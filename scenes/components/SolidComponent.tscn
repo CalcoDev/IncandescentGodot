@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cncig5pw0eiyn"]
+
+[ext_resource type="Script" path="res://scripts/components/SolidComponent.cs" id="1_qmvnq"]
+
+[node name="SolidComponent" type="Node2D" node_paths=PackedStringArray("_boundingBox")]
+script = ExtResource("1_qmvnq")
+_boundingBox = NodePath("../AABBComponent")

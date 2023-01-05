@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b5ni4eg04724j"]
+
+[ext_resource type="Script" path="res://scripts/components/CustomTimerComponent.cs" id="1_12osh"]
+
+[node name="TimerComponent" type="Node"]
+script = ExtResource("1_12osh")

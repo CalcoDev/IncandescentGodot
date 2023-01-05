@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://dls1jblghnyrr"]
+
+[ext_resource type="PackedScene" uid="uid://bouapq1mkfna4" path="res://scenes/game_object/Player.tscn" id="1_n8x5v"]
+[ext_resource type="PackedScene" uid="uid://dqqypiwxdskjl" path="res://scenes/game_object/Block.tscn" id="2_c7sn0"]
+
+[node name="TestScene" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_n8x5v")]
+position = Vector2(147, 21)
+
+[node name="Block1" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(40, 148)
+scale = Vector2(30, 4)
+
+[node name="Block2" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(175, 140)
+
+[node name="Block3" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(175, 132)
+
+[node name="Block4" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(175, 124)
+
+[node name="Block5" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(175, 116)

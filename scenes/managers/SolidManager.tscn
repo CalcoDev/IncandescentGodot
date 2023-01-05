@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6n6m8e6v8r1"]
+
+[ext_resource type="Script" path="res://scripts/managers/SolidManager.cs" id="1_uxx5s"]
+
+[node name="SolidManager" type="Node"]
+script = ExtResource("1_uxx5s")

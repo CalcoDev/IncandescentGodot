@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cof60xx2tjxeo"]
+
+[ext_resource type="Script" path="res://scripts/components/BitTagComponent.cs" id="1_ada43"]
+
+[node name="BitTagComponent" type="Node"]
+script = ExtResource("1_ada43")
+_tags = []

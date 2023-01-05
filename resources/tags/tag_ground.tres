@@ -1,0 +1,7 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://cuy0n54axaant"]
+
+[ext_resource type="Script" path="res://scripts/components/BitTagResource.cs" id="1_pxwnd"]
+
+[resource]
+script = ExtResource("1_pxwnd")
+Tag = "Ground"
