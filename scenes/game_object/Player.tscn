@@ -29,6 +29,7 @@ Size = Vector2i(12, 16)
 
 [node name="ActorComponent" parent="." node_paths=PackedStringArray("BoundingBox") instance=ExtResource("1_ugxh1")]
 BoundingBox = NodePath("../AABBComponent")
+AutoStopCollision = false
 
 [node name="GroundedChecker" parent="." node_paths=PackedStringArray("_boundingBox") instance=ExtResource("5_tgxgd")]
 _boundingBox = NodePath("AABBComponent")

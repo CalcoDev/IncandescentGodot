@@ -1,5 +1,6 @@
 ﻿using Godot;
 using Incandescent.Components;
+using Incandescent.Managers;
 using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
@@ -32,6 +33,9 @@ public partial class Player : Node2D
     [Export] private float MaxRunSpeed = 14f* 8.5f;
     [Export] private float RunAccel = 200f  * 8f;
     [Export] private float RunReduce = 62f  * 8f;
+    
+    [ExportGroup("Forgiveness")]
+    [Export(PropertyHint.Range, "0, 4, 1")] private int CornerCorrectionPixels = 2;
 
     // Input
     private float _inputX;
@@ -117,6 +121,8 @@ public partial class Player : Node2D
         float accel = RunAccel;
         if (Mathf.Abs(vel.x) > MaxRunSpeed && Calc.SameSign(_inputX, vel.x))
             accel = RunReduce;
+        if (Mathf.Abs(_inputX) > 0f && !Calc.SameSign(vel.x, _inputX))
+            accel *= 2f;
         
         vel.x = Calc.Approach(vel.x, _inputX * MaxRunSpeed, accel * (float) delta);
 
@@ -125,20 +131,52 @@ public partial class Player : Node2D
         _actorComponent.MoveX(_actorComponent.Velocity.x * (float) delta, OnCollideX);
         _actorComponent.MoveY(_actorComponent.Velocity.y * (float) delta, OnCollideY);
 
-        GD.Print($"Velocity: {vel}");
+        // GD.Print($"Velocity: {vel}");
         
         GlobalPosition = _actorComponent.IntPosition;
     }
 
     private void OnCollideX(AxisAlignedBoundingBoxComponent _)
     {
+        // TODO(calco): Maybe do horizontal corner correction?
         _actorComponent.ZeroRemainderX();
         _actorComponent.Velocity = new Vector2(0, _actorComponent.Velocity.y);
     }
     
-    private void OnCollideY(AxisAlignedBoundingBoxComponent _)
+    private void OnCollideY(AxisAlignedBoundingBoxComponent other)
     {
+        // Check if it was a head collision
+        if (_actorComponent.Velocity.y <= 0 && other.Bottom <= _actorComponent.BoundingBox.Top) // Frick inverted Y axis
+        {
+            Vector2i offset = AttemptVerticalCornerCorrection();
+            if (offset != Vector2i.Zero)
+            {
+                _actorComponent.MoveXExact(offset.x);
+                _actorComponent.MoveYExact(offset.y);
+                GD.Print("Corrected");
+                return;
+            }
+        }
+
         _actorComponent.ZeroRemainderY();
         _actorComponent.Velocity = new Vector2(_actorComponent.Velocity.x, 0);
+    }
+
+    private Vector2i AttemptVerticalCornerCorrection()
+    {
+        for (int i = 0; i < CornerCorrectionPixels; i++)
+        {
+            for (int j = -1; j < 2; j++)
+            {
+                Vector2i offset = new Vector2i((i + 1) * j, -1);
+                bool collided = SolidManager.Instance.CheckCollisionAt(_actorComponent.BoundingBox, offset);
+                if (collided)
+                    continue;
+
+                return offset;
+            }
+        }
+
+        return Vector2i.Zero;
     }
 }

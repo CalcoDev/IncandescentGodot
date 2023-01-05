@@ -6,21 +6,34 @@
 [node name="TestScene" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_n8x5v")]
-position = Vector2(147, 21)
+position = Vector2(140, 119)
 MaxFall = 200.0
+MaxRunSpeed = 100.0
+RunAccel = 550.0
+CornerCorrectionPixels = 3
 
 [node name="Block1" parent="." instance=ExtResource("2_c7sn0")]
 position = Vector2(40, 148)
 scale = Vector2(30, 4)
 
-[node name="Block2" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(175, 140)
-
-[node name="Block3" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(175, 132)
-
-[node name="Block4" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(175, 124)
-
 [node name="Block5" parent="." instance=ExtResource("2_c7sn0")]
 position = Vector2(175, 116)
+scale = Vector2(1, 4)
+
+[node name="Block6" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(111, 116)
+
+[node name="Block7" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(103, 116)
+
+[node name="Block8" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(95, 108)
+
+[node name="Block9" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(119, 108)
+
+[node name="Block10" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(111, 100)
+
+[node name="Block11" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(103, 100)

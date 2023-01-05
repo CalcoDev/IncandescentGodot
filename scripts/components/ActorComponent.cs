@@ -9,6 +9,7 @@ public partial class ActorComponent : Node2D
 {
     [ExportCategory("Actor")]
     [Export] public AxisAlignedBoundingBoxComponent BoundingBox { get; private set; }
+    [Export] public bool AutoStopCollision { get; set; } = true;
 
     public Vector2i IntPosition { get; private set; } = Vector2i.Zero;
     
@@ -41,27 +42,7 @@ public partial class ActorComponent : Node2D
             return;
         
         _remainder.x -= move;
-        int step = Mathf.Sign(move);
-        
-        while (move != 0)
-        {
-            List<AxisAlignedBoundingBoxComponent> aabbs =
-                SolidManager.Instance.GetCollisionsAt(BoundingBox, Vector2i.Right * step);
-            
-            if (aabbs.Count == 0)
-            {
-                IntPosition += new Vector2i(step, 0);
-                move -= step;
-            }
-            else
-            {
-                Velocity = new Vector2(0f, Velocity.y);
-                
-                foreach (var aabb in aabbs)
-                    onCollision?.Invoke(aabb);
-                break;
-            }
-        }
+        MoveXExact(move, onCollision);
     }
 
     public void MoveY(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
@@ -74,9 +55,40 @@ public partial class ActorComponent : Node2D
             return;
         
         _remainder.y -= move;
-        int step = Mathf.Sign(move);
+        MoveYExact(move, onCollision);
+    }
+    
+    public void MoveXExact(int amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
+    {
+        int step = Mathf.Sign(amount);
         
-        while (move != 0)
+        while (amount != 0)
+        {
+            List<AxisAlignedBoundingBoxComponent> aabbs =
+                SolidManager.Instance.GetCollisionsAt(BoundingBox, Vector2i.Right * step);
+            
+            if (aabbs.Count == 0)
+            {
+                IntPosition += new Vector2i(step, 0);
+                amount -= step;
+            }
+            else
+            {
+                if (AutoStopCollision)
+                    Velocity = new Vector2(0f, Velocity.y);
+                
+                foreach (var aabb in aabbs)
+                    onCollision?.Invoke(aabb);
+                break;
+            }
+        }
+    }
+
+    public void MoveYExact(int amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
+    {
+        int step = Mathf.Sign(amount);
+        
+        while (amount != 0)
         {
             List<AxisAlignedBoundingBoxComponent> aabbs =
                 SolidManager.Instance.GetCollisionsAt(BoundingBox, Vector2i.Down * step);
@@ -84,14 +96,15 @@ public partial class ActorComponent : Node2D
             if (aabbs.Count == 0)
             {
                 IntPosition += new Vector2i(0, step);
-                move -= step;
+                amount -= step;
             }
             else
             {
-                Velocity = new Vector2(Velocity.x, 0f);
+                if (AutoStopCollision)
+                    Velocity = new Vector2(Velocity.x, 0f);
                 
-                // foreach (var aabb in aabbs)
-                    // onCollision?.Invoke(aabb);
+                foreach (var aabb in aabbs)
+                    onCollision?.Invoke(aabb);
                 break;
             }
         }
