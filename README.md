@@ -1,6 +1,6 @@
 # Incandescent - Godot
 
-Taking inspiration from Dani's [Fair 'n Square](https://danidev.itch.io/fair-n-square) and Askiisoft's [Katana:ZERO](https://store.steampowered.com/app/460950/Katana_ZERO/), **Incandescent** is a 2d side-view focused on frame-perfect inputs in which you try to survive the bad guys and take back your cat.
+Taking inspiration from Dani's [Fair 'n Square](https://danidev.itch.io/fair-n-square) and Askiisoft's [Katana:ZERO](https://store.steampowered.com/app/460950/Katana_ZERO/), **Incandescent** is a 2d side-view focused on frame-perfect inputs in which you try to stay alive.
 
 ## Disclaimer
 

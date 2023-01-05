@@ -19,12 +19,14 @@ public partial class Player : Node2D
     [Export] private CustomTimerComponent _jumpBufferTimer;
     [Export] private CustomTimerComponent _variableJumpTimer;
     
-    [Export] private float JumpForce = 204f + 17f;
+    [Export] private float JumpForce = 204f + 8f;
     [Export] private float JumpHBoost = 13f * 5f;
     [Export(PropertyHint.Range, "0, 0.2")] private float CoyoteTime = 0.1f;
     [Export(PropertyHint.Range, "0, 0.2")] private float JumpBufferTime = 0.1f;
     [Export(PropertyHint.Range, "0, 0.2")] private float VariableJumpTime = 0.2f;
     [Export(PropertyHint.Range, "0, 1")] private float VariableJumpMultiplier = 0.5f;
+    [Export(PropertyHint.Range, "0, 5")] private float JumpApexControl = 3f;
+    [Export(PropertyHint.Range, "0, 1")] private float JumpApexControlMultiplier = 0.5f;
 
     [ExportGroup("Run")]
     [Export] private float MaxRunSpeed = 14f* 8.5f;
@@ -35,6 +37,7 @@ public partial class Player : Node2D
     private float _inputX;
     private bool _inputJumpPressed;
     private bool _inputJumpReleased;
+    private bool _inputJumpHeld;
 
     // Jumping
     private bool _isJumping;
@@ -60,6 +63,7 @@ public partial class Player : Node2D
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_jump");
         _inputJumpReleased = Input.IsActionJustReleased("btn_jump");
+        _inputJumpHeld = Input.IsActionPressed("btn_jump");
         
         // Collisions
         _groundedChecker.Update();
@@ -81,7 +85,10 @@ public partial class Player : Node2D
         // Gravity
         if (!_groundedChecker.IsColliding)
         {
-            vel.y = Calc.Approach(vel.y, MaxFall, Gravity * (float) delta);
+            if (_isJumping && _inputJumpHeld && Mathf.Abs(vel.y) < JumpApexControl)
+                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * JumpApexControlMultiplier * (float) delta);
+            else
+                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * (float) delta);
         }
 
         // Jumping
@@ -115,14 +122,23 @@ public partial class Player : Node2D
 
         _actorComponent.Velocity = vel;
         
-        _actorComponent.MoveX(_actorComponent.Velocity.x * (float) delta);
-        _actorComponent.MoveY(_actorComponent.Velocity.y * (float) delta);
+        _actorComponent.MoveX(_actorComponent.Velocity.x * (float) delta, OnCollideX);
+        _actorComponent.MoveY(_actorComponent.Velocity.y * (float) delta, OnCollideY);
 
+        GD.Print($"Velocity: {vel}");
+        
         GlobalPosition = _actorComponent.IntPosition;
     }
 
-    public void OnCoyoteTimerTimeout()
+    private void OnCollideX(AxisAlignedBoundingBoxComponent _)
     {
-        GD.Print("test");
+        _actorComponent.ZeroRemainderX();
+        _actorComponent.Velocity = new Vector2(0, _actorComponent.Velocity.y);
+    }
+    
+    private void OnCollideY(AxisAlignedBoundingBoxComponent _)
+    {
+        _actorComponent.ZeroRemainderY();
+        _actorComponent.Velocity = new Vector2(_actorComponent.Velocity.x, 0);
     }
 }

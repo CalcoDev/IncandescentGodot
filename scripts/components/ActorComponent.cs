@@ -21,6 +21,16 @@ public partial class ActorComponent : Node2D
         IntPosition = (Vector2i) GlobalPosition;
     }
 
+    public void ZeroRemainderX()
+    {
+        _remainder.x = 0;
+    }
+    
+    public void ZeroRemainderY()
+    {
+        _remainder.y = 0;
+    }
+
     public void MoveX(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
         _remainder.x += amount;
