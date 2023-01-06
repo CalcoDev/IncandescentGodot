@@ -60,3 +60,4 @@ position = Vector2(6, 8)
 width = 2.0
 Length = 15
 Delay = 0.01
+Emitting = false
