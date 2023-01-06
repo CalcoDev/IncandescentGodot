@@ -1,0 +1,24 @@
+[gd_scene load_steps=8 format=3 uid="uid://cvw7kpgsyyem"]
+
+[ext_resource type="Script" path="res://scripts/game_objects/MovingPlatform.cs" id="1_ipe6l"]
+[ext_resource type="Texture2D" uid="uid://dhtuunuk0ghpt" path="res://assets/art/blank_tile.png" id="1_kes8d"]
+[ext_resource type="PackedScene" uid="uid://cncig5pw0eiyn" path="res://scenes/components/SolidComponent.tscn" id="2_cxcdr"]
+[ext_resource type="PackedScene" uid="uid://c26ajun4s8lcc" path="res://scenes/components/AABBComponent.tscn" id="3_58ccc"]
+[ext_resource type="PackedScene" uid="uid://cof60xx2tjxeo" path="res://scenes/components/BitTagComponent.tscn" id="4_513id"]
+[ext_resource type="Resource" uid="uid://cuy0n54axaant" path="res://resources/tags/tag_platform.tres" id="5_kg7r5"]
+[ext_resource type="Resource" uid="uid://dppyn3s0qksny" path="res://resources/tags/tag_moving_platform.tres" id="5_kmp61"]
+
+[node name="MovingPlatform" type="Node2D"]
+script = ExtResource("1_ipe6l")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_kes8d")
+centered = false
+
+[node name="SolidComponent" parent="." node_paths=PackedStringArray("BoundingBox") instance=ExtResource("2_cxcdr")]
+BoundingBox = NodePath("../AABBComponent")
+
+[node name="AABBComponent" parent="." instance=ExtResource("3_58ccc")]
+
+[node name="BitTagComponent" parent="." instance=ExtResource("4_513id")]
+_tags = [ExtResource("5_kmp61"), ExtResource("5_kg7r5")]

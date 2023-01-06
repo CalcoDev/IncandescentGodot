@@ -1,24 +1,28 @@
-[gd_scene load_steps=10 format=3 uid="uid://bouapq1mkfna4"]
+[gd_scene load_steps=12 format=3 uid="uid://4rs01qbvf7bg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_oo6g4"]
 [ext_resource type="Texture2D" uid="uid://bq3c7s1nea7vo" path="res://assets/art/player/player_debug.png" id="1_ryig2"]
 [ext_resource type="PackedScene" uid="uid://diugm5qiyppib" path="res://scenes/components/ActorComponent.tscn" id="1_ugxh1"]
 [ext_resource type="PackedScene" uid="uid://c26ajun4s8lcc" path="res://scenes/components/AABBComponent.tscn" id="2_f7lw4"]
+[ext_resource type="PackedScene" uid="uid://dxinubeoc7gu8" path="res://scenes/effects/PlayerLandFX.tscn" id="2_kc52g"]
 [ext_resource type="PackedScene" uid="uid://dqqw4t8j2jjb8" path="res://scenes/components/CollisionCheckerComponent.tscn" id="5_tgxgd"]
 [ext_resource type="PackedScene" uid="uid://cof60xx2tjxeo" path="res://scenes/components/BitTagComponent.tscn" id="6_4ujxd"]
 [ext_resource type="Resource" uid="uid://4to2kygf2n8h" path="res://resources/tags/tag_player.tres" id="7_1fc3r"]
 [ext_resource type="PackedScene" uid="uid://b5ni4eg04724j" path="res://scenes/components/TimerComponent.tscn" id="8_wb3ku"]
+[ext_resource type="PackedScene" uid="uid://caixc1j7euykf" path="res://scenes/components/StateMachineComponent.tscn" id="10_agnvx"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_cqqpu"]
 diffuse_texture = ExtResource("1_ryig2")
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_actorComponent", "_groundedChecker", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer")]
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_actorComponent", "_groundedChecker", "_stateMachine", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer")]
 script = ExtResource("1_oo6g4")
 _actorComponent = NodePath("ActorComponent")
 _groundedChecker = NodePath("GroundedChecker")
+_stateMachine = NodePath("StateMachineComponent")
 _coyoteTimer = NodePath("CoyoteTimer")
 _jumpBufferTimer = NodePath("JumpBufferTimer")
 _variableJumpTimer = NodePath("VariableJumpTimer")
+_hitGroundParticles = ExtResource("2_kc52g")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = SubResource("CanvasTexture_cqqpu")
@@ -47,3 +51,5 @@ _tags = [ExtResource("7_1fc3r")]
 [node name="JumpBufferTimer" parent="." instance=ExtResource("8_wb3ku")]
 
 [node name="VariableJumpTimer" parent="." instance=ExtResource("8_wb3ku")]
+
+[node name="StateMachineComponent" parent="." instance=ExtResource("10_agnvx")]

@@ -1,39 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://dls1jblghnyrr"]
+[gd_scene load_steps=3 format=3 uid="uid://d4bx8dpxo4lhe"]
 
-[ext_resource type="PackedScene" uid="uid://bouapq1mkfna4" path="res://scenes/game_object/Player.tscn" id="1_n8x5v"]
-[ext_resource type="PackedScene" uid="uid://dqqypiwxdskjl" path="res://scenes/game_object/Block.tscn" id="2_c7sn0"]
+[ext_resource type="PackedScene" uid="uid://4rs01qbvf7bg" path="res://scenes/game_object/Player.tscn" id="1_n8x5v"]
+[ext_resource type="PackedScene" uid="uid://bydo86sefdb3v" path="res://scenes/game_object/Platform.tscn" id="2_c7sn0"]
 
 [node name="TestScene" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_n8x5v")]
-position = Vector2(140, 119)
+position = Vector2(147, 85)
 MaxFall = 200.0
 MaxRunSpeed = 100.0
 RunAccel = 550.0
-CornerCorrectionPixels = 3
+CornerCorrectionPixels = 4
 
-[node name="Block1" parent="." instance=ExtResource("2_c7sn0")]
+[node name="Platform" parent="." instance=ExtResource("2_c7sn0")]
 position = Vector2(40, 148)
 scale = Vector2(30, 4)
 
-[node name="Block5" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(175, 116)
+[node name="Platform2" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(207, 116)
 scale = Vector2(1, 4)
 
-[node name="Block6" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(111, 116)
-
-[node name="Block7" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(103, 116)
-
-[node name="Block8" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(95, 108)
-
-[node name="Block9" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(119, 108)
-
-[node name="Block10" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(111, 100)
-
-[node name="Block11" parent="." instance=ExtResource("2_c7sn0")]
-position = Vector2(103, 100)
+[node name="Platform3" parent="." instance=ExtResource("2_c7sn0")]
+position = Vector2(240, 97)
+scale = Vector2(4, 1)

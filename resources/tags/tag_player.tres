@@ -1,3 +1,7 @@
-[gd_resource type="Resource" format=3 uid="uid://4to2kygf2n8h"]
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://4to2kygf2n8h"]
+
+[ext_resource type="Script" path="res://scripts/components/BitTagResource.cs" id="1_ordm8"]
 
 [resource]
+script = ExtResource("1_ordm8")
+Tag = "Player"

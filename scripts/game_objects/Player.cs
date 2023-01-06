@@ -1,4 +1,6 @@
-﻿using Godot;
+﻿using System.Collections;
+using System.Threading.Tasks;
+using Godot;
 using Incandescent.Components;
 using Incandescent.Managers;
 using Incandescent.Utils;
@@ -10,6 +12,7 @@ public partial class Player : Node2D
     [ExportGroup("Refs")]
     [Export] private ActorComponent _actorComponent;
     [Export] private CollisionCheckerComponent _groundedChecker;
+    [Export] private StateMachineComponent _stateMachine;
 
     [ExportGroup("Gravity")]
     [Export] private float Gravity = 140f   * 5f;
@@ -19,6 +22,7 @@ public partial class Player : Node2D
     [Export] private CustomTimerComponent _coyoteTimer;
     [Export] private CustomTimerComponent _jumpBufferTimer;
     [Export] private CustomTimerComponent _variableJumpTimer;
+    [Export] private PackedScene _hitGroundParticles;
     
     [Export] private float JumpForce = 204f + 8f;
     [Export] private float JumpHBoost = 13f * 5f;
@@ -46,12 +50,27 @@ public partial class Player : Node2D
     // Jumping
     private bool _isJumping;
     
+    // State
+    private const int StNormal = 0;
+    private const int StDash = 1;
+
+    private float _delta;
+    
     public override void _Ready()
     {
+        _stateMachine.Init(1, -1);
+        _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, NormalCoroutine);
+        _stateMachine.SetState(StNormal);
+        
         _groundedChecker.OnCollide += () =>
         {
             _coyoteTimer.SetTime(CoyoteTime);
 
+            var inst = _hitGroundParticles.Instantiate<CPUParticles2D>();
+            inst.GlobalPosition = GlobalPosition;
+            inst.Position += new Vector2(6f, 16f);
+            GetNode("/root").AddChild(inst);
+            
             _isJumping = false;
         };
         
@@ -63,25 +82,37 @@ public partial class Player : Node2D
 
     public override void _Process(double delta)
     {
+        _delta = (float) delta;
+        
         // Input
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_jump");
         _inputJumpReleased = Input.IsActionJustReleased("btn_jump");
         _inputJumpHeld = Input.IsActionPressed("btn_jump");
-        
+
         // Collisions
         _groundedChecker.Update();
+
+        int newState = _stateMachine.Update();
+        _stateMachine.SetState(newState);
         
+        GlobalPosition = _actorComponent.IntPosition;
+    }
+
+    #region States
+
+    private int NormalUpdate()
+    {
         // Timers
         if (!_groundedChecker.IsColliding)
-            _coyoteTimer.Update((float) delta);
+            _coyoteTimer.Update(_delta);
         
-        _jumpBufferTimer.Update((float) delta);
+        _jumpBufferTimer.Update(_delta);
         if (_inputJumpPressed)
             _jumpBufferTimer.SetTime(JumpBufferTime);
         
         if (_isJumping)
-            _variableJumpTimer.Update((float) delta);
+            _variableJumpTimer.Update(_delta);
 
         // Movement
         Vector2 vel = _actorComponent.Velocity;
@@ -90,9 +121,9 @@ public partial class Player : Node2D
         if (!_groundedChecker.IsColliding)
         {
             if (_isJumping && _inputJumpHeld && Mathf.Abs(vel.y) < JumpApexControl)
-                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * JumpApexControlMultiplier * (float) delta);
+                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * JumpApexControlMultiplier * _delta);
             else
-                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * (float) delta);
+                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * _delta);
         }
 
         // Jumping
@@ -124,17 +155,37 @@ public partial class Player : Node2D
         if (Mathf.Abs(_inputX) > 0f && !Calc.SameSign(vel.x, _inputX))
             accel *= 2f;
         
-        vel.x = Calc.Approach(vel.x, _inputX * MaxRunSpeed, accel * (float) delta);
+        vel.x = Calc.Approach(vel.x, _inputX * MaxRunSpeed, accel * _delta);
 
         _actorComponent.Velocity = vel;
         
-        _actorComponent.MoveX(_actorComponent.Velocity.x * (float) delta, OnCollideX);
-        _actorComponent.MoveY(_actorComponent.Velocity.y * (float) delta, OnCollideY);
-
-        // GD.Print($"Velocity: {vel}");
+        _actorComponent.MoveX(_actorComponent.Velocity.x * _delta, OnCollideX);
+        _actorComponent.MoveY(_actorComponent.Velocity.y * _delta, OnCollideY);
         
-        GlobalPosition = _actorComponent.IntPosition;
+        return StNormal;
     }
+    
+    private IEnumerator NormalCoroutine()
+    {
+        GD.Print("Hello normal");
+
+        yield return Test();
+
+        yield return 1f;
+        
+        GD.Print("yo it's me normal again");
+    }
+
+    private IEnumerator Test()
+    {
+        GD.Print("Test here yoyoyoy");
+        yield return 1f;
+        GD.Print("Test out yoyoyoyo");
+    }
+
+    #endregion
+
+    #region Extra Movement
 
     private void OnCollideX(AxisAlignedBoundingBoxComponent _)
     {
@@ -179,4 +230,6 @@ public partial class Player : Node2D
 
         return Vector2i.Zero;
     }
+
+    #endregion
 }

@@ -1,0 +1,108 @@
+[gd_scene load_steps=8 format=3 uid="uid://dxinubeoc7gu8"]
+
+[sub_resource type="Curve" id="Curve_hqhnt"]
+min_value = -200.0
+max_value = 200.0
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 200), 620.509, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_2mtcl"]
+max_value = 100.0
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 100), 311.212, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_0cmht"]
+min_value = -1.0
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, -0.927273), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_bxqyh"]
+_data = [Vector2(0, 1), 0.0, -0.205195, 0, 0, Vector2(1, 0), -2.87272, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Animation" id="Animation_r3pnf"]
+resource_name = "default"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_i1j8q"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ntpuf"]
+_data = {
+"RESET": SubResource("Animation_i1j8q"),
+"default": SubResource("Animation_r3pnf")
+}
+
+[node name="PlayerLandFX" type="CPUParticles2D"]
+emitting = false
+amount = 16
+lifetime = 0.5
+one_shot = true
+speed_scale = 0.5
+explosiveness = 0.8
+randomness = 0.5
+lifetime_randomness = 0.2
+fixed_fps = 30
+draw_order = 1
+emission_shape = 3
+emission_rect_extents = Vector2(4, 1)
+gravity = Vector2(0, -150)
+initial_velocity_min = -2.0
+initial_velocity_max = 2.0
+linear_accel_min = -5.0
+linear_accel_max = 10.0
+linear_accel_curve = SubResource("Curve_hqhnt")
+radial_accel_min = 16.0
+radial_accel_max = 64.0
+damping_min = 25.0
+damping_max = 50.0
+damping_curve = SubResource("Curve_2mtcl")
+angle_min = -90.0
+angle_max = 90.0
+angle_curve = SubResource("Curve_0cmht")
+scale_amount_min = 0.5
+scale_amount_max = 3.5
+scale_amount_curve = SubResource("Curve_bxqyh")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "default"
+libraries = {
+"": SubResource("AnimationLibrary_ntpuf")
+}
