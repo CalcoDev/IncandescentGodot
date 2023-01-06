@@ -58,6 +58,5 @@ _tags = [ExtResource("7_1fc3r")]
 [node name="TrailRendererComponent" parent="." instance=ExtResource("11_npm1x")]
 position = Vector2(6, 8)
 width = 2.0
-Length = 15
-Delay = 0.01
-Emitting = false
+Length = 50
+Delay = 0.05
