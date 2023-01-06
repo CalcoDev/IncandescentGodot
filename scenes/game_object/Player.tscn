@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://4rs01qbvf7bg"]
+[gd_scene load_steps=13 format=3 uid="uid://4rs01qbvf7bg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_oo6g4"]
 [ext_resource type="Texture2D" uid="uid://bq3c7s1nea7vo" path="res://assets/art/player/player_debug.png" id="1_ryig2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" uid="uid://4to2kygf2n8h" path="res://resources/tags/tag_player.tres" id="7_1fc3r"]
 [ext_resource type="PackedScene" uid="uid://b5ni4eg04724j" path="res://scenes/components/TimerComponent.tscn" id="8_wb3ku"]
 [ext_resource type="PackedScene" uid="uid://caixc1j7euykf" path="res://scenes/components/StateMachineComponent.tscn" id="10_agnvx"]
+[ext_resource type="PackedScene" uid="uid://cuy231237s7ll" path="res://scenes/components/TrailRendererComponent.tscn" id="11_npm1x"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_cqqpu"]
 diffuse_texture = ExtResource("1_ryig2")
@@ -53,3 +54,9 @@ _tags = [ExtResource("7_1fc3r")]
 [node name="VariableJumpTimer" parent="." instance=ExtResource("8_wb3ku")]
 
 [node name="StateMachineComponent" parent="." instance=ExtResource("10_agnvx")]
+
+[node name="TrailRendererComponent" parent="." instance=ExtResource("11_npm1x")]
+position = Vector2(6, 8)
+width = 2.0
+Length = 15
+Delay = 0.01

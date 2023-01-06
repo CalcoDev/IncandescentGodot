@@ -6,7 +6,6 @@ namespace Incandescent.Components;
 
 public partial class CustomTimerComponent : Node
 {
-    [ExportGroup("Settings")]
     [Export] public bool UpdateSelf { get; set; } = false;
     
     [ExportGroup("Debug")]
