@@ -11,50 +11,41 @@ public partial class ActorComponent : Node2D
     [Export] public AxisAlignedBoundingBoxComponent BoundingBox { get; private set; }
     [Export] public bool AutoStopCollision { get; set; } = true;
 
-    public Vector2i IntPosition { get; private set; } = Vector2i.Zero;
-    
-    public Vector2 Velocity { get; set; }
+    public Vector2 Velocity { get; protected set; }
 
-    private Vector2 _remainder;
+    protected Vector2 Remainder;
 
-    public override void _EnterTree()
+    public override void _Ready()
     {
-        IntPosition = (Vector2i) GlobalPosition;
+        PhysicsManager.Instance.AddActor(this);
     }
 
-    public void ZeroRemainderX()
+    public override void _ExitTree()
     {
-        _remainder.x = 0;
-    }
-    
-    public void ZeroRemainderY()
-    {
-        _remainder.y = 0;
+        PhysicsManager.Instance.RemoveActor(this);
     }
 
     public void MoveX(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
-        _remainder.x += amount;
-        // int move = Mathf.RoundToInt(_remainder.x);
-        int move = Mathf.FloorToInt(_remainder.x);
+        Remainder.x += amount;
+        int move = Mathf.FloorToInt(Remainder.x);
         
         if (move == 0)
             return;
         
-        _remainder.x -= move;
+        Remainder.x -= move;
         MoveXExact(move, onCollision);
     }
 
     public void MoveY(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
-        _remainder.y += amount;
-        // int move = Mathf.RoundToInt(_remainder.y);
-        int move = Mathf.FloorToInt(_remainder.y);
+        Remainder.y += amount;
+        int move = Mathf.FloorToInt(Remainder.y);
         
         if (move == 0)
             return;
         
-        _remainder.y -= move;
+        Remainder.y -= move;
         MoveYExact(move, onCollision);
     }
     
@@ -65,11 +56,11 @@ public partial class ActorComponent : Node2D
         while (amount != 0)
         {
             List<AxisAlignedBoundingBoxComponent> aabbs =
-                SolidManager.Instance.GetCollisionsAt(BoundingBox, Vector2i.Right * step);
+                PhysicsManager.Instance.GetCollisionsWithSolidsAt(BoundingBox, Vector2i.Right * step);
             
             if (aabbs.Count == 0)
             {
-                IntPosition += new Vector2i(step, 0);
+                GlobalPosition += new Vector2(step, 0);
                 amount -= step;
             }
             else
@@ -91,11 +82,11 @@ public partial class ActorComponent : Node2D
         while (amount != 0)
         {
             List<AxisAlignedBoundingBoxComponent> aabbs =
-                SolidManager.Instance.GetCollisionsAt(BoundingBox, Vector2i.Down * step);
+                PhysicsManager.Instance.GetCollisionsWithSolidsAt(BoundingBox, Vector2i.Down * step);
             
             if (aabbs.Count == 0)
             {
-                IntPosition += new Vector2i(0, step);
+                GlobalPosition += new Vector2(0, step);
                 amount -= step;
             }
             else
@@ -108,5 +99,11 @@ public partial class ActorComponent : Node2D
                 break;
             }
         }
+    }
+
+    public bool IsRiding(SolidComponent solid, Vector2i offset)
+    {
+        return !BoundingBox.IntersectsRel(solid.BoundingBox, Vector2i.Zero) &&
+               BoundingBox.IntersectsRel(solid.BoundingBox, offset);
     }
 }

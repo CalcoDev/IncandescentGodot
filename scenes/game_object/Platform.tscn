@@ -1,21 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://bydo86sefdb3v"]
+[gd_scene load_steps=6 format=3 uid="uid://dxrmvhlbjvkcv"]
 
 [ext_resource type="Texture2D" uid="uid://dhtuunuk0ghpt" path="res://assets/art/blank_tile.png" id="1_x2vs3"]
-[ext_resource type="PackedScene" uid="uid://c26ajun4s8lcc" path="res://scenes/components/AABBComponent.tscn" id="2_r0i1o"]
+[ext_resource type="PackedScene" uid="uid://c26ajun4s8lcc" path="res://scenes/components/BoundingBoxComponent.tscn" id="2_r0i1o"]
 [ext_resource type="PackedScene" uid="uid://cncig5pw0eiyn" path="res://scenes/components/SolidComponent.tscn" id="3_1wcg3"]
 [ext_resource type="PackedScene" uid="uid://cof60xx2tjxeo" path="res://scenes/components/BitTagComponent.tscn" id="4_8jcns"]
 [ext_resource type="Resource" uid="uid://cuy0n54axaant" path="res://resources/tags/tag_platform.tres" id="5_fs184"]
 
-[node name="Platform" type="Node2D"]
+[node name="Platform" node_paths=PackedStringArray("BoundingBox") instance=ExtResource("3_1wcg3")]
+BoundingBox = NodePath("BoundingBoxComponent")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." index="0"]
 texture = ExtResource("1_x2vs3")
 centered = false
 
-[node name="SolidComponent" parent="." node_paths=PackedStringArray("BoundingBox") instance=ExtResource("3_1wcg3")]
-BoundingBox = NodePath("../AABBComponent")
+[node name="BoundingBoxComponent" parent="." index="1" instance=ExtResource("2_r0i1o")]
 
-[node name="AABBComponent" parent="." instance=ExtResource("2_r0i1o")]
-
-[node name="BitTagComponent" parent="." instance=ExtResource("4_8jcns")]
+[node name="BitTagComponent" parent="." index="2" instance=ExtResource("4_8jcns")]
 _tags = [ExtResource("5_fs184")]

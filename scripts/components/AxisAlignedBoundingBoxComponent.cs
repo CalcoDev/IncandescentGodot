@@ -34,10 +34,8 @@ public partial class AxisAlignedBoundingBoxComponent : Node2D
         }
     }
     
-    /// <summary>
-    /// The position of the AABB in world space.
-    /// </summary>
-    public Vector2i IntPosition => (Vector2i)GlobalPosition + PositionOffset;
+    public Vector2i IntPosition => (Vector2i) GlobalPosition + PositionOffset;
+
     public int Left => IntPosition.x;
     public int Right => IntPosition.x + Size.x;
     public int Top => IntPosition.y;
@@ -52,13 +50,7 @@ public partial class AxisAlignedBoundingBoxComponent : Node2D
         if (Engine.IsEditorHint())
             DrawRect(new Rect2(_positionOffset, _size), _color);
     }
-
-    /// <summary>
-    /// Offset self then check for an overlap between the 2 colliders.
-    /// </summary>
-    /// <param name="other">The collider to check against.</param>
-    /// <param name="positionOffset">The position offset of this collider.</param>
-    /// <returns>Whether self and overlap.</returns>
+    
     public bool IntersectsRel(AxisAlignedBoundingBoxComponent other, Vector2i positionOffset)
     {
         return Left + positionOffset.x < other.Right && Right + positionOffset.x > other.Left &&

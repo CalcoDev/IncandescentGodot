@@ -7,10 +7,9 @@ using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class Player : Node2D
+public partial class Player : ActorComponent
 {
     [ExportGroup("Refs")]
-    [Export] private ActorComponent _actorComponent;
     [Export] private CollisionCheckerComponent _groundedChecker;
     [Export] private StateMachineComponent _stateMachine;
 
@@ -58,6 +57,8 @@ public partial class Player : Node2D
     
     public override void _Ready()
     {
+        base._Ready();
+        
         _stateMachine.Init(1, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, NormalCoroutine);
         _stateMachine.SetState(StNormal);
@@ -95,8 +96,6 @@ public partial class Player : Node2D
 
         int newState = _stateMachine.Update();
         _stateMachine.SetState(newState);
-        
-        GlobalPosition = _actorComponent.IntPosition;
     }
 
     #region States
@@ -115,7 +114,7 @@ public partial class Player : Node2D
             _variableJumpTimer.Update(_delta);
 
         // Movement
-        Vector2 vel = _actorComponent.Velocity;
+        Vector2 vel = Velocity;
 
         // Gravity
         if (!_groundedChecker.IsColliding)
@@ -157,30 +156,17 @@ public partial class Player : Node2D
         
         vel.x = Calc.Approach(vel.x, _inputX * MaxRunSpeed, accel * _delta);
 
-        _actorComponent.Velocity = vel;
+        Velocity = vel;
         
-        _actorComponent.MoveX(_actorComponent.Velocity.x * _delta, OnCollideX);
-        _actorComponent.MoveY(_actorComponent.Velocity.y * _delta, OnCollideY);
+        MoveX(Velocity.x * _delta, OnCollideX);
+        MoveY(Velocity.y * _delta, OnCollideY);
         
         return StNormal;
     }
     
     private IEnumerator NormalCoroutine()
     {
-        GD.Print("Hello normal");
-
-        yield return Test();
-
-        yield return 1f;
-        
-        GD.Print("yo it's me normal again");
-    }
-
-    private IEnumerator Test()
-    {
-        GD.Print("Test here yoyoyoy");
-        yield return 1f;
-        GD.Print("Test out yoyoyoyo");
+        yield break;
     }
 
     #endregion
@@ -190,27 +176,26 @@ public partial class Player : Node2D
     private void OnCollideX(AxisAlignedBoundingBoxComponent _)
     {
         // TODO(calco): Maybe do horizontal corner correction?
-        _actorComponent.ZeroRemainderX();
-        _actorComponent.Velocity = new Vector2(0, _actorComponent.Velocity.y);
+        Remainder.x = 0f;
+        Velocity = new Vector2(0, Velocity.y);
     }
     
     private void OnCollideY(AxisAlignedBoundingBoxComponent other)
     {
         // Check if it was a head collision
-        if (_actorComponent.Velocity.y <= 0 && other.Bottom <= _actorComponent.BoundingBox.Top) // Frick inverted Y axis
+        if (Velocity.y <= 0 && other.Bottom <= BoundingBox.Top) // Frick inverted Y axis
         {
             Vector2i offset = AttemptVerticalCornerCorrection();
             if (offset != Vector2i.Zero)
             {
-                _actorComponent.MoveXExact(offset.x);
-                _actorComponent.MoveYExact(offset.y);
-                GD.Print("Corrected");
+                MoveXExact(offset.x);
+                MoveYExact(offset.y);
                 return;
             }
         }
 
-        _actorComponent.ZeroRemainderY();
-        _actorComponent.Velocity = new Vector2(_actorComponent.Velocity.x, 0);
+        Remainder.y = 0f;
+        Velocity = new Vector2(Velocity.x, 0);
     }
 
     private Vector2i AttemptVerticalCornerCorrection()
@@ -220,7 +205,7 @@ public partial class Player : Node2D
             for (int j = -1; j < 2; j++)
             {
                 Vector2i offset = new Vector2i((i + 1) * j, -1);
-                bool collided = SolidManager.Instance.CheckCollisionAt(_actorComponent.BoundingBox, offset);
+                bool collided = PhysicsManager.Instance.CheckWithSolidsCollisionAt(BoundingBox, offset);
                 if (collided)
                     continue;
 

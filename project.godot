@@ -18,7 +18,7 @@ run/max_fps=240
 
 [autoload]
 
-SolidManager="*res://scenes/managers/SolidManager.tscn"
+PhysicsManager="*res://scenes/managers/PhysicsManager.tscn"
 
 [display]
 

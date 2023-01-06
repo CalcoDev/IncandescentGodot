@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c26ajun4s8lcc"]
-
-[ext_resource type="Script" path="res://scripts/components/AxisAlignedBoundingBoxComponent.cs" id="1_fa7ev"]
-
-[node name="AABBComponent" type="Node2D"]
-script = ExtResource("1_fa7ev")
