@@ -25,6 +25,16 @@ public partial class ActorComponent : Node2D
         PhysicsManager.Instance.RemoveActor(this);
     }
 
+    public virtual bool IsRiding(SolidComponent solid, Vector2i offset)
+    {
+        return !BoundingBox.IntersectsRel(solid.BoundingBox, Vector2i.Zero) &&
+               BoundingBox.IntersectsRel(solid.BoundingBox, offset);
+    }
+
+    public virtual void Squish(AxisAlignedBoundingBoxComponent aabb)
+    {
+    }
+
     public void MoveX(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
         Remainder.x += amount;
@@ -99,11 +109,5 @@ public partial class ActorComponent : Node2D
                 break;
             }
         }
-    }
-
-    public bool IsRiding(SolidComponent solid, Vector2i offset)
-    {
-        return !BoundingBox.IntersectsRel(solid.BoundingBox, Vector2i.Zero) &&
-               BoundingBox.IntersectsRel(solid.BoundingBox, offset);
     }
 }

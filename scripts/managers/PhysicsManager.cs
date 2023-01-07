@@ -61,8 +61,13 @@ public partial class PhysicsManager : Node
     public bool CheckWithSolidsCollisionAt(AxisAlignedBoundingBoxComponent boundingBox, Vector2i offset)
     {
         foreach (var solid in Solids)
+        {
+            if (!solid.IsCollidable)
+                continue;
+            
             if (boundingBox.IntersectsRel(solid.BoundingBox, offset))
                 return true;
+        }
 
         return false;
     }
@@ -72,8 +77,14 @@ public partial class PhysicsManager : Node
         List<AxisAlignedBoundingBoxComponent> collisions = new();
 
         foreach (var solid in Solids)
+        {
+            if (!solid.IsCollidable)
+                continue;
+            
             if (boundingBox.IntersectsRel(solid.BoundingBox, offset))
                 collisions.Add(solid.BoundingBox);
+
+        }
 
         return collisions;
     }

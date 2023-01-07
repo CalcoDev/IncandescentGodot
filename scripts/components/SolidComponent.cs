@@ -9,7 +9,8 @@ public partial class SolidComponent : Node2D
 {
     [ExportCategory("Solid")]
     [Export] public AxisAlignedBoundingBoxComponent BoundingBox { get; private set; }
-
+    [Export] public bool IsCollidable { get; set; } = true;
+    
     protected Vector2 Remainder;
 
     public override void _Ready()
@@ -32,24 +33,29 @@ public partial class SolidComponent : Node2D
             return;
 
         List<ActorComponent> riders = PhysicsManager.Instance.GetRidingActors(this); 
-        Remainder.x -= move;
-
-        // TODO(calco): Move step by step. Otherwise, if moving too fast the actor will pass through the solid.
-        GlobalPosition += new Vector2(move, 0);
+        IsCollidable = false;
         
+        Remainder.x -= move;
+        GlobalPosition += new Vector2(move, 0);
+
         List<ActorComponent> actors = PhysicsManager.Instance.Actors;
         foreach (ActorComponent actor in actors)
         {
             if (BoundingBox.IntersectsRel(actor.BoundingBox, Vector2i.Zero))
             {
+                // Push left
                 if (amount < 0) 
-                    actor.MoveXExact(BoundingBox.Left - actor.BoundingBox.Right);
+                    actor.MoveXExact(BoundingBox.Left - actor.BoundingBox.Right, actor.Squish);
+                // Push right
                 else
-                    actor.MoveXExact(BoundingBox.Right - actor.BoundingBox.Left);
+                    actor.MoveXExact(BoundingBox.Right - actor.BoundingBox.Left, actor.Squish);
             }
+            // Carry
             else if (riders.Contains(actor))
                 actor.MoveXExact(move);
         }
+
+        IsCollidable = true;
     }
 
     public void MoveY(float amount)
@@ -60,10 +66,10 @@ public partial class SolidComponent : Node2D
         if (move == 0)
             return;
 
-        List<ActorComponent> riders = PhysicsManager.Instance.GetRidingActors(this); 
-        Remainder.y -= move;
+        List<ActorComponent> riders = PhysicsManager.Instance.GetRidingActors(this);
+        IsCollidable = false;
         
-        // TODO(calco): Move step by step. Otherwise, if moving too fast the actor will pass through the solid.
+        Remainder.y -= move;
         GlobalPosition += new Vector2(0, move);
         
         List<ActorComponent> actors = PhysicsManager.Instance.Actors;
@@ -71,13 +77,18 @@ public partial class SolidComponent : Node2D
         {
             if (BoundingBox.IntersectsRel(actor.BoundingBox, Vector2i.Zero))
             {
-                if (amount < 0) 
-                    actor.MoveYExact(BoundingBox.Top - actor.BoundingBox.Bottom);
+                // Push up
+                if (amount < 0)
+                    actor.MoveYExact(BoundingBox.Top - actor.BoundingBox.Bottom, actor.Squish);
+                // Push down
                 else
-                    actor.MoveYExact(BoundingBox.Bottom - actor.BoundingBox.Top);
+                    actor.MoveYExact(BoundingBox.Bottom - actor.BoundingBox.Top, actor.Squish);
             }
+            // Carry
             else if (riders.Contains(actor))
                 actor.MoveYExact(move);
         }
+
+        IsCollidable = true;
     }
 }

@@ -14,20 +14,20 @@ RunAccel = 550.0
 CornerCorrectionPixels = 4
 
 [node name="MovingPlatform" parent="." node_paths=PackedStringArray("_path") instance=ExtResource("3_ah64m")]
-position = Vector2(56, 134)
+position = Vector2(70, 85)
 scale = Vector2(3, 1)
 _path = NodePath("Path")
-_duration = 2.0
-_delay = 0.0
+_duration = 0.5
+_delay = 1.0
 
 [node name="Path" type="Node" parent="MovingPlatform"]
 
 [node name="Marker2D3" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(56, 134)
+position = Vector2(70, 85)
 gizmo_extents = 5.0
 
 [node name="Marker2D4" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(147, 134)
+position = Vector2(70, 130)
 gizmo_extents = 5.0
 
 [node name="Platform" parent="." instance=ExtResource("2_c7sn0")]
