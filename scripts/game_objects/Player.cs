@@ -14,15 +14,15 @@ public partial class Player : ActorComponent
     [Export] private StateMachineComponent _stateMachine;
 
     [ExportGroup("Gravity")]
-    [Export] private float Gravity = 140f   * 5f;
-    [Export] private float MaxFall = 25f    * 6f;
+    [Export] private float Gravity = 140f * 5f;
+    [Export] private float MaxFall = 25f * 6f;
 
-    [ExportGroup("Jump")] 
+    [ExportGroup("Jump")]
     [Export] private CustomTimerComponent _coyoteTimer;
     [Export] private CustomTimerComponent _jumpBufferTimer;
     [Export] private CustomTimerComponent _variableJumpTimer;
     [Export] private PackedScene _hitGroundParticles;
-    
+
     [Export] private float JumpForce = 204f + 8f;
     [Export] private float JumpHBoost = 13f * 5f;
     [Export(PropertyHint.Range, "0, 0.2")] private float CoyoteTime = 0.1f;
@@ -33,10 +33,10 @@ public partial class Player : ActorComponent
     [Export(PropertyHint.Range, "0, 1")] private float JumpApexControlMultiplier = 0.5f;
 
     [ExportGroup("Run")]
-    [Export] private float MaxRunSpeed = 14f* 8.5f;
-    [Export] private float RunAccel = 200f  * 8f;
-    [Export] private float RunReduce = 62f  * 8f;
-    
+    [Export] private float MaxRunSpeed = 14f * 8.5f;
+    [Export] private float RunAccel = 200f * 8f;
+    [Export] private float RunReduce = 62f * 8f;
+
     [ExportGroup("Forgiveness")]
     [Export(PropertyHint.Range, "0, 4, 1")] private int CornerCorrectionPixels = 2;
 
@@ -48,21 +48,21 @@ public partial class Player : ActorComponent
 
     // Jumping
     private bool _isJumping;
-    
+
     // State
     private const int StNormal = 0;
     private const int StDash = 1;
 
     private float _delta;
-    
+
     public override void _Ready()
     {
         base._Ready();
-        
+
         _stateMachine.Init(1, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, NormalCoroutine);
         _stateMachine.SetState(StNormal);
-        
+
         _groundedChecker.OnCollide += () =>
         {
             _coyoteTimer.SetTime(CoyoteTime);
@@ -71,20 +71,17 @@ public partial class Player : ActorComponent
             inst.GlobalPosition = GlobalPosition;
             inst.Position += new Vector2(6f, 16f);
             GetNode("/root").AddChild(inst);
-            
+
             _isJumping = false;
         };
-        
-        _groundedChecker.OnSeparate += () =>
-        {
-            _coyoteTimer.SetTime(CoyoteTime);
-        };
+
+        _groundedChecker.OnSeparate += () => _coyoteTimer.SetTime(CoyoteTime);
     }
 
     public override void _Process(double delta)
     {
-        _delta = (float) delta;
-        
+        _delta = (float)delta;
+
         // Input
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_jump");
@@ -105,11 +102,11 @@ public partial class Player : ActorComponent
         // Timers
         if (!_groundedChecker.IsColliding)
             _coyoteTimer.Update(_delta);
-        
+
         _jumpBufferTimer.Update(_delta);
         if (_inputJumpPressed)
             _jumpBufferTimer.SetTime(JumpBufferTime);
-        
+
         if (_isJumping)
             _variableJumpTimer.Update(_delta);
 
@@ -130,14 +127,14 @@ public partial class Player : ActorComponent
         {
             _coyoteTimer.SetTime(0f);
             _jumpBufferTimer.SetTime(0f);
-            
+
             vel.x += JumpHBoost * _inputX;
             vel.y = -JumpForce;
-            
+
             _variableJumpTimer.SetTime(VariableJumpTime);
             _isJumping = true;
         }
-        
+
         // Variable Jump
         if (_variableJumpTimer.IsRunning() && _inputJumpReleased)
         {
@@ -153,20 +150,20 @@ public partial class Player : ActorComponent
             accel = RunReduce;
         if (Mathf.Abs(_inputX) > 0f && !Calc.SameSign(vel.x, _inputX))
             accel *= 2f;
-        
+
         vel.x = Calc.Approach(vel.x, _inputX * MaxRunSpeed, accel * _delta);
 
         Velocity = vel;
-        
+
         MoveX(Velocity.x * _delta, OnCollideX);
         MoveY(Velocity.y * _delta, OnCollideY);
-        
+
         return StNormal;
     }
-    
+
     private IEnumerator NormalCoroutine()
     {
-        yield break;
+        yield return 1.5f;
     }
 
     #endregion
@@ -179,7 +176,7 @@ public partial class Player : ActorComponent
         Remainder.x = 0f;
         Velocity = new Vector2(0, Velocity.y);
     }
-    
+
     private void OnCollideY(AxisAlignedBoundingBoxComponent other)
     {
         // Check if it was a head collision

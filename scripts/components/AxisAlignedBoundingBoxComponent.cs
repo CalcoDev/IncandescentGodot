@@ -6,7 +6,8 @@ namespace Incandescent.Components;
 public partial class AxisAlignedBoundingBoxComponent : Node2D
 {
     [ExportCategory("AABB")]
-    [Export] public Vector2i Size
+    [Export]
+    public Vector2i Size
     {
         get => _size;
         set
@@ -15,7 +16,8 @@ public partial class AxisAlignedBoundingBoxComponent : Node2D
             QueueRedraw();
         }
     }
-    [Export] public Vector2i PositionOffset
+    [Export]
+    public Vector2i PositionOffset
     {
         get => _positionOffset;
         set
@@ -24,7 +26,8 @@ public partial class AxisAlignedBoundingBoxComponent : Node2D
             QueueRedraw();
         }
     }
-    [Export] public Color Color
+    [Export]
+    public Color Color
     {
         get => _color;
         set
@@ -33,8 +36,8 @@ public partial class AxisAlignedBoundingBoxComponent : Node2D
             QueueRedraw();
         }
     }
-    
-    public Vector2i IntPosition => (Vector2i) GlobalPosition + PositionOffset;
+
+    public Vector2i IntPosition => (Vector2i)GlobalPosition + PositionOffset;
 
     public int Left => IntPosition.x;
     public int Right => IntPosition.x + Size.x;
@@ -50,7 +53,7 @@ public partial class AxisAlignedBoundingBoxComponent : Node2D
         if (Engine.IsEditorHint())
             DrawRect(new Rect2(_positionOffset, _size), _color);
     }
-    
+
     public bool IntersectsRel(AxisAlignedBoundingBoxComponent other, Vector2i positionOffset)
     {
         return Left + positionOffset.x < other.Right && Right + positionOffset.x > other.Left &&

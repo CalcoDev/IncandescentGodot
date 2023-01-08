@@ -11,7 +11,7 @@ public partial class BitTagComponent : Node
     {
         return _tags.Contains(bitTag);
     }
-        
+
     public bool HasTagString(string bitTag)
     {
         foreach (var bitTagResource in _tags)
@@ -22,7 +22,7 @@ public partial class BitTagComponent : Node
 
         return false;
     }
-        
+
     public void AddTag(BitTagResource bitTag)
     {
         if (!HasTag(bitTag))

@@ -12,11 +12,11 @@ public partial class CollisionCheckerComponent : Node2D
     [Export] private bool _selfUpdate = false;
 
     public AxisAlignedBoundingBoxComponent AABB => _boundingBox;
-    
+
     [ExportGroup("Debug")]
     [Export] public bool IsColliding { get; private set; }
     [Export] public bool WasColliding { get; private set; }
-    
+
     public Action OnCollide { get; set; }
     public Action OnSeparate { get; set; }
 
@@ -31,12 +31,11 @@ public partial class CollisionCheckerComponent : Node2D
     public void Update()
     {
         IsColliding = PhysicsManager.Instance.CheckWithSolidsCollisionAt(_boundingBox, Vector2i.Zero);
-        
+
         if (WasColliding && !IsColliding)
             OnSeparate?.Invoke();
         else if (!WasColliding && IsColliding)
             OnCollide?.Invoke();
-            
 
         WasColliding = IsColliding;
     }

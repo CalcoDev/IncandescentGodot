@@ -7,13 +7,13 @@ namespace Incandescent.Components;
 public partial class CustomTimerComponent : Node
 {
     [Export] public bool UpdateSelf { get; set; } = false;
-    
+
     [ExportGroup("Debug")]
     [Export] private float _time;
 
-    [Signal] 
+    [Signal]
     public delegate void TimeoutEventHandler();
-    
+
     public float Time => _time;
 
     private bool _triggeredEvent;
@@ -22,7 +22,7 @@ public partial class CustomTimerComponent : Node
     {
         CustomTimerComponent c = new CustomTimerComponent();
         c.Init(time, updateAutomatically);
-        
+
         parent.AddChild(c);
         return c;
     }
@@ -36,19 +36,19 @@ public partial class CustomTimerComponent : Node
     public override void _Process(double delta)
     {
         if (UpdateSelf)
-            Update((float) delta);
+            Update((float)delta);
     }
 
     public bool HasFinished()
     {
         return Calc.FloatEquals(_time, 0f);
     }
-        
+
     public bool IsRunning()
     {
         return _time > 0f;
     }
-    
+
     public void Update(float deltaTime)
     {
         _time = Mathf.Max(_time - deltaTime, 0f);
@@ -58,13 +58,13 @@ public partial class CustomTimerComponent : Node
             _triggeredEvent = true;
         }
     }
-    
+
     public void Start(float time)
     {
         UpdateSelf = true;
         _time = time;
     }
-    
+
     public void Pause()
     {
         UpdateSelf = false;

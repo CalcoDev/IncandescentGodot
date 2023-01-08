@@ -27,7 +27,7 @@ public partial class PhysicsManager : Node
     {
         Actors.Add(actor);
     }
-    
+
     public void RemoveActor(ActorComponent actor)
     {
         Actors.Remove(actor);
@@ -37,10 +37,10 @@ public partial class PhysicsManager : Node
     {
         if (solid is MovingPlatform)
             GD.Print("Adding moving platform");
-        
+
         Solids.Add(solid);
     }
-    
+
     public void RemoveSolid(SolidComponent solid)
     {
         Solids.Remove(solid);
@@ -57,14 +57,14 @@ public partial class PhysicsManager : Node
 
         return actors;
     }
-    
+
     public bool CheckWithSolidsCollisionAt(AxisAlignedBoundingBoxComponent boundingBox, Vector2i offset)
     {
         foreach (var solid in Solids)
         {
             if (!solid.IsCollidable)
                 continue;
-            
+
             if (boundingBox.IntersectsRel(solid.BoundingBox, offset))
                 return true;
         }
@@ -80,10 +80,9 @@ public partial class PhysicsManager : Node
         {
             if (!solid.IsCollidable)
                 continue;
-            
+
             if (boundingBox.IntersectsRel(solid.BoundingBox, offset))
                 collisions.Add(solid.BoundingBox);
-
         }
 
         return collisions;

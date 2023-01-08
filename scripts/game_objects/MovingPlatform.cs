@@ -12,20 +12,19 @@ public partial class MovingPlatform : SolidComponent
 
     private List<Node2D> _points;
     private int _currentPoint = -1;
-    
-    private Tween _tween;
 
+    private Tween _tween;
     private Vector2 _targetPos;
-    
+
     public override void _Ready()
     {
         base._Ready();
-        
+
         int cnt = _path.GetChildCount();
         _points = new List<Node2D>(cnt);
         for (int i = 0; i < cnt; i++)
             _points.Add(_path.GetChild<Node2D>(i));
-        
+
         _tween = CreateTween();
 
         _targetPos = _points[0].Position;

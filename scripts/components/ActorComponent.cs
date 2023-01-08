@@ -39,10 +39,10 @@ public partial class ActorComponent : Node2D
     {
         Remainder.x += amount;
         int move = Mathf.FloorToInt(Remainder.x);
-        
+
         if (move == 0)
             return;
-        
+
         Remainder.x -= move;
         MoveXExact(move, onCollision);
     }
@@ -51,23 +51,23 @@ public partial class ActorComponent : Node2D
     {
         Remainder.y += amount;
         int move = Mathf.FloorToInt(Remainder.y);
-        
+
         if (move == 0)
             return;
-        
+
         Remainder.y -= move;
         MoveYExact(move, onCollision);
     }
-    
+
     public void MoveXExact(int amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
         int step = Mathf.Sign(amount);
-        
+
         while (amount != 0)
         {
             List<AxisAlignedBoundingBoxComponent> aabbs =
                 PhysicsManager.Instance.GetCollisionsWithSolidsAt(BoundingBox, Vector2i.Right * step);
-            
+
             if (aabbs.Count == 0)
             {
                 GlobalPosition += new Vector2(step, 0);
@@ -77,7 +77,7 @@ public partial class ActorComponent : Node2D
             {
                 if (AutoStopCollision)
                     Velocity = new Vector2(0f, Velocity.y);
-                
+
                 foreach (var aabb in aabbs)
                     onCollision?.Invoke(aabb);
                 break;
@@ -88,12 +88,12 @@ public partial class ActorComponent : Node2D
     public void MoveYExact(int amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
         int step = Mathf.Sign(amount);
-        
+
         while (amount != 0)
         {
             List<AxisAlignedBoundingBoxComponent> aabbs =
                 PhysicsManager.Instance.GetCollisionsWithSolidsAt(BoundingBox, Vector2i.Down * step);
-            
+
             if (aabbs.Count == 0)
             {
                 GlobalPosition += new Vector2(0, step);
@@ -103,7 +103,7 @@ public partial class ActorComponent : Node2D
             {
                 if (AutoStopCollision)
                     Velocity = new Vector2(Velocity.x, 0f);
-                
+
                 foreach (var aabb in aabbs)
                     onCollision?.Invoke(aabb);
                 break;
