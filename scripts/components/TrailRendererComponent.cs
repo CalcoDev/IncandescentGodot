@@ -16,9 +16,20 @@ public partial class TrailRendererComponent : Line2D
     public override void _Ready()
     {
         _timer.SetTime(Delay);
-
-        _parent = GetParent<Node2D>();
         _offset = Position;
+
+        CallDeferred(nameof(Reparent));
+    }
+
+    private void Reparent()
+    {
+        _parent = GetParent<Node2D>();
+
+        int zIndex = _parent.GetNode<Sprite2D>("Sprite").ZIndex;
+        ZIndex = zIndex - 1;
+
+        _parent.RemoveChild(this);
+        _parent.GetTree().Root.AddChild(this);
     }
 
     public override void _Process(double delta)
