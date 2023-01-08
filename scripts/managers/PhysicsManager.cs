@@ -7,7 +7,7 @@ namespace Incandescent.Managers;
 
 public partial class PhysicsManager : Node
 {
-    public static PhysicsManager Instance { get; private set; }
+    public static PhysicsManager Instance { get; private set; } = null;
 
     public List<SolidComponent> Solids { get; } = new();
     public List<ActorComponent> Actors { get; } = new();
@@ -17,6 +17,7 @@ public partial class PhysicsManager : Node
         if (Instance != null)
         {
             GD.PrintErr("Multiple instances of SolidManager detected!");
+            // TODO: delete
             return;
         }
 

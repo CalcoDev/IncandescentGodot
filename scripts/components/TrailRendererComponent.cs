@@ -18,15 +18,13 @@ public partial class TrailRendererComponent : Line2D
         _timer.SetTime(Delay);
         _offset = Position;
 
+        // FIXME(calco): Probably shouldn't reparent.
         CallDeferred(nameof(Reparent));
     }
 
     private void Reparent()
     {
         _parent = GetParent<Node2D>();
-
-        int zIndex = _parent.GetNode<Sprite2D>("Sprite").ZIndex;
-        ZIndex = zIndex - 1;
 
         _parent.RemoveChild(this);
         _parent.GetTree().Root.AddChild(this);

@@ -14,7 +14,7 @@
 [sub_resource type="CanvasTexture" id="CanvasTexture_cqqpu"]
 diffuse_texture = ExtResource("1_ryig2")
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_groundedChecker", "_stateMachine", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "BoundingBox")]
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_groundedChecker", "_stateMachine", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer", "BoundingBox")]
 script = ExtResource("1_oo6g4")
 _groundedChecker = NodePath("GroundedChecker")
 _stateMachine = NodePath("StateMachineComponent")
@@ -22,6 +22,7 @@ _coyoteTimer = NodePath("CoyoteTimer")
 _jumpBufferTimer = NodePath("JumpBufferTimer")
 _variableJumpTimer = NodePath("VariableJumpTimer")
 _hitGroundParticles = ExtResource("2_kc52g")
+_dashCooldownTimer = NodePath("DashCooldowntimer")
 BoundingBox = NodePath("BoundingBoxComponent")
 AutoStopCollision = false
 
@@ -51,7 +52,11 @@ _tags = [ExtResource("7_1fc3r")]
 
 [node name="StateMachineComponent" parent="." instance=ExtResource("10_agnvx")]
 
+[node name="DashCooldowntimer" parent="." instance=ExtResource("8_wb3ku")]
+
 [node name="TrailRendererComponent" parent="." instance=ExtResource("11_npm1x")]
+show_behind_parent = false
+z_index = -1
 position = Vector2(6, 8)
 width = 2.0
 Length = 50

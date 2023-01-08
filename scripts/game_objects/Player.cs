@@ -32,6 +32,12 @@ public partial class Player : ActorComponent
     [Export(PropertyHint.Range, "0, 5")] private float JumpApexControl = 3f;
     [Export(PropertyHint.Range, "0, 1")] private float JumpApexControlMultiplier = 0.5f;
 
+    [ExportGroup("Dash")]
+    [Export] private CustomTimerComponent _dashCooldownTimer;
+    [Export] private float DashCooldown = 0.2f;
+    [Export] private float DashSpeed = 14f * 8.5f * 1.5f;
+    [Export] private float DashTime = 0.15f;
+
     [ExportGroup("Run")]
     [Export] private float MaxRunSpeed = 14f * 8.5f;
     [Export] private float RunAccel = 200f * 8f;
@@ -46,6 +52,10 @@ public partial class Player : ActorComponent
     private bool _inputJumpReleased;
     private bool _inputJumpHeld;
 
+    private bool _inputDashPressed;
+
+    private Vector2 _lastNonZeroDir;
+
     // Jumping
     private bool _isJumping;
 
@@ -55,12 +65,20 @@ public partial class Player : ActorComponent
 
     private float _delta;
 
+    public bool IsColliding { get; private set; }
+
+    // Dashing
+    private Vector2 _dashDir;
+    private bool _groundDash;
+    private bool _queueDashStop;
+
     public override void _Ready()
     {
         base._Ready();
 
-        _stateMachine.Init(1, -1);
-        _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, NormalCoroutine);
+        _stateMachine.Init(3, -1);
+        _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
+        _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
         _stateMachine.SetState(StNormal);
 
         _groundedChecker.OnCollide += () =>
@@ -88,17 +106,28 @@ public partial class Player : ActorComponent
         _inputJumpReleased = Input.IsActionJustReleased("btn_jump");
         _inputJumpHeld = Input.IsActionPressed("btn_jump");
 
+        _inputDashPressed = Input.IsActionJustPressed("btn_dash");
+
+        if (Mathf.Abs(_inputX) > 0f)
+            _lastNonZeroDir = new(_inputX, 0f);
+
         // Collisions
         _groundedChecker.Update();
 
         int newState = _stateMachine.Update();
         _stateMachine.SetState(newState);
+
+        IsColliding = false;
     }
 
     #region States
 
     private int NormalUpdate()
     {
+        // State
+        if (_inputDashPressed)
+            return StDash;
+
         // Timers
         if (!_groundedChecker.IsColliding)
             _coyoteTimer.Update(_delta);
@@ -161,17 +190,71 @@ public partial class Player : ActorComponent
         return StNormal;
     }
 
-    private IEnumerator NormalCoroutine()
+    private void DashEnter()
     {
-        yield return 1.5f;
+        Velocity = Vector2.Zero;
+        _dashDir = Vector2.Zero;
+
+        _groundDash = _groundedChecker.IsColliding;
+    }
+
+    private int DashUpdate()
+    {
+        MoveX(Velocity.x * _delta, OnCollideX);
+        if (_queueDashStop)
+        {
+            _queueDashStop = false;
+            return StNormal;
+        }
+
+        return StDash;
+    }
+
+    private void DashExit()
+    {
+    }
+
+    private IEnumerator DashCoroutine()
+    {
+        yield return null;
+
+        _dashDir = _lastNonZeroDir;
+
+        Vector2 speed = _dashDir * DashSpeed;
+        Vector2 vel = Velocity;
+
+        if (Calc.SameSign(vel.x, speed.x) && Mathf.Abs(vel.x) > Mathf.Abs(speed.x))
+            speed.x = vel.x;
+
+        Velocity = speed;
+
+        yield return DashTime;
+
+        _stateMachine.SetState(StNormal);
     }
 
     #endregion
 
     #region Extra Movement
 
-    private void OnCollideX(AxisAlignedBoundingBoxComponent _)
+    private void OnCollideX(AxisAlignedBoundingBoxComponent aabb)
     {
+        IsColliding = true;
+
+        if (_stateMachine.State == StDash)
+        {
+            int dir = (int)_dashDir.x;
+            Vector2i offset = AttemptHorizontalCornerCorrection(dir);
+
+            if (offset != Vector2i.Zero)
+            {
+                MoveXExact(offset.x);
+                MoveYExact(offset.y);
+                return;
+            }
+            _queueDashStop = true;
+        }
+
         // TODO(calco): Maybe do horizontal corner correction?
         Remainder.x = 0f;
         Velocity = new Vector2(0, Velocity.y);
@@ -179,6 +262,8 @@ public partial class Player : ActorComponent
 
     private void OnCollideY(AxisAlignedBoundingBoxComponent other)
     {
+        IsColliding = true;
+
         // Check if it was a head collision
         if (Velocity.y <= 0 && other.Bottom <= BoundingBox.Top) // Frick inverted Y axis
         {
@@ -193,6 +278,24 @@ public partial class Player : ActorComponent
 
         Remainder.y = 0f;
         Velocity = new Vector2(Velocity.x, 0);
+    }
+
+    private Vector2i AttemptHorizontalCornerCorrection(int dir)
+    {
+        for (int i = 0; i < CornerCorrectionPixels; i++)
+        {
+            for (int j = -1; j < 2; j++)
+            {
+                Vector2i offset = new Vector2i(dir, (i + 1) * j);
+                bool collided = PhysicsManager.Instance.CheckWithSolidsCollisionAt(BoundingBox, offset);
+                if (collided)
+                    continue;
+
+                return offset;
+            }
+        }
+
+        return Vector2i.Zero;
     }
 
     private Vector2i AttemptVerticalCornerCorrection()
