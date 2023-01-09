@@ -136,7 +136,7 @@ public partial class Player : Node2D
     private int NormalUpdate()
     {
         // State
-        if (_inputDashPressed)
+        if (_inputDashPressed && _dashCooldownTimer.HasFinished())
             return StDash;
 
         // Timers
