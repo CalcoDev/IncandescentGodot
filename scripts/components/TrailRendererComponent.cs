@@ -6,12 +6,35 @@ public partial class TrailRendererComponent : Line2D
 {
     [Export] public int Length { get; set; } = 100;
     [Export] public float Delay { get; set; } = 0.1f;
-    [Export] public bool Emitting { get; set; } = true;
+    [Export]
+    public bool Emitting
+    {
+        get { return emitting; }
+        set
+        {
+            emitting = value;
+            if (!emitting)
+                _addonPoints = 0;
+        }
+    }
 
     [Export] private CustomTimerComponent _timer;
 
     private Node2D _parent;
     private Vector2 _offset;
+
+    private int _addonPoints;
+    private bool emitting = true;
+
+    public void ResetTimerToZero()
+    {
+        _timer.SetTime(0f);
+    }
+
+    public void StartClearingPoints()
+    {
+        _addonPoints = Length - GetPointCount();
+    }
 
     public override void _Ready()
     {
@@ -20,14 +43,6 @@ public partial class TrailRendererComponent : Line2D
 
         // FIXME(calco): Probably shouldn't reparent.
         CallDeferred(nameof(Reparent));
-    }
-
-    private void Reparent()
-    {
-        _parent = GetParent<Node2D>();
-
-        _parent.RemoveChild(this);
-        _parent.GetTree().Root.AddChild(this);
     }
 
     public override void _Process(double delta)
@@ -43,18 +58,27 @@ public partial class TrailRendererComponent : Line2D
 
             if (Emitting)
             {
-                // Get a random number between 0 and 1
-                // var random = GD.RandRange(-1, 1);
-
+                GD.Print($"Added point at: {_parent.GlobalPosition + _offset}");
                 AddPoint(_parent.GlobalPosition + _offset);
-                // AddPoint(_parent.GlobalPosition + _offset + Vector2.Up * random);
+            }
+            else
+            {
+                _addonPoints += 1;
             }
 
-            if (GetPointCount() > Length)
+            if (GetPointCount() > Length || (!Emitting && GetPointCount() > 0 && GetPointCount() + _addonPoints > Length))
             {
+                GD.Print($"Removing point at: {Points[0]}");
                 RemovePoint(0);
-                // RemovePoint(0);
             }
         }
+    }
+
+    private void Reparent()
+    {
+        _parent = GetParent<Node2D>();
+
+        _parent.RemoveChild(this);
+        _parent.GetTree().Root.AddChild(this);
     }
 }

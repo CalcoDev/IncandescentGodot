@@ -7,11 +7,13 @@ using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class Player : ActorComponent
+public partial class Player : Node2D
 {
     [ExportGroup("Refs")]
-    [Export] private CollisionCheckerComponent _groundedChecker;
+    [Export] private VelocityComponent _vel;
+    [Export] private ActorComponent _actor;
     [Export] private StateMachineComponent _stateMachine;
+    [Export] private CollisionCheckerComponent _groundedChecker;
 
     [ExportGroup("Gravity")]
     [Export] private float Gravity = 140f * 5f;
@@ -33,10 +35,13 @@ public partial class Player : ActorComponent
     [Export(PropertyHint.Range, "0, 1")] private float JumpApexControlMultiplier = 0.5f;
 
     [ExportGroup("Dash")]
+    [Export] private TrailRendererComponent _dashTrail;
+
     [Export] private CustomTimerComponent _dashCooldownTimer;
     [Export] private float DashCooldown = 0.2f;
-    [Export] private float DashSpeed = 14f * 8.5f * 1.5f;
+    [Export] private float DashSpeed = 14f * 8.5f * 3f;
     [Export] private float DashTime = 0.15f;
+    [Export(PropertyHint.Range, "0, 1")] private float DashFinishMultiplier = 0.75f;
 
     [ExportGroup("Run")]
     [Export] private float MaxRunSpeed = 14f * 8.5f;
@@ -74,16 +79,17 @@ public partial class Player : ActorComponent
 
     public override void _Ready()
     {
-        base._Ready();
-
         _stateMachine.Init(3, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
         _stateMachine.SetState(StNormal);
 
+        _dashTrail.Emitting = false;
+
         _groundedChecker.OnCollide += () =>
         {
             _coyoteTimer.SetTime(CoyoteTime);
+            _dashCooldownTimer.SetTime(0f);
 
             var inst = _hitGroundParticles.Instantiate<CPUParticles2D>();
             inst.GlobalPosition = GlobalPosition;
@@ -118,6 +124,11 @@ public partial class Player : ActorComponent
         _stateMachine.SetState(newState);
 
         IsColliding = false;
+
+        // GD.Print($"Grounded checker pos: {_groundedChecker.GlobalPosition}");
+        // GD.Print($"Velocity: [{_vel.X}, {_vel.Y}] | Actor Pos: {_actor.GlobalPosition}");
+        // TODO(calco): Make it so that actors don't require you to do this.
+        GlobalPosition = _actor.GlobalPosition;
     }
 
     #region States
@@ -139,16 +150,13 @@ public partial class Player : ActorComponent
         if (_isJumping)
             _variableJumpTimer.Update(_delta);
 
-        // Movement
-        Vector2 vel = Velocity;
-
         // Gravity
         if (!_groundedChecker.IsColliding)
         {
-            if (_isJumping && _inputJumpHeld && Mathf.Abs(vel.y) < JumpApexControl)
-                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * JumpApexControlMultiplier * _delta);
+            if (_isJumping && _inputJumpHeld && Mathf.Abs(_vel.Y) < JumpApexControl)
+                _vel.ApproachY(MaxFall, Gravity * JumpApexControlMultiplier * _delta);
             else
-                vel.y = Calc.Approach(vel.y, MaxFall, Gravity * _delta);
+                _vel.ApproachY(MaxFall, Gravity * _delta);
         }
 
         // Jumping
@@ -157,8 +165,8 @@ public partial class Player : ActorComponent
             _coyoteTimer.SetTime(0f);
             _jumpBufferTimer.SetTime(0f);
 
-            vel.x += JumpHBoost * _inputX;
-            vel.y = -JumpForce;
+            _vel.AddX(JumpHBoost * _inputX);
+            _vel.SetY(-JumpForce);
 
             _variableJumpTimer.SetTime(VariableJumpTime);
             _isJumping = true;
@@ -169,38 +177,41 @@ public partial class Player : ActorComponent
         {
             _variableJumpTimer.SetTime(0f);
             _isJumping = false;
-            if (vel.y < 0)
-                vel.y *= VariableJumpMultiplier;
+            if (_vel.Y < 0)
+                _vel.MultiplyY(VariableJumpMultiplier);
         }
 
         // Horizontal
         float accel = RunAccel;
-        if (Mathf.Abs(vel.x) > MaxRunSpeed && Calc.SameSign(_inputX, vel.x))
+        bool sameDir = Calc.SameSign(_inputX, _vel.X);
+        if (Mathf.Abs(_vel.X) > MaxRunSpeed && sameDir)
             accel = RunReduce;
-        if (Mathf.Abs(_inputX) > 0f && !Calc.SameSign(vel.x, _inputX))
+        if (Mathf.Abs(_inputX) > 0f && !sameDir)
             accel *= 2f;
 
-        vel.x = Calc.Approach(vel.x, _inputX * MaxRunSpeed, accel * _delta);
+        _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
 
-        Velocity = vel;
-
-        MoveX(Velocity.x * _delta, OnCollideX);
-        MoveY(Velocity.y * _delta, OnCollideY);
+        _actor.MoveX(_vel.X * _delta, OnCollideX);
+        _actor.MoveY(_vel.Y * _delta, OnCollideY);
 
         return StNormal;
     }
 
     private void DashEnter()
     {
-        Velocity = Vector2.Zero;
+        _vel.Set(0f, 0f);
         _dashDir = Vector2.Zero;
 
         _groundDash = _groundedChecker.IsColliding;
+
+        _dashTrail.ClearPoints();
+        _dashTrail.ResetTimerToZero();
+        _dashTrail.Emitting = true;
     }
 
     private int DashUpdate()
     {
-        MoveX(Velocity.x * _delta, OnCollideX);
+        _actor.MoveX(_vel.X * _delta, OnCollideX);
         if (_queueDashStop)
         {
             _queueDashStop = false;
@@ -212,6 +223,11 @@ public partial class Player : ActorComponent
 
     private void DashExit()
     {
+        _dashTrail.Emitting = false;
+
+        CustomTimerComponent.Create(this, 0.2f, true).Timeout += () => _dashTrail.StartClearingPoints();
+
+        GD.Print("Stopped dashing.");
     }
 
     private IEnumerator DashCoroutine()
@@ -221,15 +237,15 @@ public partial class Player : ActorComponent
         _dashDir = _lastNonZeroDir;
 
         Vector2 speed = _dashDir * DashSpeed;
-        Vector2 vel = Velocity;
 
-        if (Calc.SameSign(vel.x, speed.x) && Mathf.Abs(vel.x) > Mathf.Abs(speed.x))
-            speed.x = vel.x;
+        if (Calc.SameSign(_vel.X, speed.x) && Mathf.Abs(_vel.X) > Mathf.Abs(speed.x))
+            speed.x = _vel.X;
 
-        Velocity = speed;
+        _vel.Set(speed);
 
         yield return DashTime;
 
+        _vel.MultiplyX(DashFinishMultiplier);
         _stateMachine.SetState(StNormal);
     }
 
@@ -248,16 +264,16 @@ public partial class Player : ActorComponent
 
             if (offset != Vector2i.Zero)
             {
-                MoveXExact(offset.x);
-                MoveYExact(offset.y);
+                _actor.MoveXExact(offset.x);
+                _actor.MoveYExact(offset.y);
                 return;
             }
             _queueDashStop = true;
         }
 
         // TODO(calco): Maybe do horizontal corner correction?
-        Remainder.x = 0f;
-        Velocity = new Vector2(0, Velocity.y);
+        _actor.ClearRemainderX();
+        _vel.SetX(0f);
     }
 
     private void OnCollideY(AxisAlignedBoundingBoxComponent other)
@@ -265,19 +281,19 @@ public partial class Player : ActorComponent
         IsColliding = true;
 
         // Check if it was a head collision
-        if (Velocity.y <= 0 && other.Bottom <= BoundingBox.Top) // Frick inverted Y axis
+        if (_vel.Y <= 0 && other.Bottom <= _actor.BoundingBox.Top) // Frick inverted Y axis
         {
             Vector2i offset = AttemptVerticalCornerCorrection();
             if (offset != Vector2i.Zero)
             {
-                MoveXExact(offset.x);
-                MoveYExact(offset.y);
+                _actor.MoveXExact(offset.x);
+                _actor.MoveYExact(offset.y);
                 return;
             }
         }
 
-        Remainder.y = 0f;
-        Velocity = new Vector2(Velocity.x, 0);
+        _actor.ClearRemainderY();
+        _vel.SetY(0f);
     }
 
     private Vector2i AttemptHorizontalCornerCorrection(int dir)
@@ -287,7 +303,7 @@ public partial class Player : ActorComponent
             for (int j = -1; j < 2; j++)
             {
                 Vector2i offset = new Vector2i(dir, (i + 1) * j);
-                bool collided = PhysicsManager.Instance.CheckWithSolidsCollisionAt(BoundingBox, offset);
+                bool collided = PhysicsManager.Instance.CheckWithSolidsCollisionAt(_actor.BoundingBox, offset);
                 if (collided)
                     continue;
 
@@ -305,7 +321,7 @@ public partial class Player : ActorComponent
             for (int j = -1; j < 2; j++)
             {
                 Vector2i offset = new Vector2i((i + 1) * j, -1);
-                bool collided = PhysicsManager.Instance.CheckWithSolidsCollisionAt(BoundingBox, offset);
+                bool collided = PhysicsManager.Instance.CheckWithSolidsCollisionAt(_actor.BoundingBox, offset);
                 if (collided)
                     continue;
 

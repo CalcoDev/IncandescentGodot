@@ -14,3 +14,4 @@ insert_final_newline = false
 # roslynator config
 # default|none|silent|suggestion|warning|error
 dotnet_diagnostic.IDE0090.severity = silent
+dotnet_diagnostic.RCS1089.severity = silent

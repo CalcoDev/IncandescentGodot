@@ -9,14 +9,15 @@ public partial class ActorComponent : Node2D
 {
     [ExportCategory("Actor")]
     [Export] public AxisAlignedBoundingBoxComponent BoundingBox { get; private set; }
-    [Export] public bool AutoStopCollision { get; set; } = true;
 
-    public Vector2 Velocity { get; protected set; }
-
-    protected Vector2 Remainder;
+    private Vector2 _remainder;
 
     public override void _Ready()
     {
+        Vector2 t = GlobalPosition;
+        TopLevel = true;
+        GlobalPosition = t;
+
         PhysicsManager.Instance.AddActor(this);
     }
 
@@ -35,27 +36,37 @@ public partial class ActorComponent : Node2D
     {
     }
 
+    public void ClearRemainderX()
+    {
+        _remainder.x = 0f;
+    }
+
+    public void ClearRemainderY()
+    {
+        _remainder.y = 0f;
+    }
+
     public void MoveX(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
-        Remainder.x += amount;
-        int move = Mathf.FloorToInt(Remainder.x);
+        _remainder.x += amount;
+        int move = Mathf.FloorToInt(_remainder.x);
 
         if (move == 0)
             return;
 
-        Remainder.x -= move;
+        _remainder.x -= move;
         MoveXExact(move, onCollision);
     }
 
     public void MoveY(float amount, Action<AxisAlignedBoundingBoxComponent> onCollision = null)
     {
-        Remainder.y += amount;
-        int move = Mathf.FloorToInt(Remainder.y);
+        _remainder.y += amount;
+        int move = Mathf.FloorToInt(_remainder.y);
 
         if (move == 0)
             return;
 
-        Remainder.y -= move;
+        _remainder.y -= move;
         MoveYExact(move, onCollision);
     }
 
@@ -70,14 +81,11 @@ public partial class ActorComponent : Node2D
 
             if (aabbs.Count == 0)
             {
-                GlobalPosition += new Vector2(step, 0);
+                Position += new Vector2(step, 0);
                 amount -= step;
             }
             else
             {
-                if (AutoStopCollision)
-                    Velocity = new Vector2(0f, Velocity.y);
-
                 foreach (var aabb in aabbs)
                     onCollision?.Invoke(aabb);
                 break;
@@ -96,14 +104,11 @@ public partial class ActorComponent : Node2D
 
             if (aabbs.Count == 0)
             {
-                GlobalPosition += new Vector2(0, step);
+                Position += new Vector2(0, step);
                 amount -= step;
             }
             else
             {
-                if (AutoStopCollision)
-                    Velocity = new Vector2(Velocity.x, 0f);
-
                 foreach (var aabb in aabbs)
                     onCollision?.Invoke(aabb);
                 break;

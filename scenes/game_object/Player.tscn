@@ -1,10 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://c5vg665m6p7rw"]
+[gd_scene load_steps=15 format=3 uid="uid://c5vg665m6p7rw"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_oo6g4"]
 [ext_resource type="Texture2D" uid="uid://bq3c7s1nea7vo" path="res://assets/art/player/player_debug.png" id="1_ryig2"]
 [ext_resource type="PackedScene" uid="uid://c26ajun4s8lcc" path="res://scenes/components/BoundingBoxComponent.tscn" id="2_f7lw4"]
 [ext_resource type="PackedScene" uid="uid://dxinubeoc7gu8" path="res://scenes/effects/PlayerLandFX.tscn" id="2_kc52g"]
+[ext_resource type="PackedScene" uid="uid://diugm5qiyppib" path="res://scenes/components/ActorComponent.tscn" id="5_kbkgk"]
 [ext_resource type="PackedScene" uid="uid://dqqw4t8j2jjb8" path="res://scenes/components/CollisionCheckerComponent.tscn" id="5_tgxgd"]
+[ext_resource type="PackedScene" uid="uid://dgwpvgv1o3bw3" path="res://scenes/components/VelocityComponent.tscn" id="6_2a08f"]
 [ext_resource type="PackedScene" uid="uid://cof60xx2tjxeo" path="res://scenes/components/BitTagComponent.tscn" id="6_4ujxd"]
 [ext_resource type="Resource" uid="uid://4to2kygf2n8h" path="res://resources/tags/tag_player.tres" id="7_1fc3r"]
 [ext_resource type="PackedScene" uid="uid://b5ni4eg04724j" path="res://scenes/components/TimerComponent.tscn" id="8_wb3ku"]
@@ -14,32 +16,55 @@
 [sub_resource type="CanvasTexture" id="CanvasTexture_cqqpu"]
 diffuse_texture = ExtResource("1_ryig2")
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_groundedChecker", "_stateMachine", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer", "BoundingBox")]
+[sub_resource type="Gradient" id="Gradient_ct385"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.175214, 0.418803, 0.700855, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.405983, 1, 1, 1, 0.657298, 1, 1, 1, 0.805241, 1, 1, 1, 1)
+
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_vel", "_actor", "_stateMachine", "_groundedChecker", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashTrail", "_dashCooldownTimer")]
 script = ExtResource("1_oo6g4")
-_groundedChecker = NodePath("GroundedChecker")
+_vel = NodePath("VelocityComponent")
+_actor = NodePath("ActorComponent")
 _stateMachine = NodePath("StateMachineComponent")
+_groundedChecker = NodePath("ActorComponent/GroundedChecker")
 _coyoteTimer = NodePath("CoyoteTimer")
 _jumpBufferTimer = NodePath("JumpBufferTimer")
 _variableJumpTimer = NodePath("VariableJumpTimer")
 _hitGroundParticles = ExtResource("2_kc52g")
+_dashTrail = NodePath("TrailRendererComponent")
 _dashCooldownTimer = NodePath("DashCooldowntimer")
-BoundingBox = NodePath("BoundingBoxComponent")
-AutoStopCollision = false
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = SubResource("CanvasTexture_cqqpu")
 centered = false
 
-[node name="BoundingBoxComponent" parent="." instance=ExtResource("2_f7lw4")]
-Size = Vector2i(12, 16)
+[node name="TrailRendererComponent" parent="." instance=ExtResource("11_npm1x")]
+show_behind_parent = false
+z_index = -1
+position = Vector2(6, 8)
+width_curve = null
+gradient = SubResource("Gradient_ct385")
+round_precision = 2
+antialiased = true
+Delay = 0.01
 
-[node name="GroundedChecker" parent="." node_paths=PackedStringArray("_boundingBox") instance=ExtResource("5_tgxgd")]
+[node name="ActorComponent" parent="." node_paths=PackedStringArray("BoundingBox") instance=ExtResource("5_kbkgk")]
+BoundingBox = NodePath("BoundingBoxComponent")
+
+[node name="GroundedChecker" parent="ActorComponent" node_paths=PackedStringArray("_boundingBox") instance=ExtResource("5_tgxgd")]
 position = Vector2(0, 16)
 _boundingBox = NodePath("AABBComponent")
 
-[node name="AABBComponent" parent="GroundedChecker" instance=ExtResource("2_f7lw4")]
+[node name="AABBComponent" parent="ActorComponent/GroundedChecker" instance=ExtResource("2_f7lw4")]
 Size = Vector2i(12, 1)
 Color = Color(0, 0.917647, 1, 0.25098)
+
+[node name="BoundingBoxComponent" parent="ActorComponent" instance=ExtResource("2_f7lw4")]
+Size = Vector2i(12, 16)
+
+[node name="VelocityComponent" parent="." instance=ExtResource("6_2a08f")]
+
+[node name="StateMachineComponent" parent="." instance=ExtResource("10_agnvx")]
 
 [node name="BitTagComponent" parent="." instance=ExtResource("6_4ujxd")]
 _tags = [ExtResource("7_1fc3r")]
@@ -50,14 +75,4 @@ _tags = [ExtResource("7_1fc3r")]
 
 [node name="VariableJumpTimer" parent="." instance=ExtResource("8_wb3ku")]
 
-[node name="StateMachineComponent" parent="." instance=ExtResource("10_agnvx")]
-
 [node name="DashCooldowntimer" parent="." instance=ExtResource("8_wb3ku")]
-
-[node name="TrailRendererComponent" parent="." instance=ExtResource("11_npm1x")]
-show_behind_parent = false
-z_index = -1
-position = Vector2(6, 8)
-width = 2.0
-Length = 50
-Delay = 0.05

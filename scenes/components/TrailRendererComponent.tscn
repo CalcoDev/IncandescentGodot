@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b5ni4eg04724j" path="res://scenes/components/TimerComponent.tscn" id="2_1ovv5"]
 
 [sub_resource type="Curve" id="Curve_5u4cp"]
-_data = [Vector2(0, 0.0090909), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, -2.56452, 0, 0]
+_data = [Vector2(0, 0.990909), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, -2.56452, 0, 0]
 point_count = 2
 
 [node name="TrailRendererComponent" type="Line2D" node_paths=PackedStringArray("_timer")]
