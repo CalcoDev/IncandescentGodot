@@ -10,6 +10,7 @@ public partial class ActorComponent : Node2D
     [ExportCategory("Actor")]
     [Export] public AxisAlignedBoundingBoxComponent BoundingBox { get; private set; }
 
+    public Vector2 Remainder => _remainder;
     private Vector2 _remainder;
 
     public override void _Ready()

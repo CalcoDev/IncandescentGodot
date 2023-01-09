@@ -4,8 +4,12 @@ using Incandescent.Components;
 
 namespace Incandescent.GameObjects;
 
-public partial class MovingPlatform : SolidComponent
+public partial class MovingPlatform : Node2D
 {
+    [ExportGroup("Refs")]
+    [Export] private SolidComponent _solid;
+
+    [ExportGroup("Settings")]
     [Export] private Node _path;
     [Export] private float _duration = 1f;
     [Export] private float _delay = 0.5f;
@@ -43,7 +47,9 @@ public partial class MovingPlatform : SolidComponent
 
     public override void _Process(double delta)
     {
-        MoveX(_targetPos.x - (GlobalPosition.x + Remainder.x));
-        MoveY(_targetPos.y - (GlobalPosition.y + Remainder.y));
+        _solid.MoveX(_targetPos.x - (GlobalPosition.x + _solid.Remainder.x));
+        _solid.MoveY(_targetPos.y - (GlobalPosition.y + _solid.Remainder.y));
+
+        GlobalPosition = _solid.GlobalPosition;
     }
 }

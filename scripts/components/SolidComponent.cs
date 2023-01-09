@@ -10,11 +10,18 @@ public partial class SolidComponent : Node2D
     [Export] public AxisAlignedBoundingBoxComponent BoundingBox { get; private set; }
     [Export] public bool IsCollidable { get; set; } = true;
 
-    protected Vector2 Remainder;
+    public Vector2 Remainder => _remainder;
+    private Vector2 _remainder;
 
     public override void _Ready()
     {
-        BoundingBox.Size *= (Vector2i)Scale;
+        // TODO(calco): Create a base class for Solids and Actors, to avoid code duplication like this.
+        Vector2 t = GlobalPosition;
+        TopLevel = true;
+        GlobalPosition = t;
+
+        // TODO(calco): This is awful lmao. Please fix somehow.
+        BoundingBox.Size *= (Vector2i)Scale * (Vector2i)GetParent<Node2D>().Scale;
         PhysicsManager.Instance.AddSolid(this);
     }
 
@@ -25,7 +32,7 @@ public partial class SolidComponent : Node2D
 
     public void MoveX(float amount)
     {
-        Remainder.x += amount;
+        _remainder.x += amount;
         int move = Mathf.FloorToInt(Remainder.x);
 
         if (move == 0)
@@ -34,7 +41,7 @@ public partial class SolidComponent : Node2D
         List<ActorComponent> riders = PhysicsManager.Instance.GetRidingActors(this);
         IsCollidable = false;
 
-        Remainder.x -= move;
+        _remainder.x -= move;
         GlobalPosition += new Vector2(move, 0);
 
         List<ActorComponent> actors = PhysicsManager.Instance.Actors;
@@ -61,7 +68,7 @@ public partial class SolidComponent : Node2D
 
     public void MoveY(float amount)
     {
-        Remainder.y += amount;
+        _remainder.y += amount;
         int move = Mathf.FloorToInt(Remainder.y);
 
         if (move == 0)
@@ -70,7 +77,7 @@ public partial class SolidComponent : Node2D
         List<ActorComponent> riders = PhysicsManager.Instance.GetRidingActors(this);
         IsCollidable = false;
 
-        Remainder.y -= move;
+        _remainder.y -= move;
         GlobalPosition += new Vector2(0, move);
 
         List<ActorComponent> actors = PhysicsManager.Instance.Actors;
