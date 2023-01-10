@@ -1,8 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://t28w57qr8cuv"]
+[gd_scene load_steps=8 format=3 uid="uid://t28w57qr8cuv"]
 
 [ext_resource type="PackedScene" uid="uid://c5vg665m6p7rw" path="res://scenes/game_object/Player.tscn" id="1_n8x5v"]
 [ext_resource type="PackedScene" uid="uid://dxrmvhlbjvkcv" path="res://scenes/game_object/Platform.tscn" id="2_c7sn0"]
+[ext_resource type="Texture2D" uid="uid://ckjrpjthcn14b" path="res://assets/art/light.png" id="2_jrgt1"]
 [ext_resource type="PackedScene" uid="uid://bwt15hptwystb" path="res://scenes/game_object/MovingPlatform.tscn" id="3_ah64m"]
+[ext_resource type="Script" path="res://scripts/utils/LightGrow.cs" id="3_dc2f4"]
+[ext_resource type="Texture2D" uid="uid://bmefdtxwbnwn1" path="res://assets/art/background.png" id="4_1mle7"]
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_m41og"]
+cull_mode = 1
+polygon = PackedVector2Array(0, 8, 8, 8, 8, 0, 0, 0)
 
 [node name="TestScene" type="Node2D"]
 
@@ -12,6 +19,15 @@ MaxFall = 200.0
 MaxRunSpeed = 100.0
 RunAccel = 550.0
 CornerCorrectionPixels = 4
+
+[node name="PointLight2D" type="PointLight2D" parent="Player"]
+position = Vector2(6, 7)
+energy = 0.6
+shadow_enabled = true
+shadow_filter_smooth = 1.0
+texture = ExtResource("2_jrgt1")
+texture_scale = 0.4
+script = ExtResource("3_dc2f4")
 
 [node name="MovingPlatform" parent="." node_paths=PackedStringArray("_path") instance=ExtResource("3_ah64m")]
 position = Vector2(70, 130)
@@ -30,6 +46,9 @@ gizmo_extents = 5.0
 position = Vector2(70, 130)
 gizmo_extents = 5.0
 
+[node name="LightOccluder2D" type="LightOccluder2D" parent="MovingPlatform"]
+occluder = SubResource("OccluderPolygon2D_m41og")
+
 [node name="Platform" parent="." instance=ExtResource("2_c7sn0")]
 position = Vector2(40, 148)
 scale = Vector2(30, 4)
@@ -37,3 +56,14 @@ scale = Vector2(30, 4)
 [node name="Platform2" parent="." instance=ExtResource("2_c7sn0")]
 position = Vector2(193, 113)
 scale = Vector2(3, 1)
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Platform2"]
+occluder = SubResource("OccluderPolygon2D_m41og")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -2
+texture = ExtResource("4_1mle7")
+centered = false
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.117647, 0.113725, 0.223529, 1)

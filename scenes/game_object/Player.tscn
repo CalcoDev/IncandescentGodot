@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c5vg665m6p7rw"]
+[gd_scene load_steps=14 format=3 uid="uid://c5vg665m6p7rw"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_oo6g4"]
 [ext_resource type="Texture2D" uid="uid://bq3c7s1nea7vo" path="res://assets/art/player/player_debug.png" id="1_ryig2"]
@@ -15,11 +15,6 @@
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_cqqpu"]
 diffuse_texture = ExtResource("1_ryig2")
-
-[sub_resource type="Gradient" id="Gradient_ct385"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0, 0.175214, 0.418803, 0.700855, 1)
-colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.405983, 1, 1, 1, 0.657298, 1, 1, 1, 0.805241, 1, 1, 1, 1)
 
 [node name="Player" type="Node2D" node_paths=PackedStringArray("_vel", "_actor", "_stateMachine", "_groundedChecker", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashTrail", "_dashCooldownTimer")]
 script = ExtResource("1_oo6g4")
@@ -42,8 +37,6 @@ centered = false
 show_behind_parent = false
 z_index = -1
 position = Vector2(6, 8)
-width_curve = null
-gradient = SubResource("Gradient_ct385")
 round_precision = 2
 antialiased = true
 Delay = 0.01

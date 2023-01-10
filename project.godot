@@ -61,4 +61,6 @@ btn_dash={
 
 [rendering]
 
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true
 textures/canvas_textures/default_texture_filter=0
