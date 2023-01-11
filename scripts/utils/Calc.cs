@@ -26,4 +26,9 @@ public static class Calc
     {
         return Mathf.Abs(a - b) < epsilon;
     }
+
+    public static int FloorToIntButCeilIfClose(float value, float epsilon = 0.05f)
+    {
+        return Mathf.FloorToInt(value) + (Mathf.Abs(value - Mathf.Ceil(value)) < epsilon ? 1 : 0);
+    }
 }

@@ -10,10 +10,10 @@ config_version=5
 
 [application]
 
-config/name="Template"
-config/description="Replace this with a description of your game."
+config/name="Eyes"
+config/description="Eyes..."
 run/main_scene="res://scenes/Main.tscn"
-config/features=PackedStringArray("4.0", "Forward Plus")
+config/features=PackedStringArray("4.0", "C#", "Forward Plus")
 run/max_fps=240
 
 [display]
@@ -28,7 +28,7 @@ window/stretch/mode="viewport"
 
 [dotnet]
 
-project/assembly_name="Template"
+project/assembly_name="Eyes"
 
 [input]
 
@@ -54,6 +54,11 @@ btn_shift={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"unicode":0,"echo":false,"script":null)
 ]
 }
+
+[physics]
+
+common/physics_ticks_per_second=120
+common/physics_jitter_fix=0.0
 
 [rendering]
 
