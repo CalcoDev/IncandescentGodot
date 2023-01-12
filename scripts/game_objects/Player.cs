@@ -46,8 +46,13 @@ public partial class Player : Node2D
         _actor.GlobalPosition = t;
     }
 
+    private bool _test;
+
     public override void _Process(double delta)
     {
+        if (Input.IsActionJustPressed("btn_rand_toggle"))
+            _test = !_test;
+
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_space");
         _inputJumpReleased = Input.IsActionJustReleased("btn_space");
@@ -105,19 +110,13 @@ public partial class Player : Node2D
 
         // TODO(calco): What in the world is this.
         Vector2i pos = Vector2i.Zero;
-        bool c = _actor.MoveAndSlide();
-        // if (c)
-        // {
+
+        if (_test)
+            _actor.MoveAndSlide();
+        GD.Print($"Moved player actor on frame: {Time.GetTicksMsec()}.");
+
         pos.x = Calc.FloorToIntButCeilIfClose(_actor.GlobalPosition.x);
         pos.y = Calc.FloorToIntButCeilIfClose(_actor.GlobalPosition.y);
-        // }
-        // else
-        // {
-        // pos.x = Mathf.FloorToInt(_actor.GlobalPosition.x);
-        // pos.y = Mathf.FloorToInt(_actor.GlobalPosition.y);
-        // }
-
-        // GD.Print(_actor.GlobalPosition);
 
         GlobalPosition = pos;
     }

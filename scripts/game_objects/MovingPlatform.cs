@@ -21,6 +21,7 @@ public partial class MovingPlatform : Node2D
     private Vector2 _targetPos;
 
     private List<CharacterBody2D> _ridingActors;
+    private bool _moving;
 
     public override void _EnterTree()
     {
@@ -73,12 +74,15 @@ public partial class MovingPlatform : Node2D
 
     private void OnBodyExited(Node2D body)
     {
+        if (_moving)
+            return;
+
         CharacterBody2D actor = (CharacterBody2D)body;
 
         if (!_ridingActors.Contains(actor))
             return;
 
-        GD.Print($"Removed {actor.Name}.");
+        GD.Print($"Removed {actor.Name} on frame: {Time.GetTicksMsec()}.");
         _ridingActors.Remove(actor);
     }
 
@@ -87,11 +91,15 @@ public partial class MovingPlatform : Node2D
         // _solid.MoveAndCollide(_targetPos - _solid.GlobalPosition);
         // GlobalPosition = _solid.GlobalPosition;
 
-        GD.Print(_ridingActors.Count);
+        // GD.Print(_ridingActors.Count);
+        _moving = true;
         foreach (CharacterBody2D actor in _ridingActors)
         {
+            GD.Print($"Moved {actor.Name} by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
             actor.GlobalPosition += _targetPos - GlobalPosition;
         }
+        GD.Print($"Moved moving platform by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
         GlobalPosition = _targetPos;
+        _moving = false;
     }
 }
