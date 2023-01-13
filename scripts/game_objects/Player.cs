@@ -1,6 +1,7 @@
 using System;
-using System.Reflection.Metadata.Ecma335;
 using Eyes.Components;
+using Eyes.Components.Physics;
+using Eyes.Managers;
 using Godot;
 using Incandescent.Utils;
 
@@ -10,7 +11,7 @@ public partial class Player : Node2D
 {
     [ExportGroup("Refs")]
     [Export] private VelocityComponent _vel;
-    [Export] private CharacterBody2D _actor;
+    [Export] private ActorComponent _actor;
 
     [ExportGroup("Gravity")]
     [Export] private float Gravity = 140f * 5f;
@@ -39,20 +40,19 @@ public partial class Player : Node2D
 
     private bool _isJumping;
 
+    private bool _isGrounded;
+
     public override void _Ready()
     {
         Vector2 t = _actor.GlobalPosition;
         _actor.TopLevel = true;
         _actor.GlobalPosition = t;
-    }
 
-    private bool _test = true;
+        _actor.OnSquish += OnSquish;
+    }
 
     public override void _Process(double delta)
     {
-        if (Input.IsActionJustPressed("btn_rand_toggle"))
-            _test = !_test;
-
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_space");
         _inputJumpReleased = Input.IsActionJustReleased("btn_space");
@@ -64,31 +64,24 @@ public partial class Player : Node2D
             _lastNonZeroDir = new Vector2(_inputX, 0f);
 
         // Handle Jump.
-        if (_inputJumpPressed) // _jumpBufferTimer.IsRunning() && _coyoteTimer.IsRunning()
+        if (_inputJumpPressed)
         {
-            // _coyoteTimer.SetTime(0f);
-            // _jumpBufferTimer.SetTime(0f);
-
             GD.Print("Jump");
             _vel.AddX(JumpHBoost * _inputX);
             _vel.SetY(-JumpForce);
 
-            // _variableJumpTimer.SetTime(VariableJumpTime);
             _isJumping = true;
         }
 
-        // Test((float)delta);
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
         Test((float)delta);
     }
 
     private void Test(float delta)
     {
+        _isGrounded = _actor.CollideAt(LevelManager.Instance.Solids, Vector2i.Down);
+
         // Add the gravity.
-        if (!_actor.IsOnFloor())
+        if (!_isGrounded)
         {
             if (_isJumping && _inputJumpHeld && Mathf.Abs(_vel.Y) < JumpApexControl)
                 _vel.ApproachY(MaxFall, Gravity * JumpApexControlMultiplier * delta);
@@ -103,21 +96,27 @@ public partial class Player : Node2D
             accel = RunReduce;
         if (Mathf.Abs(_inputX) > 0f && !sameDir)
             accel *= 2f;
-
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * delta);
 
-        _actor.Velocity = _vel.Value;
+        _actor.MoveX(_vel.X * delta, OnCollideX);
+        _actor.MoveY(_vel.Y * delta, OnCollideY);
 
-        // TODO(calco): What in the world is this.
-        Vector2i pos = Vector2i.Zero;
+        // Vector2i pos = Vector2i.Zero;
+        // pos.x = Calc.FloorToIntButCeilIfClose(_actor.GlobalPosition.x);
+        // pos.y = Calc.FloorToIntButCeilIfClose(_actor.GlobalPosition.y);
+        // GlobalPosition = pos;
+    }
 
-        if (_test)
-            _actor.MoveAndSlide();
-        GD.Print($"Moved player actor on frame: {Time.GetTicksMsec()}.");
+    private void OnCollideX(AABBComponent other)
+    {
+    }
 
-        pos.x = Calc.FloorToIntButCeilIfClose(_actor.GlobalPosition.x);
-        pos.y = Calc.FloorToIntButCeilIfClose(_actor.GlobalPosition.y);
+    private void OnCollideY(AABBComponent other)
+    {
+    }
 
-        GlobalPosition = pos;
+    private void OnSquish(AABBComponent other)
+    {
+        GD.Print("Player was squished!");
     }
 }

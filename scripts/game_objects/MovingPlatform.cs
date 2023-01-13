@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Eyes.Components.Physics;
 using Godot;
 using Incandescent.Utils;
 
@@ -7,8 +8,7 @@ namespace Eyes.GameObjects;
 
 public partial class MovingPlatform : Node2D
 {
-    [Export] private AnimatableBody2D _solid;
-    [Export] private Area2D _area;
+    [Export] private SolidComponent _solid;
 
     [Export] private Node _path;
     [Export] private float _duration = 1f;
@@ -19,14 +19,6 @@ public partial class MovingPlatform : Node2D
 
     private Tween _tween;
     private Vector2 _targetPos;
-
-    // private List<CharacterBody2D> _ridingActors;
-    private bool _moving;
-
-    public override void _EnterTree()
-    {
-        // _ridingActors = new();
-    }
 
     public override void _Ready()
     {
@@ -51,54 +43,10 @@ public partial class MovingPlatform : Node2D
         }
         _tween.SetLoops();
         _tween.Play();
-
-        // _area.BodyEntered += OnBodyEntered;
-        // _area.BodyExited += OnBodyExited;
     }
 
-    // private void OnBodyEntered(Node2D body)
-    // {
-    //     CharacterBody2D actor = (CharacterBody2D)body;
-
-    //     // TODO(calco): maybe make this not check equality but other sth
-    //     var shape = actor.GetNode<CollisionShape2D>("CollisionShape2D");
-    //     Vector2 size = (Vector2)shape.Shape.Get("size");
-    //     float bottom = actor.GlobalPosition.y + size.y;
-    //     float top = GlobalPosition.y;
-    //     if (Mathf.RoundToInt(bottom) != Mathf.RoundToInt(top))
-    //         return;
-
-    //     _ridingActors.Add(actor);
-    //     GD.Print($"Added: {actor.Name}");
-    // }
-
-    // private void OnBodyExited(Node2D body)
-    // {
-    //     if (_moving)
-    //         return;
-
-    //     CharacterBody2D actor = (CharacterBody2D)body;
-
-    //     if (!_ridingActors.Contains(actor))
-    //         return;
-
-    //     GD.Print($"Removed {actor.Name} on frame: {Time.GetTicksMsec()}.");
-    //     _ridingActors.Remove(actor);
-    // }
-
-    public override void _PhysicsProcess(double delta)
+    public override void _Process(double delta)
     {
-        _moving = true;
-        // foreach (CharacterBody2D actor in _ridingActors)
-        // {
-        //     GD.Print($"Moved {actor.Name} by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
-        //     // actor.GlobalPosition += _targetPos - GlobalPosition;
-        //     actor.MoveAndCollide(_targetPos - actor.GlobalPosition);
-        // }
-
-        _solid.GlobalPosition = _targetPos;
-        GlobalPosition = _targetPos;
-
-        _moving = false;
+        _solid.MoveX(_targetPos.x - (_solid.GlobalPosition.x + _solid.Remainder.x));
     }
 }
