@@ -96,7 +96,8 @@ public partial class MovingPlatform : Node2D
         foreach (CharacterBody2D actor in _ridingActors)
         {
             GD.Print($"Moved {actor.Name} by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
-            actor.GlobalPosition += _targetPos - GlobalPosition;
+            // actor.GlobalPosition += _targetPos - GlobalPosition;
+            actor.MoveAndCollide(_targetPos - actor.GlobalPosition);
         }
         GD.Print($"Moved moving platform by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
         GlobalPosition = _targetPos;
