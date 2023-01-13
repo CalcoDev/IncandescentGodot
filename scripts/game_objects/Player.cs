@@ -46,7 +46,7 @@ public partial class Player : Node2D
         _actor.GlobalPosition = t;
     }
 
-    private bool _test;
+    private bool _test = true;
 
     public override void _Process(double delta)
     {
@@ -77,12 +77,12 @@ public partial class Player : Node2D
             _isJumping = true;
         }
 
-        Test((float)delta);
+        // Test((float)delta);
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        // Test((float)delta);
+        Test((float)delta);
     }
 
     private void Test(float delta)

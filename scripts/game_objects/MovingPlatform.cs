@@ -7,7 +7,7 @@ namespace Eyes.GameObjects;
 
 public partial class MovingPlatform : Node2D
 {
-    [Export] private StaticBody2D _solid;
+    [Export] private AnimatableBody2D _solid;
     [Export] private Area2D _area;
 
     [Export] private Node _path;
@@ -20,12 +20,12 @@ public partial class MovingPlatform : Node2D
     private Tween _tween;
     private Vector2 _targetPos;
 
-    private List<CharacterBody2D> _ridingActors;
+    // private List<CharacterBody2D> _ridingActors;
     private bool _moving;
 
     public override void _EnterTree()
     {
-        _ridingActors = new();
+        // _ridingActors = new();
     }
 
     public override void _Ready()
@@ -52,55 +52,53 @@ public partial class MovingPlatform : Node2D
         _tween.SetLoops();
         _tween.Play();
 
-        _area.BodyEntered += OnBodyEntered;
-        _area.BodyExited += OnBodyExited;
+        // _area.BodyEntered += OnBodyEntered;
+        // _area.BodyExited += OnBodyExited;
     }
 
-    private void OnBodyEntered(Node2D body)
+    // private void OnBodyEntered(Node2D body)
+    // {
+    //     CharacterBody2D actor = (CharacterBody2D)body;
+
+    //     // TODO(calco): maybe make this not check equality but other sth
+    //     var shape = actor.GetNode<CollisionShape2D>("CollisionShape2D");
+    //     Vector2 size = (Vector2)shape.Shape.Get("size");
+    //     float bottom = actor.GlobalPosition.y + size.y;
+    //     float top = GlobalPosition.y;
+    //     if (Mathf.RoundToInt(bottom) != Mathf.RoundToInt(top))
+    //         return;
+
+    //     _ridingActors.Add(actor);
+    //     GD.Print($"Added: {actor.Name}");
+    // }
+
+    // private void OnBodyExited(Node2D body)
+    // {
+    //     if (_moving)
+    //         return;
+
+    //     CharacterBody2D actor = (CharacterBody2D)body;
+
+    //     if (!_ridingActors.Contains(actor))
+    //         return;
+
+    //     GD.Print($"Removed {actor.Name} on frame: {Time.GetTicksMsec()}.");
+    //     _ridingActors.Remove(actor);
+    // }
+
+    public override void _PhysicsProcess(double delta)
     {
-        CharacterBody2D actor = (CharacterBody2D)body;
-
-        // TODO(calco): maybe make this not check equality but other sth
-        var shape = actor.GetNode<CollisionShape2D>("CollisionShape2D");
-        Vector2 size = (Vector2)shape.Shape.Get("size");
-        float bottom = actor.GlobalPosition.y + size.y;
-        float top = GlobalPosition.y;
-        if (Mathf.RoundToInt(bottom) != Mathf.RoundToInt(top))
-            return;
-
-        _ridingActors.Add(actor);
-        GD.Print($"Added: {actor.Name}");
-    }
-
-    private void OnBodyExited(Node2D body)
-    {
-        if (_moving)
-            return;
-
-        CharacterBody2D actor = (CharacterBody2D)body;
-
-        if (!_ridingActors.Contains(actor))
-            return;
-
-        GD.Print($"Removed {actor.Name} on frame: {Time.GetTicksMsec()}.");
-        _ridingActors.Remove(actor);
-    }
-
-    public override void _Process(double delta)
-    {
-        // _solid.MoveAndCollide(_targetPos - _solid.GlobalPosition);
-        // GlobalPosition = _solid.GlobalPosition;
-
-        // GD.Print(_ridingActors.Count);
         _moving = true;
-        foreach (CharacterBody2D actor in _ridingActors)
-        {
-            GD.Print($"Moved {actor.Name} by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
-            // actor.GlobalPosition += _targetPos - GlobalPosition;
-            actor.MoveAndCollide(_targetPos - actor.GlobalPosition);
-        }
-        GD.Print($"Moved moving platform by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
+        // foreach (CharacterBody2D actor in _ridingActors)
+        // {
+        //     GD.Print($"Moved {actor.Name} by {_targetPos - GlobalPosition} on frame: {Time.GetTicksMsec()}.");
+        //     // actor.GlobalPosition += _targetPos - GlobalPosition;
+        //     actor.MoveAndCollide(_targetPos - actor.GlobalPosition);
+        // }
+
+        _solid.GlobalPosition = _targetPos;
         GlobalPosition = _targetPos;
+
         _moving = false;
     }
 }
