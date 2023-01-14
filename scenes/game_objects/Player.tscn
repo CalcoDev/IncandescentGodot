@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=9 format=3 uid="uid://d1t61exxeefqg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="4_fwujc"]
 [ext_resource type="Texture2D" uid="uid://8xhl7qoqmc1r" path="res://assets/art/player.png" id="5_2p74w"]
 [ext_resource type="PackedScene" uid="uid://b00we5mqxw4f1" path="res://scenes/components/physics/AABBComponent.tscn" id="6_03tc4"]
-[ext_resource type="Script" path="res://scripts/components/physics/AABBComponent.cs" id="6_h0ki2"]
 [ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
 
@@ -37,11 +36,10 @@ centered = false
 Size = Vector2i(12, 18)
 
 [node name="GrounedCheckerComponent" parent="ActorComponent" node_paths=PackedStringArray("_aabb") instance=ExtResource("7_mshr8")]
+position = Vector2(0, 18)
 _aabb = NodePath("AABBComponent")
 
-[node name="AABBComponent" type="Node2D" parent="ActorComponent/GrounedCheckerComponent"]
-position = Vector2(0, 18)
-script = ExtResource("6_h0ki2")
+[node name="AABBComponent" parent="ActorComponent/GrounedCheckerComponent" instance=ExtResource("6_03tc4")]
 Size = Vector2i(12, 1)
 
 [node name="Timers" type="Node" parent="."]

@@ -6,6 +6,8 @@ using Incandescent.Managers;
 
 namespace Incandescent.Components.Physics;
 
+// TODO(calco): figure out how to show warnings without [Tool]
+[Tool]
 public partial class ActorComponent : PhysicsBodyComponent
 {
     [Signal]
@@ -13,6 +15,9 @@ public partial class ActorComponent : PhysicsBodyComponent
 
     public override void _Ready()
     {
+        if (Engine.IsEditorHint())
+            return;
+
         Vector2 t = GlobalPosition;
         TopLevel = true;
         GlobalPosition = t;
@@ -22,6 +27,9 @@ public partial class ActorComponent : PhysicsBodyComponent
 
     public override void _ExitTree()
     {
+        if (Engine.IsEditorHint())
+            return;
+
         LevelManager.Instance.RemoveActor(this);
     }
 
