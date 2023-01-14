@@ -18,24 +18,22 @@ public partial class Player : Node2D
     [Export] private StateMachineComponent _stateMachine;
     [Export] private CollisionCheckerComponent _groundedChecker;
 
-    [ExportGroup("Gravity")]
+    #region Constants
+
+    [ExportGroup("Constants")]
+    [ExportSubgroup("Gravity")]
     [Export] private float Gravity = 140f * 5f;
     [Export] private float MaxFall = 25f * 6f;
 
-    [ExportGroup("Run")]
+    [ExportSubgroup("Run")]
     [Export] private float MaxRunSpeed = 14f * 8.5f;
     [Export] private float RunAccel = 200f * 8f;
     [Export] private float RunReduce = 62f * 8f;
 
-    [ExportGroup("Forgiveness")]
+    [ExportSubgroup("Forgiveness")]
     [Export(PropertyHint.Range, "0, 4, 1")] private int CornerCorrectionPixels = 4;
 
-    [ExportGroup("Jump")]
-    [Export] private CustomTimerComponent _coyoteTimer;
-    [Export] private CustomTimerComponent _jumpBufferTimer;
-    [Export] private CustomTimerComponent _variableJumpTimer;
-    // [Export] private PackedScene _hitGroundParticles;
-
+    [ExportSubgroup("Jump")]
     [Export] private float JumpForce = 204f + 8f;
     [Export] private float JumpHBoost = 13f * 5f;
     [Export(PropertyHint.Range, "0, 0.2")] private float CoyoteTime = 0.1f;
@@ -45,13 +43,24 @@ public partial class Player : Node2D
     [Export(PropertyHint.Range, "0, 5")] private float JumpApexControl = 3f;
     [Export(PropertyHint.Range, "0, 1")] private float JumpApexControlMultiplier = 0.5f;
 
-    [ExportGroup("Dash")]
-    [Export] private CustomTimerComponent _dashCooldownTimer;
-
+    [ExportSubgroup("Dash")]
     [Export] private float DashCooldown = 0.2f;
     [Export] private float DashSpeed = 14f * 8.5f * 3f;
     [Export] private float DashTime = 0.15f;
     [Export(PropertyHint.Range, "0, 1")] private float DashFinishMultiplier = 0.75f;
+
+    #endregion
+
+    #region Vars
+
+    [ExportGroup("Vars")]
+    [ExportSubgroup("Jump")]
+    [Export] private CustomTimerComponent _coyoteTimer;
+    [Export] private CustomTimerComponent _jumpBufferTimer;
+    [Export] private CustomTimerComponent _variableJumpTimer;
+
+    [ExportSubgroup("Dash")]
+    [Export] private CustomTimerComponent _dashCooldownTimer;
 
     private Vector2 _dashDir;
     private bool _groundDash;
@@ -62,7 +71,6 @@ public partial class Player : Node2D
     private bool _inputJumpPressed;
     private bool _inputJumpReleased;
     private bool _inputJumpHeld;
-
     private bool _inputDashPressed;
     private Vector2 _lastNonZeroDir;
 
@@ -72,9 +80,10 @@ public partial class Player : Node2D
     private const int StNormal = 0;
     private const int StDash = 1;
 
-    // AAAAAAAAAA
     private bool _isJumping;
     private bool _isGrounded;
+
+    #endregion
 
     public override void _Ready()
     {
