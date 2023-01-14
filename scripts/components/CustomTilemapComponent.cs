@@ -26,8 +26,6 @@ public partial class CustomTilemapComponent : Node
             solid.AddChild(aabb);
 
             AddChild(solid);
-
-            LevelManager.Instance.AddSolid(solid);
         }
     }
 }

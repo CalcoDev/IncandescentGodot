@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Eyes.Managers;
 using Godot;
 
 namespace Eyes.Components.Physics;
@@ -11,6 +12,16 @@ public partial class PhysicsBodyComponent : Node2D
     public Vector2 Remainder => _remainder;
     protected Vector2 _remainder;
 
+    public void SetRemainderX(float value)
+    {
+        _remainder.x = value;
+    }
+
+    public void SetRemainderY(float value)
+    {
+        _remainder.y = value;
+    }
+
     /// <summary>
     /// Virtually moves the actor by [<paramref name="positionOffset"/>] and checks if it collides with any of the [<paramref name="bodies"/>
     /// </summary>
@@ -19,13 +30,12 @@ public partial class PhysicsBodyComponent : Node2D
     /// <returns>If the actor will collide with anything.</returns>
     public bool CollideAt(IEnumerable<PhysicsBodyComponent> bodies, Vector2i positionOffset)
     {
-        foreach (PhysicsBodyComponent body in bodies)
-        {
-            if (body.IsCollidable && body.AABB != AABB && AABB.IntersectsRel(body.AABB, positionOffset))
-                return true;
-        }
+        return LevelManager.CollideAt(AABB, bodies, positionOffset);
+    }
 
-        return false;
+    public IEnumerable<PhysicsBodyComponent> GetCollidingBodies(IEnumerable<PhysicsBodyComponent> bodies, Vector2i positionOffset)
+    {
+        return LevelManager.GetCollidingBodies(AABB, bodies, positionOffset);
     }
 
     // TODO(calco): Maybe define movement methods here?

@@ -17,7 +17,33 @@ public partial class LevelManager : Node
         Instance = this;
     }
 
+    #region Collisions
+
+    public static IEnumerable<PhysicsBodyComponent> GetCollidingBodies(AABBComponent aabb,
+        IEnumerable<PhysicsBodyComponent> bodies, Vector2i positionOffset)
+    {
+        foreach (PhysicsBodyComponent body in bodies)
+        {
+            if (body.IsCollidable && body.AABB != aabb && aabb.IntersectsRel(body.AABB, positionOffset))
+                yield return body;
+        }
+    }
+
+    public static bool CollideAt(AABBComponent aabb, IEnumerable<PhysicsBodyComponent> bodies, Vector2i positionOffset)
+    {
+        foreach (PhysicsBodyComponent body in bodies)
+        {
+            if (body.IsCollidable && body.AABB != aabb && aabb.IntersectsRel(body.AABB, positionOffset))
+                return true;
+        }
+
+        return false;
+    }
+
+    #endregion
+
     #region Level Object Helpers
+
     // These are separate methods as maybe we want to do something else in the future,
     // and refactoring would become a pain.
     public void AddSolid(SolidComponent solid)
@@ -39,5 +65,6 @@ public partial class LevelManager : Node
     {
         Actors.Remove(actor);
     }
+
     #endregion
 }

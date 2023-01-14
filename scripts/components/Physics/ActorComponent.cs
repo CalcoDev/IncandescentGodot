@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Eyes.Managers;
 using Godot;
 
@@ -57,9 +59,13 @@ public partial class ActorComponent : PhysicsBodyComponent
         int step = Mathf.Sign(amount);
         while (amount != 0)
         {
-            if (CollideAt(LevelManager.Instance.Solids, new Vector2i(step, 0)))
+            Vector2i offset = Vector2i.Right * step;
+            List<PhysicsBodyComponent> bodies = GetCollidingBodies(LevelManager.Instance.Solids, offset).ToList();
+
+            if (bodies.Count > 0)
             {
-                onCollide?.Invoke(AABB);
+                foreach (PhysicsBodyComponent body in bodies)
+                    onCollide?.Invoke(body.AABB);
                 break;
             }
             else
@@ -75,9 +81,13 @@ public partial class ActorComponent : PhysicsBodyComponent
         int step = Mathf.Sign(amount);
         while (amount != 0)
         {
-            if (CollideAt(LevelManager.Instance.Solids, new Vector2i(0, step)))
+            Vector2i offset = Vector2i.Down * step;
+              List<PhysicsBodyComponent> bodies = GetCollidingBodies(LevelManager.Instance.Solids, offset).ToList();
+
+            if (bodies.Count > 0)
             {
-                onCollide?.Invoke(AABB);
+                foreach (PhysicsBodyComponent body in bodies)
+                    onCollide?.Invoke(body.AABB);
                 break;
             }
             else
