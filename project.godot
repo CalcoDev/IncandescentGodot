@@ -15,6 +15,7 @@ config/description="Taking inspiration from Dani's Fair 'n Square and Askiisoft'
 run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.0", "C#", "Forward Plus")
 run/max_fps=240
+run/frame_delay_msec=1
 
 [autoload]
 
@@ -26,6 +27,7 @@ LevelManager="*res://scenes/managers/LevelManager.tscn"
 
 window/size/viewport_width=320
 window/size/viewport_height=180
+window/size/mode=3
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/per_pixel_transparency/allowed=true
@@ -60,7 +62,7 @@ btn_shift={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"unicode":0,"echo":false,"script":null)
 ]
 }
-btn_rand_toggle={
+btn_toggle_debug={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":77,"unicode":0,"echo":false,"script":null)
 ]
