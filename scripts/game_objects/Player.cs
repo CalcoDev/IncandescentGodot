@@ -167,6 +167,7 @@ public partial class Player : Node2D
         }
 
         // Jumping
+        // GD.Print($"Jump Buffer: {_jumpBufferTimer.IsRunning()}, Coyote: {_coyoteTimer.IsRunning()} | IsJumping: {_isJumping}");
         if (_jumpBufferTimer.IsRunning() && _coyoteTimer.IsRunning())
         {
             _coyoteTimer.SetTime(0f);
@@ -288,6 +289,14 @@ public partial class Player : Node2D
                 _actor.MoveXExact(offset.x);
                 // _actor.MoveYExact(offset.y);
                 return;
+            }
+
+            _groundedChecker.Update();
+            _isGrounded = _groundedChecker.IsColliding;
+            if (_isGrounded)
+            {
+                _coyoteTimer.SetTime(CoyoteTime);
+                _isJumping = false;
             }
         }
 
