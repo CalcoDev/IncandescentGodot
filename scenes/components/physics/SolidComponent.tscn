@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dhqnaeg7tprh6"]
+
+[ext_resource type="Script" path="res://scripts/components/physics/SolidComponent.cs" id="1_3f60y"]
+
+[node name="SolidComponent" type="Node2D"]
+script = ExtResource("1_3f60y")

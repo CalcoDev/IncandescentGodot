@@ -1,7 +1,7 @@
-using Eyes.Utils;
 using Godot;
+using Incandescent.Utils;
 
-namespace Eyes.Components.Logic;
+namespace Incandescent.Components.Logic;
 
 public partial class CustomTimerComponent : Node
 {

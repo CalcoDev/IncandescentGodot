@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Eyes.Utils;
+namespace Incandescent.Utils;
 
 public static class Calc
 {

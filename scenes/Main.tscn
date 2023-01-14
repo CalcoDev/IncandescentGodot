@@ -1,21 +1,12 @@
-[gd_scene load_steps=19 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=10 format=3 uid="uid://cjjin3npj7t0j"]
 
-[ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_kavfk"]
-[ext_resource type="Texture2D" uid="uid://8xhl7qoqmc1r" path="res://assets/art/player.png" id="1_srwes"]
-[ext_resource type="Script" path="res://scripts/components/logic/StateMachineComponent.cs" id="3_3d40r"]
-[ext_resource type="Script" path="res://scripts/components/VelocityComponent.cs" id="3_dwufe"]
-[ext_resource type="Script" path="res://scripts/components/physics/ActorComponent.cs" id="4_o62u8"]
+[ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
+[ext_resource type="PackedScene" uid="uid://dhqnaeg7tprh6" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
 [ext_resource type="Script" path="res://scripts/game_objects/MovingPlatform.cs" id="5_8ikv8"]
-[ext_resource type="Script" path="res://scripts/components/physics/AABBComponent.cs" id="5_14fhd"]
-[ext_resource type="Script" path="res://scripts/managers/LevelManager.cs" id="6_hipom"]
-[ext_resource type="Script" path="res://scripts/components/CustomTilemapComponent.cs" id="6_kdqpl"]
-[ext_resource type="Script" path="res://scripts/managers/GameManager.cs" id="6_l3try"]
+[ext_resource type="PackedScene" uid="uid://b00we5mqxw4f1" path="res://scenes/components/physics/AABBComponent.tscn" id="5_yd4tr"]
+[ext_resource type="PackedScene" uid="uid://tv1y58xwivo4" path="res://scenes/components/CustomTilemapComponent.tscn" id="6_rflvr"]
 [ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="7_6en6j"]
-[ext_resource type="Script" path="res://scripts/components/physics/CollisionCheckerComponent.cs" id="7_yb3uu"]
-[ext_resource type="Script" path="res://scripts/components/logic/CustomTimerComponent.cs" id="8_8cgbv"]
-[ext_resource type="Script" path="res://scripts/components/physics/SolidComponent.cs" id="8_j1saf"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="10_u4j31"]
-[ext_resource type="Script" path="res://scripts/managers/CoroutineManager.cs" id="12_pgnsu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s174l"]
 resource_name = "Prototype"
@@ -508,63 +499,12 @@ sources/0 = SubResource("TileSetAtlasSource_s174l")
 
 [node name="Node2D" type="Node2D"]
 
-[node name="Player" type="Node2D" parent="." node_paths=PackedStringArray("_actor", "_vel", "_stateMachine", "_groundedChecker", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
-position = Vector2(120, 119)
-script = ExtResource("1_kavfk")
-_actor = NodePath("ActorComponent")
-_vel = NodePath("VelocityComponent")
-_stateMachine = NodePath("StateMachineComponent")
-_groundedChecker = NodePath("ActorComponent/GroundedCheckerComponent")
-_coyoteTimer = NodePath("Timers/CoyoteTimerComponent")
-_jumpBufferTimer = NodePath("Timers/JumpBufferTimerComponent")
-_variableJumpTimer = NodePath("Timers/VariableJumpTimerComponent")
-_dashCooldownTimer = NodePath("Timers/DashCooldownTimerComponent")
-
-[node name="VelocityComponent" type="Node" parent="Player"]
-script = ExtResource("3_dwufe")
-
-[node name="StateMachineComponent" type="Node" parent="Player"]
-script = ExtResource("3_3d40r")
-
-[node name="ActorComponent" type="Node2D" parent="Player" node_paths=PackedStringArray("AABB")]
-script = ExtResource("4_o62u8")
-AABB = NodePath("AABBComponent")
-
-[node name="Sprite2D" type="Sprite2D" parent="Player/ActorComponent"]
-texture = ExtResource("1_srwes")
-centered = false
-
-[node name="AABBComponent" type="Node2D" parent="Player/ActorComponent"]
-script = ExtResource("5_14fhd")
-Size = Vector2i(12, 18)
-
-[node name="GroundedCheckerComponent" type="Node2D" parent="Player/ActorComponent" node_paths=PackedStringArray("_aabb")]
-script = ExtResource("7_yb3uu")
-_aabb = NodePath("AABBComponent")
-
-[node name="AABBComponent" type="Node2D" parent="Player/ActorComponent/GroundedCheckerComponent"]
-position = Vector2(0, 18)
-script = ExtResource("5_14fhd")
-Size = Vector2i(12, 1)
-
-[node name="Timers" type="Node" parent="Player"]
-
-[node name="CoyoteTimerComponent" type="Node" parent="Player/Timers"]
-script = ExtResource("8_8cgbv")
-
-[node name="JumpBufferTimerComponent" type="Node" parent="Player/Timers"]
-script = ExtResource("8_8cgbv")
-
-[node name="VariableJumpTimerComponent" type="Node" parent="Player/Timers"]
-script = ExtResource("8_8cgbv")
-
-[node name="DashCooldownTimerComponent" type="Node" parent="Player/Timers"]
-script = ExtResource("8_8cgbv")
+[node name="Player" parent="." instance=ExtResource("1_ialhu")]
 
 [node name="MovingPlatform" type="Node2D" parent="." node_paths=PackedStringArray("_solid", "_path")]
 position = Vector2(46, 132)
 script = ExtResource("5_8ikv8")
-_solid = NodePath("Solid")
+_solid = NodePath("SolidComponent")
 _path = NodePath("Path")
 
 [node name="Sprite2D" type="Sprite2D" parent="MovingPlatform"]
@@ -573,12 +513,10 @@ scale = Vector2(24, 8)
 texture = ExtResource("7_6en6j")
 centered = false
 
-[node name="Solid" type="Node2D" parent="MovingPlatform" node_paths=PackedStringArray("AABB")]
-script = ExtResource("8_j1saf")
-AABB = NodePath("AABB")
+[node name="SolidComponent" parent="MovingPlatform" node_paths=PackedStringArray("AABB") instance=ExtResource("4_bsa8u")]
+AABB = NodePath("AABBComponent")
 
-[node name="AABB" type="Node2D" parent="MovingPlatform/Solid"]
-script = ExtResource("5_14fhd")
+[node name="AABBComponent" parent="MovingPlatform/SolidComponent" instance=ExtResource("5_yd4tr")]
 Size = Vector2i(24, 8)
 
 [node name="Path" type="Node" parent="MovingPlatform"]
@@ -589,21 +527,10 @@ position = Vector2(46, 132)
 [node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
 position = Vector2(70, 132)
 
-[node name="CustomTilemap" type="Node" parent="." node_paths=PackedStringArray("_tilemap")]
-script = ExtResource("6_kdqpl")
+[node name="CustomTilemapComponent" parent="." node_paths=PackedStringArray("_tilemap") instance=ExtResource("6_rflvr")]
 _tilemap = NodePath("TileMap")
 
-[node name="TileMap" type="TileMap" parent="CustomTilemap"]
+[node name="TileMap" type="TileMap" parent="CustomTilemapComponent"]
 tile_set = SubResource("TileSet_30wja")
 format = 2
 layer_0/tile_data = PackedInt32Array(1441797, 524288, 3, 1441798, 589824, 3, 1441799, 589824, 3, 1441800, 589824, 3, 1441801, 589824, 3, 1441802, 589824, 3, 1441803, 589824, 3, 1441804, 589824, 3, 1441805, 589824, 3, 1441806, 589824, 3, 1441807, 589824, 3, 1441808, 589824, 3, 1441809, 589824, 3, 1441810, 589824, 3, 1441811, 589824, 3, 1441812, 589824, 3, 1441813, 589824, 3, 1441816, 589824, 3, 1441815, 589824, 3, 1441814, 589824, 3, 1441817, 589824, 3, 1441818, 589824, 3, 1441819, 589824, 3, 1441820, 589824, 3, 1441821, 589824, 3, 1441822, 589824, 3, 1441823, 589824, 3, 1441824, 589824, 3, 1441825, 589824, 3, 1441826, 720896, 3, 1376290, 720896, 2, 1376289, 589824, 2, 1376288, 589824, 2, 1376287, 589824, 2, 1376286, 589824, 2, 1376285, 589824, 2, 1376284, 589824, 2, 1376283, 589824, 2, 1376282, 589824, 2, 1376281, 589824, 2, 1376280, 589824, 2, 1376279, 589824, 2, 1376278, 589824, 2, 1376277, 589824, 2, 1376276, 589824, 2, 1376275, 589824, 2, 1376274, 589824, 2, 1376273, 589824, 2, 1376272, 589824, 2, 1376271, 589824, 2, 1376270, 589824, 2, 1376269, 589824, 2, 1376268, 589824, 2, 1376267, 589824, 2, 1376266, 589824, 2, 1376265, 589824, 2, 1376264, 589824, 2, 1376263, 589824, 2, 1376262, 589824, 2, 1376261, 524288, 1, 1245189, 524288, 0, 1245190, 655360, 0, 1245191, 655360, 0, 1245192, 655360, 0, 1245193, 655360, 0, 1245194, 655360, 0, 1245195, 655360, 0, 1245196, 655360, 0, 1245197, 655360, 0, 1245198, 655360, 0, 1245199, 655360, 0, 1245200, 655360, 0, 1245201, 655360, 0, 1245202, 655360, 0, 1245203, 655360, 0, 1245204, 655360, 0, 1245205, 655360, 0, 1245206, 655360, 0, 1245207, 655360, 0, 1245208, 655360, 0, 1245209, 655360, 0, 1245210, 655360, 0, 1245211, 655360, 0, 1245212, 589824, 1, 1245213, 393216, 1, 1245214, 655360, 0, 1245215, 655360, 0, 1245216, 655360, 0, 1245218, 720896, 0, 1245217, 655360, 0, 1310754, 720896, 2, 1310753, 589824, 2, 1310752, 589824, 2, 1310751, 589824, 2, 1310750, 589824, 2, 1310749, 589824, 2, 1310748, 589824, 2, 1310747, 589824, 2, 1310746, 589824, 2, 1310745, 589824, 2, 1310744, 589824, 2, 1310743, 589824, 2, 1310742, 589824, 2, 1310741, 589824, 2, 1310740, 589824, 2, 1310739, 589824, 2, 1310738, 589824, 2, 1310737, 589824, 2, 1310736, 589824, 2, 1310735, 589824, 2, 1310734, 589824, 2, 1310733, 589824, 2, 1310732, 589824, 2, 1310731, 589824, 2, 1310730, 589824, 2, 1310729, 589824, 2, 1310728, 589824, 2, 1310727, 589824, 2, 1310726, 589824, 2, 1310725, 524288, 1, 1179676, 524288, 1, 1114140, 524288, 1, 1048604, 524288, 1, 983068, 524288, 1, 917532, 524288, 1, 851996, 524288, 1, 786460, 524288, 1, 720924, 524288, 0, 720925, 720896, 0, 786461, 720896, 2, 851997, 720896, 2, 917533, 720896, 2, 983069, 720896, 2, 1048605, 720896, 2, 1114141, 720896, 2, 1179677, 720896, 2, 786446, 720896, 0, 851982, 720896, 2, 917518, 720896, 3, 917517, 524288, 3, 851981, 524288, 1, 786445, 524288, 0)
-
-[node name="GameManager" type="Node" parent="."]
-script = ExtResource("6_l3try")
-Debug = true
-
-[node name="LevelManager" type="Node" parent="."]
-script = ExtResource("6_hipom")
-
-[node name="CoroutineManager" type="Node" parent="."]
-script = ExtResource("12_pgnsu")

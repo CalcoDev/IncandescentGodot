@@ -1,7 +1,7 @@
-using Eyes.Managers;
 using Godot;
+using Incandescent.Managers;
 
-namespace Eyes.Components.Physics;
+namespace Incandescent.Components.Physics;
 
 [Tool]
 public partial class AABBComponent : Node2D

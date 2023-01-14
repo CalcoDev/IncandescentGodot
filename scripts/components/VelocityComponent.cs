@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Eyes.Components;
+namespace Incandescent.Components;
 
 public partial class VelocityComponent : Node
 {

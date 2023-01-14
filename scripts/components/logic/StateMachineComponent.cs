@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using Godot;
 
-namespace Eyes.Components.Logic;
+namespace Incandescent.Components.Logic;
 
 public partial class StateMachineComponent : Node
 {

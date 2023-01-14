@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Eyes.Components;
-using Eyes.Components.Physics;
+using Incandescent.Components;
 using Godot;
+using Incandescent.Components.Physics;
 
-namespace Eyes.Managers;
+namespace Incandescent.Managers;
 
 public partial class LevelManager : Node
 {

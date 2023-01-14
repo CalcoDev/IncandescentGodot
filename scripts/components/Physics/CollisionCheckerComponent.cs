@@ -1,8 +1,8 @@
 using System;
-using Eyes.Managers;
 using Godot;
+using Incandescent.Managers;
 
-namespace Eyes.Components.Physics;
+namespace Incandescent.Components.Physics;
 
 public partial class CollisionCheckerComponent : Node2D
 {

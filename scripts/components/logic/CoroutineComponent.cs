@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Godot;
 
-namespace Eyes.Components.Logic;
+namespace Incandescent.Components.Logic;
 
 public partial class CoroutineComponent : Node
 {

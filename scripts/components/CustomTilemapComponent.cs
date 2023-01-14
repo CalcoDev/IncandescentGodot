@@ -1,8 +1,8 @@
-using Eyes.Components.Physics;
-using Eyes.Managers;
+using Incandescent.Managers;
 using Godot;
+using Incandescent.Components.Physics;
 
-namespace Eyes.Components;
+namespace Incandescent.Components;
 
 // TODO(calco): This is so bad for performance. MUST FIX
 // https://en.wikipedia.org/wiki/Quadtree

@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Eyes.Components.Logic;
 using Godot;
+using Incandescent.Components.Logic;
 
-namespace Eyes.Managers;
+namespace Incandescent.Managers;
 
 public partial class CoroutineManager : Node
 {

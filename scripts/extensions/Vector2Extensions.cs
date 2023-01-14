@@ -1,7 +1,7 @@
-using Eyes.Utils;
 using Godot;
+using Incandescent.Utils;
 
-namespace Eyes.Extensions;
+namespace Incandescent.Extensions;
 
 public static class Vector2Extensions
 {

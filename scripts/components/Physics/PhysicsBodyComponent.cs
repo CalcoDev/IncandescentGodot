@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Eyes.Managers;
 using Godot;
+using Incandescent.Managers;
 
-namespace Eyes.Components.Physics;
+namespace Incandescent.Components.Physics;
 
 public partial class PhysicsBodyComponent : Node2D
 {

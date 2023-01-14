@@ -1,14 +1,12 @@
-using System;
 using System.Collections;
-using Eyes.Components;
-using Eyes.Components.Logic;
-using Eyes.Components.Physics;
-using Eyes.Extensions;
-using Eyes.Managers;
-using Eyes.Utils;
 using Godot;
+using Incandescent.Components;
+using Incandescent.Components.Logic;
+using Incandescent.Components.Physics;
+using Incandescent.Managers;
+using Incandescent.Utils;
 
-namespace Eyes.GameObjects;
+namespace Incandescent.GameObjects;
 
 public partial class Player : Node2D
 {

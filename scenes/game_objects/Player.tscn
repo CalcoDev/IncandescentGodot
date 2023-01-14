@@ -1,0 +1,55 @@
+[gd_scene load_steps=10 format=3 uid="uid://d1t61exxeefqg"]
+
+[ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
+[ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
+[ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_j5h5e"]
+[ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="4_fwujc"]
+[ext_resource type="Texture2D" uid="uid://8xhl7qoqmc1r" path="res://assets/art/player.png" id="5_2p74w"]
+[ext_resource type="PackedScene" uid="uid://b00we5mqxw4f1" path="res://scenes/components/physics/AABBComponent.tscn" id="6_03tc4"]
+[ext_resource type="Script" path="res://scripts/components/physics/AABBComponent.cs" id="6_h0ki2"]
+[ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
+[ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
+
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_vel", "_stateMachine", "_groundedChecker", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
+position = Vector2(120, 119)
+script = ExtResource("1_bfr8j")
+_actor = NodePath("ActorComponent")
+_vel = NodePath("VelocityComponent")
+_stateMachine = NodePath("StateMachineComponent")
+_groundedChecker = NodePath("ActorComponent/GrounedCheckerComponent")
+_coyoteTimer = NodePath("Timers/CoyoteTimer")
+_jumpBufferTimer = NodePath("Timers/JumpBufferTimer")
+_variableJumpTimer = NodePath("Timers/VariableJumpTimer")
+_dashCooldownTimer = NodePath("Timers/DashCooldownTimer")
+
+[node name="VelocityComponent" parent="." instance=ExtResource("2_0apfh")]
+
+[node name="StateMachineComponent" parent="." instance=ExtResource("3_j5h5e")]
+
+[node name="ActorComponent" parent="." node_paths=PackedStringArray("AABB") instance=ExtResource("4_fwujc")]
+AABB = NodePath("AABBComponent")
+
+[node name="Sprite2D" type="Sprite2D" parent="ActorComponent"]
+texture = ExtResource("5_2p74w")
+centered = false
+
+[node name="AABBComponent" parent="ActorComponent" instance=ExtResource("6_03tc4")]
+Size = Vector2i(12, 18)
+
+[node name="GrounedCheckerComponent" parent="ActorComponent" node_paths=PackedStringArray("_aabb") instance=ExtResource("7_mshr8")]
+_aabb = NodePath("AABBComponent")
+
+[node name="AABBComponent" type="Node2D" parent="ActorComponent/GrounedCheckerComponent"]
+position = Vector2(0, 18)
+script = ExtResource("6_h0ki2")
+Size = Vector2i(12, 1)
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="CoyoteTimer" parent="Timers" instance=ExtResource("8_vigfg")]
+
+[node name="JumpBufferTimer" parent="Timers" instance=ExtResource("8_vigfg")]
+
+[node name="VariableJumpTimer" parent="Timers" instance=ExtResource("8_vigfg")]
+
+[node name="DashCooldownTimer" parent="Timers" instance=ExtResource("8_vigfg")]

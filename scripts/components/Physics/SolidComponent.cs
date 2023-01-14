@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using Eyes.Managers;
 using Godot;
+using Incandescent.Managers;
 
-namespace Eyes.Components.Physics;
+namespace Incandescent.Components.Physics;
 
 public partial class SolidComponent : PhysicsBodyComponent
 {

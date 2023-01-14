@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Eyes.Components.Physics;
 using Godot;
+using Incandescent.Components.Physics;
 
-namespace Eyes.GameObjects;
+namespace Incandescent.GameObjects;
 
 public partial class MovingPlatform : Node2D
 {

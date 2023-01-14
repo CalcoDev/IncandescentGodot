@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Eyes.Managers;
+namespace Incandescent.Managers;
 
 public partial class GameManager : Node
 {

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ojq16yiv6tqs"]
+
+[ext_resource type="Script" path="res://scripts/managers/CoroutineManager.cs" id="1_h7dpl"]
+
+[node name="CoroutineManager" type="Node"]
+script = ExtResource("1_h7dpl")
