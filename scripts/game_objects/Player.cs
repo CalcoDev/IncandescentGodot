@@ -2,8 +2,8 @@ using System;
 using Eyes.Components;
 using Eyes.Components.Physics;
 using Eyes.Managers;
+using Eyes.Utils;
 using Godot;
-using Incandescent.Utils;
 
 namespace Eyes.GameObjects;
 
