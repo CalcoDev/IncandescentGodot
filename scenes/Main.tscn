@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=13 format=3 uid="uid://cjjin3npj7t0j"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_kavfk"]
 [ext_resource type="Texture2D" uid="uid://8xhl7qoqmc1r" path="res://assets/art/player.png" id="1_srwes"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/components/CustomTilemapComponent.cs" id="6_kdqpl"]
 [ext_resource type="Script" path="res://scripts/managers/GameManager.cs" id="6_l3try"]
 [ext_resource type="Script" path="res://scripts/components/Physics/SolidComponent.cs" id="7_ecfyy"]
+[ext_resource type="Script" path="res://scripts/managers/CoroutineManager.cs" id="12_pgnsu"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -70,3 +71,6 @@ Debug = true
 
 [node name="LevelManager" type="Node" parent="."]
 script = ExtResource("6_hipom")
+
+[node name="CoroutineManager" type="Node" parent="."]
+script = ExtResource("12_pgnsu")

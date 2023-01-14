@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Eyes.Components.Physics;
 using Eyes.Managers;
 using Godot;
 

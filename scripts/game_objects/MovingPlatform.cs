@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Eyes.Components.Physics;
 using Godot;
-using Incandescent.Utils;
 
 namespace Eyes.GameObjects;
 

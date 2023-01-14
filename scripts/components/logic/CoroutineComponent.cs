@@ -92,6 +92,7 @@ public partial class CoroutineComponent : Node
     {
         Finished = true;
 
+        EmitSignal(SignalName.OnYield);
         EmitSignal(SignalName.OnFinished);
 
         if (RemoveOnCompletion)
