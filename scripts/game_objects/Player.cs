@@ -15,7 +15,7 @@ public partial class Player : Node2D
     [Export] private VelocityComponent _vel;
     [Export] private StateMachineComponent _stateMachine;
     [Export] private CollisionCheckerComponent _groundedChecker;
-    [Export] private Sprite2D _sprite;
+    [Export] private AnimatedSprite2D _sprite;
 
     #region Constants
 
@@ -125,10 +125,7 @@ public partial class Player : Node2D
         _inputDashPressed = Input.IsActionJustPressed("btn_shift");
 
         if (Mathf.Abs(_inputX) > 0f)
-        {
             _lastNonZeroDir = new Vector2(_inputX, 0f);
-            _sprite.FlipH = _lastNonZeroDir.x > 0f;
-        }
 
         // General Updates
         _groundedChecker.Update();
@@ -156,6 +153,17 @@ public partial class Player : Node2D
 
         if (_isJumping)
             _variableJumpTimer.Update(_delta);
+
+        // Sprite
+        if (Mathf.Abs(_inputX) > 0f)
+        {
+            _sprite.FlipH = _lastNonZeroDir.x > 0f;
+            _sprite.Play("run");
+        }
+        else
+        {
+            _sprite.Play("idle");
+        }
 
         // Gravity
         if (!_isGrounded)

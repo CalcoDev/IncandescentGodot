@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=36 format=3 uid="uid://d1t61exxeefqg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
@@ -6,11 +6,124 @@
 [ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="4_fwujc"]
 [ext_resource type="Texture2D" uid="uid://ckihyaab1up4u" path="res://assets/art/entities/player/player.png" id="5_dw34v"]
 [ext_resource type="PackedScene" uid="uid://b00we5mqxw4f1" path="res://scenes/components/physics/AABBComponent.tscn" id="6_03tc4"]
+[ext_resource type="Texture2D" uid="uid://dof272qp5egov" path="res://assets/art/entities/player/player_idle.png" id="6_v2wt6"]
+[ext_resource type="Texture2D" uid="uid://de3rhxf13tl4y" path="res://assets/art/entities/player/player_run_temp.png" id="7_blxg0"]
 [ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_yof4h"]
-diffuse_texture = ExtResource("5_dw34v")
+[sub_resource type="AtlasTexture" id="AtlasTexture_ev6pv"]
+atlas = ExtResource("5_dw34v")
+region = Rect2(0, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qqvq"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(0, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y013d"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(8, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3bep0"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(16, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oo3af"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(24, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wioqa"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(32, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhsn4"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(40, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_egyiv"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(48, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8wh2i"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(56, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nhw6b"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(64, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_46bbx"]
+atlas = ExtResource("6_v2wt6")
+region = Rect2(72, 0, 8, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kgi2s"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(0, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_joab3"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(12, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hq5bt"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(24, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wwx3a"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(36, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u2yat"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(48, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ha8od"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(60, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fjggj"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(72, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhdl7"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(84, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v861i"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(96, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8o53p"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(108, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1fsv"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(120, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fg2og"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(132, 0, 12, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cilsc"]
+atlas = ExtResource("7_blxg0")
+region = Rect2(144, 0, 12, 18)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ftf3o"]
+animations = [{
+"frames": [SubResource("AtlasTexture_ev6pv")],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}, {
+"frames": [SubResource("AtlasTexture_8qqvq"), SubResource("AtlasTexture_y013d"), SubResource("AtlasTexture_3bep0"), SubResource("AtlasTexture_oo3af"), SubResource("AtlasTexture_wioqa"), SubResource("AtlasTexture_qhsn4"), SubResource("AtlasTexture_egyiv"), SubResource("AtlasTexture_8wh2i"), SubResource("AtlasTexture_nhw6b"), SubResource("AtlasTexture_46bbx")],
+"loop": true,
+"name": &"idle",
+"speed": 10.0
+}, {
+"frames": [SubResource("AtlasTexture_kgi2s"), SubResource("AtlasTexture_joab3"), SubResource("AtlasTexture_hq5bt"), SubResource("AtlasTexture_wwx3a"), SubResource("AtlasTexture_u2yat"), SubResource("AtlasTexture_ha8od"), SubResource("AtlasTexture_fjggj"), SubResource("AtlasTexture_qhdl7"), SubResource("AtlasTexture_v861i"), SubResource("AtlasTexture_8o53p"), SubResource("AtlasTexture_s1fsv"), SubResource("AtlasTexture_fg2og"), SubResource("AtlasTexture_cilsc")],
+"loop": true,
+"name": &"run",
+"speed": 15.0
+}]
 
 [node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_vel", "_stateMachine", "_groundedChecker", "_sprite", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
 script = ExtResource("1_bfr8j")
@@ -18,7 +131,7 @@ _actor = NodePath("ActorComponent")
 _vel = NodePath("VelocityComponent")
 _stateMachine = NodePath("StateMachineComponent")
 _groundedChecker = NodePath("ActorComponent/GrounedCheckerComponent")
-_sprite = NodePath("ActorComponent/Sprite2D")
+_sprite = NodePath("ActorComponent/AnimatedSprite2D")
 _coyoteTimer = NodePath("Timers/CoyoteTimer")
 _jumpBufferTimer = NodePath("Timers/JumpBufferTimer")
 _variableJumpTimer = NodePath("Timers/VariableJumpTimer")
@@ -31,9 +144,9 @@ _dashCooldownTimer = NodePath("Timers/DashCooldownTimer")
 [node name="ActorComponent" parent="." node_paths=PackedStringArray("AABB") instance=ExtResource("4_fwujc")]
 AABB = NodePath("AABBComponent")
 
-[node name="Sprite2D" type="Sprite2D" parent="ActorComponent"]
-texture = SubResource("CanvasTexture_yof4h")
-centered = false
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ActorComponent"]
+position = Vector2(4, 8)
+frames = SubResource("SpriteFrames_ftf3o")
 
 [node name="AABBComponent" parent="ActorComponent" instance=ExtResource("6_03tc4")]
 Size = Vector2i(8, 12)
