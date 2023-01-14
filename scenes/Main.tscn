@@ -55,7 +55,7 @@ Size = Vector2i(24, 8)
 position = Vector2(46, 132)
 
 [node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(175, 132)
+position = Vector2(203, 132)
 
 [node name="CustomTilemap" type="Node" parent="." node_paths=PackedStringArray("_tilemap")]
 script = ExtResource("6_kdqpl")

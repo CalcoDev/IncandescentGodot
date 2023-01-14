@@ -35,6 +35,9 @@ public partial class AABBComponent : Node2D
     public int Top => IntPosition.y;
     public int Bottom => IntPosition.y + Size.y;
 
+    public int CentreX => IntPosition.x + (Size.x / 2);
+    public int CentreY => IntPosition.y + (Size.y / 2);
+
     private Vector2i _size;
     private Vector2i _positionOffset;
 
