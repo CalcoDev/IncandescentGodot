@@ -18,6 +18,6 @@ public partial class LightGrow : PointLight2D
         _a = Mathf.Sin(Time.GetTicksMsec() * 0.001f) * 0.05f;
 
         TextureScale = _init + _a;
-        RotationDegrees += 0.5f;
+        // RotationDegrees += 0.5f;
     }
 }
