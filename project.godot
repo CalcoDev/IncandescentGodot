@@ -22,6 +22,7 @@ run/frame_delay_msec=1
 CoroutineManager="*res://scenes/managers/CoroutineManager.tscn"
 GameManager="*res://scenes/managers/GameManager.tscn"
 LevelManager="*res://scenes/managers/LevelManager.tscn"
+RenderingManager="*res://scenes/managers/RenderingManager.tscn"
 
 [display]
 
