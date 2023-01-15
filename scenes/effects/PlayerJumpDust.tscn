@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://dx18jygjwobrl"]
+
+[ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="1_aymbq"]
+
+[sub_resource type="Curve" id="Curve_nwwpb"]
+max_value = 100.0
+_data = [Vector2(0, 100), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_0iwxj"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="CPUParticles2D" type="CPUParticles2D" groups=["pixelated"]]
+z_index = 4
+z_as_relative = false
+position = Vector2(146, 142)
+lifetime = 1.5
+texture = ExtResource("1_aymbq")
+emission_shape = 3
+emission_rect_extents = Vector2(5, 5)
+direction = Vector2(1, -1)
+gravity = Vector2(0, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+orbit_velocity_min = -1.0
+orbit_velocity_max = 1.0
+damping_min = 50.0
+damping_max = 100.0
+damping_curve = SubResource("Curve_nwwpb")
+scale_amount_min = 4.0
+scale_amount_max = 8.0
+scale_amount_curve = SubResource("Curve_0iwxj")

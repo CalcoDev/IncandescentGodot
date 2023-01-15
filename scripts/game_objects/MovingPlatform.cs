@@ -47,7 +47,5 @@ public partial class MovingPlatform : Node2D
     {
         _solid.MoveX(_targetPos.x - (_solid.GlobalPosition.x + _solid.Remainder.x));
         _solid.MoveY(_targetPos.y - (_solid.GlobalPosition.y + _solid.Remainder.y));
-
-        // _solid.GlobalPosition = _targetPos;
     }
 }
