@@ -15,6 +15,7 @@ public partial class Player : Node2D
     [Export] private VelocityComponent _vel;
     [Export] private StateMachineComponent _stateMachine;
     [Export] private CollisionCheckerComponent _groundedChecker;
+    [Export] private AnimatedSprite2D _sprite;
 
     #region Constants
 
@@ -56,6 +57,7 @@ public partial class Player : Node2D
     [Export] private CustomTimerComponent _coyoteTimer;
     [Export] private CustomTimerComponent _jumpBufferTimer;
     [Export] private CustomTimerComponent _variableJumpTimer;
+    [Export] private PackedScene _jumpDust;
 
     [ExportSubgroup("Dash")]
     [Export] private CustomTimerComponent _dashCooldownTimer;
@@ -106,6 +108,8 @@ public partial class Player : Node2D
             // inst.Position += new Vector2(6f, 16f);
             // GetNode("/root").AddChild(inst);
 
+            GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
+
             _isJumping = false;
         };
         _groundedChecker.OnSeparate += () => _coyoteTimer.SetTime(CoyoteTime);
@@ -132,6 +136,8 @@ public partial class Player : Node2D
 
         int newState = _stateMachine.Update();
         _stateMachine.SetState(newState);
+
+        GlobalPosition = _actor.GlobalPosition;
     }
 
     #region States
@@ -153,6 +159,17 @@ public partial class Player : Node2D
         if (_isJumping)
             _variableJumpTimer.Update(_delta);
 
+        // Sprite
+        if (Mathf.Abs(_inputX) > 0f)
+        {
+            _sprite.FlipH = _lastNonZeroDir.x > 0f;
+            _sprite.Play("run");
+        }
+        else
+        {
+            _sprite.Play("idle");
+        }
+
         // Gravity
         if (!_isGrounded)
         {
@@ -163,6 +180,7 @@ public partial class Player : Node2D
         }
 
         // Jumping
+        // GD.Print($"Jump Buffer: {_jumpBufferTimer.IsRunning()}, Coyote: {_coyoteTimer.IsRunning()} | IsJumping: {_isJumping}");
         if (_jumpBufferTimer.IsRunning() && _coyoteTimer.IsRunning())
         {
             _coyoteTimer.SetTime(0f);
@@ -193,6 +211,7 @@ public partial class Player : Node2D
             accel *= 2f;
 
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
+
 
         _actor.MoveX(_vel.X * _delta, OnCollideX);
         _actor.MoveY(_vel.Y * _delta, OnCollideY);
@@ -283,6 +302,14 @@ public partial class Player : Node2D
                 _actor.MoveXExact(offset.x);
                 // _actor.MoveYExact(offset.y);
                 return;
+            }
+
+            _groundedChecker.Update();
+            _isGrounded = _groundedChecker.IsColliding;
+            if (_isGrounded)
+            {
+                _coyoteTimer.SetTime(CoyoteTime);
+                _isJumping = false;
             }
         }
 
