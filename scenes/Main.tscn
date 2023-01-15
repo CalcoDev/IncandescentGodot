@@ -972,6 +972,9 @@ point_count = 2
 [node name="Player" parent="." instance=ExtResource("1_ialhu")]
 position = Vector2(158, 113)
 
+[node name="AnimatedSprite2D" parent="Player/ActorComponent" index="0"]
+z_index = -1
+
 [node name="MovingPlatform" type="Node2D" parent="." node_paths=PackedStringArray("_solid", "_path")]
 position = Vector2(46, 132)
 script = ExtResource("5_8ikv8")
@@ -1016,15 +1019,11 @@ centered = false
 
 [node name="Bow" type="Sprite2D" parent="."]
 position = Vector2(194, 53)
-rotation = 31.7421
+rotation = 0.326127
 texture = ExtResource("10_xw4lw")
 
-[node name="SubViewport" type="SubViewport" parent="."]
-disable_3d = true
-canvas_item_default_texture_filter = 0
-
-[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
-position = Vector2(87, 42)
+[node name="CPUParticles2D" type="CPUParticles2D" parent="." groups=["pixelated"]]
+position = Vector2(159, 80)
 lifetime = 1.5
 texture = ExtResource("7_6en6j")
 emission_shape = 3
@@ -1043,3 +1042,5 @@ damping_curve = SubResource("Curve_nwwpb")
 scale_amount_min = 4.0
 scale_amount_max = 8.0
 scale_amount_curve = SubResource("Curve_0iwxj")
+
+[editable path="Player"]
