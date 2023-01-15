@@ -6,6 +6,12 @@ namespace Incandescent.Managers;
 
 public partial class RenderingManager : Node
 {
+    public class PixelatedRenderingLayer
+    {
+        public SubViewport SubViewport { get; set; }
+        public TextureRect TextureRect { get; set; }
+    }
+
     public static RenderingManager Instance { get; private set; }
 
     private readonly System.Collections.Generic.Dictionary<float, PixelatedRenderingLayer> _layers = new();
@@ -92,12 +98,5 @@ public partial class RenderingManager : Node
         };
 
         node.AddChild(followerComp);
-    }
-
-    // TODO(calco): Move this to own file.
-    public class PixelatedRenderingLayer
-    {
-        public SubViewport SubViewport { get; set; }
-        public TextureRect TextureRect { get; set; }
     }
 }

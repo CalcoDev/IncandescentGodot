@@ -1019,6 +1019,3 @@ texture = ExtResource("10_xw4lw")
 
 [node name="RenderingManager" type="Node" parent="."]
 script = ExtResource("11_ug2gc")
-
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.282353, 0.282353, 0.282353, 1)

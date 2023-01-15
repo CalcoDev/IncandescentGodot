@@ -4,7 +4,7 @@ using Incandescent.Managers;
 
 namespace Incandescent.Components.Physics;
 
-public partial class PhysicsBodyComponent : Node2D
+public abstract partial class PhysicsBodyComponent : Node2D
 {
     [Export] public AABBComponent AABB { get; set; }
     [Export] public bool IsCollidable { get; set; } = true;
@@ -37,6 +37,4 @@ public partial class PhysicsBodyComponent : Node2D
     {
         return LevelManager.GetCollidingBodies(AABB, bodies, positionOffset);
     }
-
-    // TODO(calco): Maybe define movement methods here?
 }
