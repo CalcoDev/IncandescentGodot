@@ -1,6 +1,6 @@
-using Incandescent.Managers;
 using Godot;
 using Incandescent.Components.Physics;
+using Incandescent.Managers;
 
 namespace Incandescent.Components;
 
@@ -21,6 +21,8 @@ public partial class CustomTilemapComponent : Node
 
             AABBComponent aabb = new AABBComponent();
             aabb.Size = new Vector2i(8, 8);
+            // aabb.ZAsRelative = false;
+            // aabb.ZIndex = _tilemap.ZIndex + 1;
             solid.AABB = aabb;
 
             solid.AddChild(aabb);

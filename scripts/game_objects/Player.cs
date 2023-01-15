@@ -57,6 +57,7 @@ public partial class Player : Node2D
     [Export] private CustomTimerComponent _coyoteTimer;
     [Export] private CustomTimerComponent _jumpBufferTimer;
     [Export] private CustomTimerComponent _variableJumpTimer;
+    [Export] private PackedScene _jumpDust;
 
     [ExportSubgroup("Dash")]
     [Export] private CustomTimerComponent _dashCooldownTimer;
@@ -107,6 +108,8 @@ public partial class Player : Node2D
             // inst.Position += new Vector2(6f, 16f);
             // GetNode("/root").AddChild(inst);
 
+            GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
+
             _isJumping = false;
         };
         _groundedChecker.OnSeparate += () => _coyoteTimer.SetTime(CoyoteTime);
@@ -133,6 +136,8 @@ public partial class Player : Node2D
 
         int newState = _stateMachine.Update();
         _stateMachine.SetState(newState);
+
+        GlobalPosition = _actor.GlobalPosition;
     }
 
     #region States

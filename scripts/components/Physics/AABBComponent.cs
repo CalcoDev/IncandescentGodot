@@ -54,8 +54,11 @@ public partial class AABBComponent : Node2D
 
     public override void _Draw()
     {
-        if (Engine.IsEditorHint() || GameManager.DebugMode)
+        if (Engine.IsEditorHint() || GameManager.Instance.Debug)
+        {
+            ZIndex = 20;
             DrawRect(new Rect2(_positionOffset, _size), new Color(0f, .65f, .75f, 0.5f));
+        }
     }
 
     public bool IntersectsRel(AABBComponent other, Vector2i positionOffset)

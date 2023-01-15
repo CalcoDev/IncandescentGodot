@@ -1,6 +1,7 @@
 [gd_scene load_steps=17 format=3 uid="uid://cjjin3npj7t0j"]
 
 [ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
+[ext_resource type="PackedScene" uid="uid://dx18jygjwobrl" path="res://scenes/effects/PlayerJumpDust.tscn" id="3_g25um"]
 [ext_resource type="PackedScene" uid="uid://dhqnaeg7tprh6" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
 [ext_resource type="Script" path="res://scripts/game_objects/MovingPlatform.cs" id="5_8ikv8"]
 [ext_resource type="PackedScene" uid="uid://b00we5mqxw4f1" path="res://scenes/components/physics/AABBComponent.tscn" id="5_yd4tr"]
@@ -10,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://b6a2i1277xia7" path="res://assets/art/env/background.png" id="9_cxb55"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="10_u4j31"]
 [ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="10_xw4lw"]
+[ext_resource type="Script" path="res://scripts/managers/RenderingManager.cs" id="11_ug2gc"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rb27m"]
 cull_mode = 1
@@ -958,22 +960,17 @@ terrain_set_0/terrain_1/color = Color(0.568627, 0.537255, 1, 1)
 sources/0 = SubResource("TileSetAtlasSource_s174l")
 sources/1 = SubResource("TileSetAtlasSource_jp46a")
 
-[sub_resource type="Curve" id="Curve_nwwpb"]
-max_value = 100.0
-_data = [Vector2(0, 100), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 2
+[node name="SceneMain" type="Node2D"]
 
-[sub_resource type="Curve" id="Curve_0iwxj"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[node name="Node2D" type="Node2D"]
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -3
+z_as_relative = false
+texture = ExtResource("9_cxb55")
+centered = false
 
 [node name="Player" parent="." instance=ExtResource("1_ialhu")]
 position = Vector2(158, 113)
-
-[node name="AnimatedSprite2D" parent="Player/ActorComponent" index="0"]
-z_index = -1
+_jumpDust = ExtResource("3_g25um")
 
 [node name="MovingPlatform" type="Node2D" parent="." node_paths=PackedStringArray("_solid", "_path")]
 position = Vector2(46, 132)
@@ -991,6 +988,7 @@ texture = ExtResource("7_6en6j")
 centered = false
 
 [node name="AABBComponent" parent="MovingPlatform/SolidComponent" instance=ExtResource("5_yd4tr")]
+z_index = 20
 Size = Vector2i(24, 8)
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="MovingPlatform/SolidComponent"]
@@ -1008,39 +1006,19 @@ position = Vector2(70, 132)
 _tilemap = NodePath("TileMap")
 
 [node name="TileMap" type="TileMap" parent="CustomTilemapComponent"]
+z_index = 2
+z_as_relative = false
 tile_set = SubResource("TileSet_30wja")
 format = 2
 layer_0/tile_data = PackedInt32Array(1441797, 458753, 1, 1441798, 327681, 3, 1441799, 327681, 3, 1441800, 327681, 3, 1441801, 327681, 3, 1441802, 327681, 3, 1441803, 327681, 3, 1441804, 327681, 3, 1441805, 327681, 3, 1441806, 327681, 3, 1441807, 327681, 3, 1441808, 327681, 3, 1441809, 327681, 3, 1441810, 327681, 3, 1441811, 327681, 3, 1441812, 327681, 3, 1441813, 327681, 3, 1441816, 327681, 3, 1441815, 327681, 3, 1441814, 327681, 3, 1441817, 327681, 3, 1441818, 327681, 3, 1441819, 327681, 3, 1441820, 327681, 3, 1441821, 327681, 3, 1441822, 327681, 3, 1441823, 327681, 3, 1441824, 327681, 3, 1441825, 327681, 3, 1441826, 524289, 1, 1376290, 327681, 2, 1376289, 393217, 2, 1376288, 393217, 2, 1376287, 393217, 2, 1376286, 393217, 2, 1376285, 393217, 2, 1376284, 393217, 2, 1376283, 393217, 2, 1376282, 393217, 2, 1376281, 393217, 2, 1376280, 393217, 2, 1376279, 393217, 2, 1376278, 393217, 2, 1376277, 393217, 2, 1376276, 393217, 2, 1376275, 393217, 2, 1376274, 393217, 2, 1376273, 393217, 2, 1376272, 393217, 2, 1376271, 393217, 2, 1376270, 393217, 2, 1376269, 393217, 2, 1376268, 393217, 2, 1376267, 393217, 2, 1376266, 393217, 2, 1376265, 393217, 2, 1376264, 393217, 2, 1376263, 393217, 2, 1376262, 393217, 2, 1376261, 262145, 2, 1245189, 458753, 0, 1245190, 262145, 3, 1245191, 262145, 3, 1245192, 262145, 3, 1245193, 262145, 3, 1245194, 262145, 3, 1245195, 262145, 3, 1245196, 262145, 3, 1245197, 262145, 3, 1245198, 262145, 3, 1245199, 262145, 3, 1245200, 262145, 3, 1245201, 262145, 3, 1245202, 262145, 3, 1245203, 262145, 3, 1245204, 262145, 3, 1245205, 262145, 3, 1245206, 196609, 2, 1245207, 262145, 3, 1245208, 65537, 3, 1245209, 393217, 2, 1245210, 1, 3, 1245211, 262145, 3, 1245212, 65537, 3, 1245213, 393217, 2, 1245214, 1, 3, 1245215, 262145, 3, 1245216, 262145, 3, 1245218, 524289, 0, 1245217, 262145, 3, 1310754, 327681, 2, 1310753, 393217, 2, 1310752, 393217, 2, 1310751, 393217, 2, 1310750, 393217, 2, 1310749, 393217, 2, 1310748, 393217, 2, 1310747, 393217, 2, 1310746, 393217, 2, 1310745, 393217, 2, 1310744, 393217, 2, 1310743, 393217, 2, 1310742, 393217, 2, 1310741, 393217, 2, 1310740, 393217, 2, 1310739, 393217, 2, 1310738, 393217, 2, 1310737, 393217, 2, 1310736, 393217, 2, 1310735, 393217, 2, 1310734, 393217, 2, 1310733, 393217, 2, 1310732, 393217, 2, 1310731, 393217, 2, 1310730, 393217, 2, 1310729, 393217, 2, 1310728, 393217, 2, 1310727, 393217, 2, 1310726, 393217, 2, 1310725, 262145, 2, 1179676, 262145, 2, 1114140, 262145, 2, 1048604, 262145, 2, 983068, 262145, 2, 917532, 262145, 2, 851996, 458753, 0, 851997, 262145, 3, 917533, 393217, 2, 983069, 393217, 2, 1048605, 393217, 2, 1114141, 393217, 2, 1179677, 393217, 2, 786445, 458753, 0, 786446, 524289, 0, 851982, 327681, 2, 851981, 262145, 2, 917518, 524289, 1, 917517, 458753, 1, 1179678, 327681, 2, 1114142, 327681, 2, 1048606, 327681, 2, 983070, 327681, 2, 917534, 327681, 2, 851998, 524289, 0, 1048602, 524289, 0, 1114138, 327681, 2, 1179674, 327681, 2, 1179673, 393217, 2, 1179672, 262145, 2, 1114136, 262145, 2, 1114137, 393217, 2, 1048601, 262145, 3, 1048600, 458753, 0, 1114134, 327681, 1, 1179670, 131073, 1, 983072, 458753, 0, 983073, 524289, 0, 1048609, 524289, 1, 1048608, 458753, 1)
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-z_index = -1
-texture = ExtResource("9_cxb55")
-centered = false
 
 [node name="Bow" type="Sprite2D" parent="."]
 position = Vector2(194, 53)
 rotation = 0.326127
 texture = ExtResource("10_xw4lw")
 
-[node name="CPUParticles2D" type="CPUParticles2D" parent="." groups=["pixelated"]]
-position = Vector2(159, 80)
-lifetime = 1.5
-texture = ExtResource("7_6en6j")
-emission_shape = 3
-emission_rect_extents = Vector2(5, 5)
-direction = Vector2(1, -1)
-gravity = Vector2(0, 0)
-initial_velocity_min = 50.0
-initial_velocity_max = 100.0
-angular_velocity_min = -180.0
-angular_velocity_max = 180.0
-orbit_velocity_min = -1.0
-orbit_velocity_max = 1.0
-damping_min = 50.0
-damping_max = 100.0
-damping_curve = SubResource("Curve_nwwpb")
-scale_amount_min = 4.0
-scale_amount_max = 8.0
-scale_amount_curve = SubResource("Curve_0iwxj")
+[node name="RenderingManager" type="Node" parent="."]
+script = ExtResource("11_ug2gc")
 
-[editable path="Player"]
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.282353, 0.282353, 0.282353, 1)
