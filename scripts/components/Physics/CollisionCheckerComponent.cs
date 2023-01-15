@@ -15,9 +15,11 @@ public partial class CollisionCheckerComponent : Node2D
     [Export] public bool IsColliding { get; private set; }
     [Export] public bool WasColliding { get; private set; }
 
-    // TODO(calco): Make these Signals
-    public Action OnCollide { get; set; }
-    public Action OnSeparate { get; set; }
+    [Signal]
+    public delegate void OnCollideEventHandler();
+
+    [Signal]
+    public delegate void OnSeparateEventHandler();
 
     public override void _Process(double delta)
     {
@@ -32,9 +34,9 @@ public partial class CollisionCheckerComponent : Node2D
         IsColliding = LevelManager.CollideAt(_aabb, LevelManager.Instance.Solids, Vector2i.Zero);
 
         if (WasColliding && !IsColliding)
-            OnSeparate?.Invoke();
+            EmitSignal(SignalName.OnSeparate);
         else if (!WasColliding && IsColliding)
-            OnCollide?.Invoke();
+            EmitSignal(SignalName.OnCollide);
 
         WasColliding = IsColliding;
     }

@@ -6,8 +6,6 @@ using Incandescent.Managers;
 
 namespace Incandescent.Components.Physics;
 
-// TODO(calco): figure out how to show warnings without [Tool]
-[Tool]
 public partial class ActorComponent : PhysicsBodyComponent
 {
     [Signal]
