@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=17 format=3 uid="uid://cjjin3npj7t0j"]
 
 [ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="PackedScene" uid="uid://dhqnaeg7tprh6" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
@@ -958,6 +958,15 @@ terrain_set_0/terrain_1/color = Color(0.568627, 0.537255, 1, 1)
 sources/0 = SubResource("TileSetAtlasSource_s174l")
 sources/1 = SubResource("TileSetAtlasSource_jp46a")
 
+[sub_resource type="Curve" id="Curve_nwwpb"]
+max_value = 100.0
+_data = [Vector2(0, 100), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_0iwxj"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [node name="Node2D" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_ialhu")]
@@ -1007,5 +1016,30 @@ centered = false
 
 [node name="Bow" type="Sprite2D" parent="."]
 position = Vector2(194, 53)
-rotation = -1.03008
+rotation = 31.7421
 texture = ExtResource("10_xw4lw")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+disable_3d = true
+canvas_item_default_texture_filter = 0
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(87, 42)
+lifetime = 1.5
+texture = ExtResource("7_6en6j")
+emission_shape = 3
+emission_rect_extents = Vector2(5, 5)
+direction = Vector2(1, -1)
+gravity = Vector2(0, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+orbit_velocity_min = -1.0
+orbit_velocity_max = 1.0
+damping_min = 50.0
+damping_max = 100.0
+damping_curve = SubResource("Curve_nwwpb")
+scale_amount_min = 4.0
+scale_amount_max = 8.0
+scale_amount_curve = SubResource("Curve_0iwxj")
