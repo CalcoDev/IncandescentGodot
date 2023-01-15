@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=17 format=3 uid="uid://cjjin3npj7t0j"]
 
 [ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="PackedScene" uid="uid://dhqnaeg7tprh6" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://b6a2i1277xia7" path="res://assets/art/env/background.png" id="9_cxb55"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="10_u4j31"]
 [ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="10_xw4lw"]
+[ext_resource type="Texture2D" uid="uid://cn610dedyc31p" path="res://assets/art/particles/circle_4.png" id="11_ga8rx"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rb27m"]
 cull_mode = 1
@@ -958,6 +959,12 @@ terrain_set_0/terrain_1/color = Color(0.568627, 0.537255, 1, 1)
 sources/0 = SubResource("TileSetAtlasSource_s174l")
 sources/1 = SubResource("TileSetAtlasSource_jp46a")
 
+[sub_resource type="Curve" id="Curve_8a2gm"]
+min_value = -200.0
+max_value = 200.0
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, -138.182), 0.0, 0.0, 0, 0]
+point_count = 2
+
 [node name="Node2D" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_ialhu")]
@@ -1009,3 +1016,21 @@ centered = false
 position = Vector2(194, 53)
 rotation = -1.03008
 texture = ExtResource("10_xw4lw")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(94, 36)
+texture = ExtResource("11_ga8rx")
+emission_shape = 3
+emission_rect_extents = Vector2(3, 0)
+direction = Vector2(0, -1)
+spread = 20.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 25.0
+initial_velocity_max = 50.0
+angular_velocity_min = -45.0
+angular_velocity_max = 45.0
+linear_accel_min = 10.0
+linear_accel_max = 20.0
+linear_accel_curve = SubResource("Curve_8a2gm")
+scale_amount_min = 0.75
+scale_amount_max = 1.5
