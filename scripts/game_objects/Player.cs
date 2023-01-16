@@ -1,8 +1,10 @@
 using System.Collections;
 using Godot;
 using Incandescent.Components;
+using Incandescent.Components.Graphics;
 using Incandescent.Components.Logic;
 using Incandescent.Components.Physics;
+using Incandescent.GameObjects.Weapons;
 using Incandescent.Managers;
 using Incandescent.Utils;
 
@@ -16,6 +18,8 @@ public partial class Player : Node2D
     [Export] private StateMachineComponent _stateMachine;
     [Export] private CollisionCheckerComponent _groundedChecker;
     [Export] private AnimatedSprite2D _sprite;
+
+    private Sword _sword;
 
     #region Constants
 
@@ -61,6 +65,8 @@ public partial class Player : Node2D
 
     [ExportSubgroup("Dash")]
     [Export] private CustomTimerComponent _dashCooldownTimer;
+    [Export] private PackedScene _dashStartExplosionFX;
+    [Export] private PackedScene _dashEndExplosionFX;
 
     private Vector2 _dashDir;
     private bool _groundDash;
@@ -87,6 +93,8 @@ public partial class Player : Node2D
 
     public override void _Ready()
     {
+        _sword = GetNode<Sword>("Sword");
+
         Vector2 t = _actor.GlobalPosition;
         _actor.TopLevel = true;
         _actor.GlobalPosition = t;
@@ -108,7 +116,8 @@ public partial class Player : Node2D
             // inst.Position += new Vector2(6f, 16f);
             // GetNode("/root").AddChild(inst);
 
-            GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
+            // TODO(calco): Add this back in.
+            // GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
 
             _isJumping = false;
         };
@@ -162,7 +171,8 @@ public partial class Player : Node2D
         // Sprite
         if (Mathf.Abs(_inputX) > 0f)
         {
-            _sprite.FlipH = _lastNonZeroDir.x > 0f;
+            Scale = new Vector2(_lastNonZeroDir.x > 0f ? -1f : 1f, 1f);
+
             _sprite.Play("run");
         }
         else
@@ -229,6 +239,19 @@ public partial class Player : Node2D
         // _dashTrail.ClearPoints();
         // _dashTrail.ResetTimerToZero();
         // _dashTrail.Emitting = true;
+
+        Node2D fx = GameManager.SpawnPixelatedFX(_dashStartExplosionFX, GlobalPosition);
+        if (fx is CallbackParticlesComponent callback)
+        {
+            callback.Emitting = true;
+            callback.Init(true);
+            callback.OnParticlesFinished += () =>
+            {
+                CallDeferred(nameof(RemoveNode), fx);
+                GD.Print("Hheheheha");
+            };
+        }
+        _sprite.Visible = false;
     }
 
     private int DashUpdate()
@@ -245,8 +268,27 @@ public partial class Player : Node2D
 
     private void DashExit()
     {
+        // TODO(calco): This is such a scuffed wya of just creating particles lmao.
+        Node2D fx = GameManager.SpawnPixelatedFX(_dashEndExplosionFX, GlobalPosition);
+        if (fx is CallbackParticlesComponent callback)
+        {
+            callback.Emitting = true;
+            callback.Init(true);
+            callback.OnParticlesFinished += () =>
+            {
+                CallDeferred(nameof(RemoveNode), fx);
+                GD.Print("Hheheheha");
+            };
+        }
+        _sprite.Visible = true;
+
         // _dashTrail.Emitting = false;
         // CustomTimerComponent.Create(this, 0.2f, true).Timeout += () => _dashTrail.StartClearingPoints();
+    }
+
+    private void RemoveNode(Node node)
+    {
+        node.QueueFree();
     }
 
     private IEnumerator DashCoroutine()

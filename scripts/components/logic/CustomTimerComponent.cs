@@ -11,7 +11,7 @@ public partial class CustomTimerComponent : Node
     [Export] private float _time;
 
     [Signal]
-    public delegate void TimeoutEventHandler();
+    public delegate void OnTimeoutEventHandler();
 
     public float Time => _time;
 
@@ -53,7 +53,7 @@ public partial class CustomTimerComponent : Node
         _time = Mathf.Max(_time - deltaTime, 0f);
         if (HasFinished() && !_triggeredEvent)
         {
-            EmitSignal(SignalName.Timeout);
+            EmitSignal(SignalName.OnTimeout);
             _triggeredEvent = true;
         }
     }

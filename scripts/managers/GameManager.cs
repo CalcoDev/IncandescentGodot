@@ -32,7 +32,7 @@ public partial class GameManager : Node
         }
     }
 
-    public static void SpawnPixelatedFX(PackedScene fx, Vector2 position, bool root = true)
+    public static Node2D SpawnPixelatedFX(PackedScene fx, Vector2 position, bool root = true)
     {
         var fxInstance = fx.Instantiate() as Node2D;
 
@@ -43,5 +43,7 @@ public partial class GameManager : Node
 
         fxInstance.GlobalPosition = position;
         RenderingManager.Instance.TryAddNodeToLayer(fxInstance);
+
+        return fxInstance;
     }
 }

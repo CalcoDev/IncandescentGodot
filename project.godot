@@ -38,6 +38,10 @@ window/stretch/mode="canvas_items"
 
 project/assembly_name="Incandescent"
 
+[editor]
+
+scene/scene_naming=1
+
 [input]
 
 axis_horizontal_positive={
