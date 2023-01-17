@@ -1064,6 +1064,3 @@ scale_amount_max = 1.5
 scale_amount_curve = SubResource("Curve_5287p")
 color_ramp = SubResource("Gradient_kh7x5")
 color_initial_ramp = SubResource("Gradient_i1gvf")
-
-[node name="PlayerDash" parent="." instance=ExtResource("4_w7eco")]
-visible = false

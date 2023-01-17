@@ -23,8 +23,8 @@ point_count = 2
 offsets = PackedFloat32Array(0, 0.262097, 0.314516, 0.487903, 0.741935, 1)
 colors = PackedColorArray(0.745098, 0.466667, 0.168627, 1, 0.905882, 0.835294, 0.701961, 1, 0.888567, 0.795596, 0.644525, 1, 0.533333, 0.294118, 0.168627, 1, 0.117647, 0.113725, 0.223529, 1, 0.0352941, 0.0392157, 0.0784314, 0.231373)
 
-[node name="PlayerDash" type="CPUParticles2D" groups=["pixelated"]]
-z_index = 4
+[node name="PlayerDash" type="CPUParticles2D"]
+z_index = 1
 z_as_relative = false
 position = Vector2(240, 77)
 emitting = false
