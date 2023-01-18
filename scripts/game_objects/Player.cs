@@ -109,7 +109,7 @@ public partial class Player : Node2D
         _actor.TopLevel = true;
         _actor.GlobalPosition = t;
 
-        _stateMachine.Init(3, -1);
+        _stateMachine.Init(10, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
 
@@ -117,8 +117,8 @@ public partial class Player : Node2D
         _primary.SetStates(StPrimary, StNormal);
         _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
 
-        // _secondary.SetStates(StSecondary, StNormal);
-        // _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
+        _secondary.SetStates(StSecondary, StNormal);
+        _stateMachine.SetCallbacks(StSecondary, _secondary.Update, _secondary.Enter, _secondary.Exit, _secondary.Coroutine);
 
         _stateMachine.SetState(StNormal);
 
@@ -173,11 +173,13 @@ public partial class Player : Node2D
         if (_inputDashPressed && _dashCooldownTimer.HasFinished())
             return StDash;
 
-        if (_inputPrimaryPressed)
+        if (_inputPrimaryPressed || _inputSecondaryPressed)
         {
             AbilityActivationData data = new AbilityActivationData(_actor, _vel, _lastNonZeroDir);
-            if (_primary.TryActivate(data))
+            if (_inputPrimaryPressed && _primary.TryActivate(data))
                 return StPrimary;
+            if (_inputSecondaryPressed && _secondary.TryActivate(data))
+                return StSecondary;
         }
 
         // Timers

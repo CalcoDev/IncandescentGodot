@@ -7,9 +7,7 @@ namespace Incandescent.Components.Abilities;
 /// </summary>
 public abstract partial class AbilityDefinition : RefCounted
 {
-    // public abstract string Name { get; }
-    // public abstract string Description { get; }
-
+    // TODO(calco): Consider making these properties instead of methods.
     public abstract string GetName();
     public abstract string GetDescription();
 

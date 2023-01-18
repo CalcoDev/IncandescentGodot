@@ -17,9 +17,7 @@ public partial class PlayerSwingComponent : AbilityComponent
 
     public override void Enter()
     {
-        GD.Print("Started Player Swing.");
         _timer.Start(1f);
-
         LatestActivationData.SenderVelocity.Set(LatestActivationData.Direction * 10f);
     }
 
@@ -37,8 +35,6 @@ public partial class PlayerSwingComponent : AbilityComponent
 
     public override void Exit()
     {
-        GD.Print("Ended Player Swing.");
-
         CooldownTimer.Start(_definition.GetCooldown());
     }
 }
