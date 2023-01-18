@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=36 format=3 uid="uid://d1t61exxeefqg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
@@ -10,8 +10,6 @@
 [ext_resource type="Texture2D" uid="uid://de3rhxf13tl4y" path="res://assets/art/entities/player/player_run_temp.png" id="7_blxg0"]
 [ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
-[ext_resource type="Script" path="res://scripts/game_objects/weapons/Sword.cs" id="11_o35ih"]
-[ext_resource type="Texture2D" uid="uid://c43k4l5scy6qg" path="res://assets/art/entities/player/weapons/sword.png" id="12_wwofj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ev6pv"]
 atlas = ExtResource("5_dw34v")
@@ -127,9 +125,6 @@ animations = [{
 "speed": 15.0
 }]
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_q7edy"]
-diffuse_texture = ExtResource("12_wwofj")
-
 [node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_vel", "_stateMachine", "_groundedChecker", "_sprite", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
 script = ExtResource("1_bfr8j")
 _actor = NodePath("ActorComponent")
@@ -176,13 +171,3 @@ Size = Vector2i(8, 1)
 [node name="VariableJumpTimer" parent="Timers" instance=ExtResource("8_vigfg")]
 
 [node name="DashCooldownTimer" parent="Timers" instance=ExtResource("8_vigfg")]
-
-[node name="Sword" type="Node2D" parent="."]
-position = Vector2(-9, 2)
-script = ExtResource("11_o35ih")
-
-[node name="Sprite2D" type="Sprite2D" parent="Sword"]
-visible = false
-texture = SubResource("CanvasTexture_q7edy")
-centered = false
-offset = Vector2(-12, -3)

@@ -4,7 +4,6 @@ using Incandescent.Components;
 using Incandescent.Components.Graphics;
 using Incandescent.Components.Logic;
 using Incandescent.Components.Physics;
-using Incandescent.GameObjects.Weapons;
 using Incandescent.Managers;
 using Incandescent.Utils;
 
@@ -18,8 +17,6 @@ public partial class Player : Node2D
     [Export] private StateMachineComponent _stateMachine;
     [Export] private CollisionCheckerComponent _groundedChecker;
     [Export] private AnimatedSprite2D _sprite;
-
-    private Sword _sword;
 
     #region Constants
 
@@ -93,8 +90,6 @@ public partial class Player : Node2D
 
     public override void _Ready()
     {
-        _sword = GetNode<Sword>("Sword");
-
         Vector2 t = _actor.GlobalPosition;
         _actor.TopLevel = true;
         _actor.GlobalPosition = t;
