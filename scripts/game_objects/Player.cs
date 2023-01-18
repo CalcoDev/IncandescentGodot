@@ -1,6 +1,7 @@
 using System.Collections;
 using Godot;
 using Incandescent.Components;
+using Incandescent.Components.Abilities;
 using Incandescent.Components.Graphics;
 using Incandescent.Components.Logic;
 using Incandescent.Components.Physics;
@@ -12,11 +13,18 @@ namespace Incandescent.GameObjects;
 public partial class Player : Node2D
 {
     [ExportGroup("Refs")]
+    [ExportSubgroup("Logic")]
     [Export] private ActorComponent _actor;
-    [Export] private VelocityComponent _vel;
     [Export] private StateMachineComponent _stateMachine;
+    [Export] private VelocityComponent _vel;
     [Export] private CollisionCheckerComponent _groundedChecker;
+
+    [ExportSubgroup("Animation")]
     [Export] private AnimatedSprite2D _sprite;
+
+    [ExportSubgroup("Abilities")]
+    [Export] private AbilityComponent _primary;
+    [Export] private AbilityComponent _secondary;
 
     #region Constants
 
@@ -77,6 +85,9 @@ public partial class Player : Node2D
     private bool _inputDashPressed;
     private Vector2 _lastNonZeroDir;
 
+    private bool _inputPrimaryPressed;
+    private bool _inputSecondaryPressed;
+
     // State
     private float _delta;
 
@@ -90,6 +101,8 @@ public partial class Player : Node2D
 
     public override void _Ready()
     {
+        GD.Print(_primary.GetAbilityDefinition().GetName());
+
         Vector2 t = _actor.GlobalPosition;
         _actor.TopLevel = true;
         _actor.GlobalPosition = t;
@@ -131,6 +144,9 @@ public partial class Player : Node2D
 
         _inputDashPressed = Input.IsActionJustPressed("btn_shift");
 
+        _inputPrimaryPressed = Input.IsActionJustPressed("btn_primary");
+        _inputSecondaryPressed = Input.IsActionJustPressed("btn_secondary");
+
         if (Mathf.Abs(_inputX) > 0f)
             _lastNonZeroDir = new Vector2(_inputX, 0f);
 
@@ -151,6 +167,11 @@ public partial class Player : Node2D
         // State
         if (_inputDashPressed && _dashCooldownTimer.HasFinished())
             return StDash;
+
+        if (_inputPrimaryPressed)
+        {
+            bool activated = _primary.Activate();
+        }
 
         // Timers
         if (!_isGrounded)
@@ -215,7 +236,7 @@ public partial class Player : Node2D
         if (Mathf.Abs(_inputX) > 0f && !sameDir)
             accel *= 2f;
 
-        GD.Print($"Accel: {accel} | Input: {_inputX} | Vel: {_vel.X}");
+        // GD.Print($"Accel: {accel} | Input: {_inputX} | Vel: {_vel.X}");
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
 
         _actor.MoveX(_vel.X * _delta, OnCollideX);
@@ -243,7 +264,7 @@ public partial class Player : Node2D
             callback.OnParticlesFinished += () =>
             {
                 CallDeferred(nameof(RemoveNode), fx);
-                GD.Print("Hheheheha");
+                // GD.Print("Hheheheha");
             };
         }
         _sprite.Visible = false;
@@ -272,7 +293,7 @@ public partial class Player : Node2D
             callback.OnParticlesFinished += () =>
             {
                 CallDeferred(nameof(RemoveNode), fx);
-                GD.Print("Hheheheha");
+                // GD.Print("Hheheheha");
             };
         }
         _sprite.Visible = true;
@@ -356,7 +377,7 @@ public partial class Player : Node2D
 
     private void OnSquish(AABBComponent other)
     {
-        GD.Print("Player was squished!");
+        // GD.Print("Player was squished!");
     }
 
     #endregion

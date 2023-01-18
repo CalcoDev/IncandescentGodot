@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=37 format=3 uid="uid://d1t61exxeefqg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://de3rhxf13tl4y" path="res://assets/art/entities/player/player_run_temp.png" id="7_blxg0"]
 [ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
+[ext_resource type="Script" path="res://scripts/components/abilities/PlayerSwingComponent.cs" id="11_8shje"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ev6pv"]
 atlas = ExtResource("5_dw34v")
@@ -125,13 +126,14 @@ animations = [{
 "speed": 15.0
 }]
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_vel", "_stateMachine", "_groundedChecker", "_sprite", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_stateMachine", "_vel", "_groundedChecker", "_sprite", "_primary", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
 script = ExtResource("1_bfr8j")
 _actor = NodePath("ActorComponent")
-_vel = NodePath("VelocityComponent")
 _stateMachine = NodePath("StateMachineComponent")
+_vel = NodePath("VelocityComponent")
 _groundedChecker = NodePath("ActorComponent/GrounedCheckerComponent")
 _sprite = NodePath("AnimatedSprite2D")
+_primary = NodePath("Abilities/PlayerSwingComponent")
 _coyoteTimer = NodePath("Timers/CoyoteTimer")
 _jumpBufferTimer = NodePath("Timers/JumpBufferTimer")
 _variableJumpTimer = NodePath("Timers/VariableJumpTimer")
@@ -140,10 +142,6 @@ _dashCooldownTimer = NodePath("Timers/DashCooldownTimer")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_as_relative = false
 frames = SubResource("SpriteFrames_ftf3o")
-
-[node name="VelocityComponent" parent="." instance=ExtResource("2_0apfh")]
-
-[node name="StateMachineComponent" parent="." instance=ExtResource("3_j5h5e")]
 
 [node name="ActorComponent" parent="." node_paths=PackedStringArray("AABB") instance=ExtResource("4_fwujc")]
 AABB = NodePath("AABBComponent")
@@ -162,6 +160,10 @@ _aabb = NodePath("AABBComponent")
 z_index = 20
 Size = Vector2i(8, 1)
 
+[node name="StateMachineComponent" parent="." instance=ExtResource("3_j5h5e")]
+
+[node name="VelocityComponent" parent="." instance=ExtResource("2_0apfh")]
+
 [node name="Timers" type="Node" parent="."]
 
 [node name="CoyoteTimer" parent="Timers" instance=ExtResource("8_vigfg")]
@@ -171,3 +173,12 @@ Size = Vector2i(8, 1)
 [node name="VariableJumpTimer" parent="Timers" instance=ExtResource("8_vigfg")]
 
 [node name="DashCooldownTimer" parent="Timers" instance=ExtResource("8_vigfg")]
+
+[node name="Abilities" type="Node" parent="."]
+
+[node name="PlayerSwingComponent" type="Node" parent="Abilities" node_paths=PackedStringArray("_cooldownTimer")]
+script = ExtResource("11_8shje")
+_cooldownTimer = NodePath("CustomTimerComponent")
+
+[node name="CustomTimerComponent" parent="Abilities/PlayerSwingComponent" instance=ExtResource("8_vigfg")]
+UpdateSelf = true
