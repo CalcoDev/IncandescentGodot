@@ -209,14 +209,14 @@ public partial class Player : Node2D
 
         // Horizontal
         float accel = RunAccel;
-        bool sameDir = Calc.SameSign(_inputX, _vel.X);
+        bool sameDir = Calc.SameSignZero(_inputX, _vel.X);
         if (Mathf.Abs(_vel.X) > MaxRunSpeed && sameDir)
             accel = RunReduce;
         if (Mathf.Abs(_inputX) > 0f && !sameDir)
             accel *= 2f;
 
+        GD.Print($"Accel: {accel} | Input: {_inputX} | Vel: {_vel.X}");
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
-
 
         _actor.MoveX(_vel.X * _delta, OnCollideX);
         _actor.MoveY(_vel.Y * _delta, OnCollideY);
