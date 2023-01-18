@@ -2,7 +2,7 @@ using Godot;
 
 namespace Incandescent.Components.Abilities.Definitions;
 
-public partial class PlayerSwingAbilityDefinition : AbilityDefinition
+public partial class SwordSlashAbilityDefinition : AbilityDefinition
 {
     public override string GetName()
     {

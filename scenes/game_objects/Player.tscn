@@ -10,8 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://de3rhxf13tl4y" path="res://assets/art/entities/player/player_run_temp.png" id="7_blxg0"]
 [ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
-[ext_resource type="Script" path="res://scripts/components/abilities/PlayerSwingComponent.cs" id="11_8shje"]
-[ext_resource type="Script" path="res://scripts/components/abilities/LeapAbilityComponent.cs" id="12_xnh3n"]
+[ext_resource type="PackedScene" uid="uid://v33eworj57he" path="res://scenes/components/abilities/SwordSlashAbilityComponent.tscn" id="12_7bp5m"]
+[ext_resource type="PackedScene" uid="uid://tnxlxxpxxndc" path="res://scenes/components/abilities/LeapAbilityComponent.tscn" id="12_v6h56"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ev6pv"]
 atlas = ExtResource("5_dw34v")
@@ -134,8 +134,8 @@ _stateMachine = NodePath("StateMachineComponent")
 _vel = NodePath("VelocityComponent")
 _groundedChecker = NodePath("ActorComponent/GrounedCheckerComponent")
 _sprite = NodePath("AnimatedSprite2D")
-_primary = NodePath("Abilities/PlayerSwingComponent")
-_secondary = NodePath("Abilities/LeapAbilityComponent")
+_primary = NodePath("SwordSlashAbilityComponent")
+_secondary = NodePath("LeapAbilityComponent")
 _coyoteTimer = NodePath("Timers/CoyoteTimer")
 _jumpBufferTimer = NodePath("Timers/JumpBufferTimer")
 _variableJumpTimer = NodePath("Timers/VariableJumpTimer")
@@ -175,22 +175,6 @@ Size = Vector2i(8, 2)
 
 [node name="DashCooldownTimer" parent="Timers" instance=ExtResource("8_vigfg")]
 
-[node name="Abilities" type="Node" parent="."]
+[node name="LeapAbilityComponent" parent="." instance=ExtResource("12_v6h56")]
 
-[node name="PlayerSwingComponent" type="Node" parent="Abilities" node_paths=PackedStringArray("_timer", "CooldownTimer")]
-script = ExtResource("11_8shje")
-_timer = NodePath("AbilityTimer")
-CooldownTimer = NodePath("CooldownTimer")
-
-[node name="CooldownTimer" parent="Abilities/PlayerSwingComponent" instance=ExtResource("8_vigfg")]
-UpdateSelf = true
-
-[node name="AbilityTimer" parent="Abilities/PlayerSwingComponent" instance=ExtResource("8_vigfg")]
-UpdateSelf = true
-
-[node name="LeapAbilityComponent" type="Node" parent="Abilities" node_paths=PackedStringArray("CooldownTimer")]
-script = ExtResource("12_xnh3n")
-CooldownTimer = NodePath("CooldownTimer")
-
-[node name="CooldownTimer" parent="Abilities/LeapAbilityComponent" instance=ExtResource("8_vigfg")]
-UpdateSelf = true
+[node name="SwordSlashAbilityComponent" parent="." instance=ExtResource("12_7bp5m")]

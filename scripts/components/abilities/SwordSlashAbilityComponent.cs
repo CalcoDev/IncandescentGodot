@@ -4,11 +4,11 @@ using Incandescent.Components.Logic;
 
 namespace Incandescent.Components.Abilities;
 
-public partial class PlayerSwingComponent : AbilityComponent
+public partial class SwordSlashAbilityComponent : AbilityComponent
 {
     [Export] private CustomTimerComponent _timer;
 
-    private PlayerSwingAbilityDefinition _definition = new PlayerSwingAbilityDefinition();
+    private SwordSlashAbilityDefinition _definition = new SwordSlashAbilityDefinition();
 
     public override AbilityDefinition GetAbilityDefinition()
     {

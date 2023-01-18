@@ -4,6 +4,7 @@ using Incandescent.Components.Logic;
 
 namespace Incandescent.Components.Abilities;
 
+// TODO(calco): Refactor this to be a Node2D to allow for cool sprites and things.
 /// <summary>
 /// More complex node handling the in game representation of an ability. The counterpart of <see cref="AbilityDefinition"/>.
 /// </summary>
