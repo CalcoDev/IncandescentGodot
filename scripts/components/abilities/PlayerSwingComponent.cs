@@ -15,26 +15,22 @@ public partial class PlayerSwingComponent : AbilityComponent
         return _definition;
     }
 
-    // TODO(calco): Maybe make this the base class implementation?
-    public override bool TryActivate()
-    {
-        if (_cooldownTimer.IsRunning())
-            return false;
-
-        _cooldownTimer.Start(_definition.GetCooldown());
-        return true;
-    }
-
     public override void Enter()
     {
         GD.Print("Started Player Swing.");
         _timer.Start(1f);
+
+        LatestActivationData.SenderVelocity.Set(LatestActivationData.Direction * 10f);
     }
 
     public override int Update()
     {
         if (_timer.IsRunning())
+        {
+            LatestActivationData.Sender.MoveX(LatestActivationData.SenderVelocity.X * (float)GetProcessDeltaTime());
+            LatestActivationData.Sender.MoveY(LatestActivationData.SenderVelocity.Y * (float)GetProcessDeltaTime());
             return SelfState;
+        }
 
         return FallbackState;
     }
@@ -42,5 +38,7 @@ public partial class PlayerSwingComponent : AbilityComponent
     public override void Exit()
     {
         GD.Print("Ended Player Swing.");
+
+        CooldownTimer.Start(_definition.GetCooldown());
     }
 }

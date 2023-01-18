@@ -113,8 +113,12 @@ public partial class Player : Node2D
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
 
-        // TODO(calco): Highlight NOTE(calco)
-        // NOTE(calco): Ability callbacks are set whenever the ability is used / changed.
+        // TODO(calco): Maybe make this a method to allow dynamically changing abilities mid game.
+        _primary.SetStates(StPrimary, StNormal);
+        _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
+
+        // _secondary.SetStates(StSecondary, StNormal);
+        // _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
 
         _stateMachine.SetState(StNormal);
 
@@ -124,11 +128,6 @@ public partial class Player : Node2D
         {
             _coyoteTimer.SetTime(CoyoteTime);
             _dashCooldownTimer.SetTime(0f);
-
-            // var inst = _hitGroundParticles.Instantiate<CPUParticles2D>();
-            // inst.GlobalPosition = GlobalPosition;
-            // inst.Position += new Vector2(6f, 16f);
-            // GetNode("/root").AddChild(inst);
 
             // TODO(calco): Add this back in.
             // GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
@@ -176,16 +175,9 @@ public partial class Player : Node2D
 
         if (_inputPrimaryPressed)
         {
-            bool activated = _primary.TryActivate();
-
-            // TODO(calco): Create an abstraction and handle this within the ability?
-            if (activated)
-            {
-                _primary.SelfState = StPrimary;
-                _primary.FallbackState = StNormal;
-                _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
+            AbilityActivationData data = new AbilityActivationData(_actor, _vel, _lastNonZeroDir);
+            if (_primary.TryActivate(data))
                 return StPrimary;
-            }
         }
 
         // Timers
