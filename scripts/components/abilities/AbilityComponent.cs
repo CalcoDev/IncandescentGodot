@@ -1,3 +1,4 @@
+using System.Collections;
 using Godot;
 using Incandescent.Components.Logic;
 
@@ -12,5 +13,19 @@ public abstract partial class AbilityComponent : Node
 
     public abstract AbilityDefinition GetAbilityDefinition();
 
-    public abstract bool Activate();
+    public abstract bool TryActivate();
+
+    public int SelfState { get; set; }
+    public int FallbackState { get; set; }
+
+    public virtual void Enter() { }
+    public virtual int Update()
+    {
+        return SelfState;
+    }
+    public virtual void Exit() { }
+    public virtual IEnumerator Coroutine()
+    {
+        yield break;
+    }
 }

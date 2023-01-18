@@ -18,4 +18,9 @@ public partial class PlayerSwingAbilityDefinition : AbilityDefinition
     {
         return 1f;
     }
+
+    public override bool IsStateful()
+    {
+        return true;
+    }
 }

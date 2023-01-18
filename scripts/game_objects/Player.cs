@@ -93,6 +93,8 @@ public partial class Player : Node2D
 
     private const int StNormal = 0;
     private const int StDash = 1;
+    private const int StPrimary = 2;
+    private const int StSecondary = 3;
 
     private bool _isJumping;
     private bool _isGrounded;
@@ -110,6 +112,10 @@ public partial class Player : Node2D
         _stateMachine.Init(3, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
+
+        // TODO(calco): Highlight NOTE(calco)
+        // NOTE(calco): Ability callbacks are set whenever the ability is used / changed.
+
         _stateMachine.SetState(StNormal);
 
         _actor.OnSquish += OnSquish;
@@ -170,7 +176,16 @@ public partial class Player : Node2D
 
         if (_inputPrimaryPressed)
         {
-            bool activated = _primary.Activate();
+            bool activated = _primary.TryActivate();
+
+            // TODO(calco): Create an abstraction and handle this within the ability?
+            if (activated)
+            {
+                _primary.SelfState = StPrimary;
+                _primary.FallbackState = StNormal;
+                _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
+                return StPrimary;
+            }
         }
 
         // Timers

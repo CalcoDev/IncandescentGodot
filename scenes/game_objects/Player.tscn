@@ -176,9 +176,13 @@ Size = Vector2i(8, 1)
 
 [node name="Abilities" type="Node" parent="."]
 
-[node name="PlayerSwingComponent" type="Node" parent="Abilities" node_paths=PackedStringArray("_cooldownTimer")]
+[node name="PlayerSwingComponent" type="Node" parent="Abilities" node_paths=PackedStringArray("_timer", "_cooldownTimer")]
 script = ExtResource("11_8shje")
-_cooldownTimer = NodePath("CustomTimerComponent")
+_timer = NodePath("AbilityTimer")
+_cooldownTimer = NodePath("CooldownTimer")
 
-[node name="CustomTimerComponent" parent="Abilities/PlayerSwingComponent" instance=ExtResource("8_vigfg")]
+[node name="CooldownTimer" parent="Abilities/PlayerSwingComponent" instance=ExtResource("8_vigfg")]
+UpdateSelf = true
+
+[node name="AbilityTimer" parent="Abilities/PlayerSwingComponent" instance=ExtResource("8_vigfg")]
 UpdateSelf = true

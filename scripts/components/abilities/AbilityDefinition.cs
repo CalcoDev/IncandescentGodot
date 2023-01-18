@@ -14,4 +14,5 @@ public abstract partial class AbilityDefinition : RefCounted
     public abstract string GetDescription();
 
     public abstract float GetCooldown();
+    public abstract bool IsStateful();
 }
