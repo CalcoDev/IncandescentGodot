@@ -177,9 +177,20 @@ public partial class Player : Node2D
         {
             AbilityActivationData data = new AbilityActivationData(_actor, _vel, _lastNonZeroDir);
             if (_inputPrimaryPressed && _primary.TryActivate(data))
-                return StPrimary;
+            {
+                if (_primary.GetAbilityDefinition().IsStateful())
+                    return StPrimary;
+                else
+                    _primary.Activate();
+            }
+
             if (_inputSecondaryPressed && _secondary.TryActivate(data))
-                return StSecondary;
+            {
+                if (_secondary.GetAbilityDefinition().IsStateful())
+                    return StSecondary;
+                else
+                    _secondary.Activate();
+            }
         }
 
         // Timers

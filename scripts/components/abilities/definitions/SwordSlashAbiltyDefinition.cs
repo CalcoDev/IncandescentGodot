@@ -21,6 +21,6 @@ public partial class SwordSlashAbilityDefinition : AbilityDefinition
 
     public override bool IsStateful()
     {
-        return true;
+        return false;
     }
 }

@@ -15,6 +15,13 @@ public partial class SwordSlashAbilityComponent : AbilityComponent
         return _definition;
     }
 
+    public override void Activate()
+    {
+        GD.Print("Swing!");
+
+        CooldownTimer.Start(GetAbilityDefinition().GetCooldown());
+    }
+
     public override void Enter()
     {
         _timer.Start(1f);
