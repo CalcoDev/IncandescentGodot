@@ -115,24 +115,10 @@ public partial class Player : Node2D
 
         // TODO(calco): Maybe make this a method to allow dynamically changing abilities mid game.
         if (_primary.GetAbilityDefinition().IsStateful())
-        {
-            _primary.AsStateful().SetStates(StPrimary, StNormal);
-            _stateMachine.SetCallbacks(StPrimary,
-                _primary.AsStateful().Update,
-                _primary.AsStateful().Enter,
-                _primary.AsStateful().Exit,
-                _primary.AsStateful().Coroutine);
-        }
+            _primary.AsStateful().AddSelfToStateMachine(_stateMachine, StPrimary, StNormal);
 
         if (_secondary.GetAbilityDefinition().IsStateful())
-        {
-            _secondary.AsStateful().SetStates(StSecondary, StNormal);
-            _stateMachine.SetCallbacks(StSecondary,
-                _secondary.AsStateful().Update,
-                _secondary.AsStateful().Enter,
-                _secondary.AsStateful().Exit,
-                _secondary.AsStateful().Coroutine);
-        }
+            _secondary.AsStateful().AddSelfToStateMachine(_stateMachine, StSecondary, StNormal);
 
         _stateMachine.SetState(StNormal);
 
@@ -190,20 +176,18 @@ public partial class Player : Node2D
         if (_inputPrimaryPressed || _inputSecondaryPressed)
         {
             AbilityActivationData data = new AbilityActivationData(_actor, _vel, _lastNonZeroDir);
-            if (_inputPrimaryPressed && _primary.TryActivate(data))
+            if (_inputPrimaryPressed && _primary.CanActivate())
             {
-                if (_primary.GetAbilityDefinition().IsStateful())
-                    return StPrimary;
-                else
-                    ((StatelessAbilityComponent)_primary).Activate();
+                int st = _primary.Activate(data);
+                if (st != -1)
+                    return st;
             }
 
-            if (_inputSecondaryPressed && _secondary.TryActivate(data))
+            if (_inputSecondaryPressed && _secondary.CanActivate())
             {
-                if (_secondary.GetAbilityDefinition().IsStateful())
-                    return StSecondary;
-                else
-                    ((StatelessAbilityComponent)_secondary).Activate();
+                int st = _secondary.Activate(data);
+                if (st != -1)
+                    return st;
             }
         }
 

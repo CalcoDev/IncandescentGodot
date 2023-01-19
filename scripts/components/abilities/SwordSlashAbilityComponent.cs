@@ -1,6 +1,5 @@
 using Godot;
 using Incandescent.Components.Abilities.Definitions;
-using Incandescent.Components.Logic;
 
 namespace Incandescent.Components.Abilities;
 

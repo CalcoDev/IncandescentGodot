@@ -5,29 +5,38 @@ using Incandescent.Components.Logic;
 namespace Incandescent.Components.Abilities;
 
 // TODO(calco): Refactor this to be a Node2D to allow for cool sprites and things.
-// TODO(calco): Maybe split this into a StatefulAbilityComponent and a StatelessAbilityComponent.
 /// <summary>
 /// More complex node handling the in game representation of an ability. The counterpart of <see cref="AbilityDefinition"/>.
 /// </summary>
-public abstract partial class AbilityComponent : Node
+public abstract partial class AbilityComponent : Node2D
 {
     [Export] protected CustomTimerComponent CooldownTimer;
 
     public abstract AbilityDefinition GetAbilityDefinition();
 
     protected AbilityActivationData LatestActivationData { get; private set; }
-    public virtual bool TryActivate(AbilityActivationData activationData)
+    public virtual bool CanActivate()
     {
-        if (!CooldownTimer.IsRunning())
-        {
-            LatestActivationData = activationData;
-            return true;
-        }
-
-        return false;
+        return !CooldownTimer.IsRunning();
     }
 
-    // TODO(calco): This is probably quite bad, and should be handled locally, but it's easier.
+    /// <summary>
+    /// Doesn't check if the ability can be activated.
+    /// </summary>
+    public int Activate(AbilityActivationData activationData)
+    {
+        LatestActivationData = activationData;
+
+        var stateless = this.AsStateless();
+        if (stateless != null)
+        {
+            stateless.Activate();
+            return -1;
+        }
+        return this.AsStateful().SelfState;
+    }
+
+    // TODO(calco): This is probably quite bad, and should be handled locally, but it's easier this way.
     public StatefulAbilityComponent AsStateful()
     {
         if (GetAbilityDefinition().IsStateful())
