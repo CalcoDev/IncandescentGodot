@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=39 format=3 uid="uid://d1t61exxeefqg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
 [ext_resource type="PackedScene" uid="uid://v33eworj57he" path="res://scenes/components/abilities/SwordSlashAbilityComponent.tscn" id="12_7bp5m"]
 [ext_resource type="PackedScene" uid="uid://tnxlxxpxxndc" path="res://scenes/components/abilities/LeapAbilityComponent.tscn" id="12_v6h56"]
+[ext_resource type="Script" path="res://scripts/components/passives/base/PassiveContainerComponent.cs" id="13_4q73u"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ev6pv"]
 atlas = ExtResource("5_dw34v")
@@ -127,7 +128,7 @@ animations = [{
 "speed": 15.0
 }]
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_stateMachine", "_vel", "_groundedChecker", "_sprite", "_primary", "_secondary", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_stateMachine", "_vel", "_groundedChecker", "_sprite", "_primary", "_secondary", "_passiveContainer", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
 script = ExtResource("1_bfr8j")
 _actor = NodePath("ActorComponent")
 _stateMachine = NodePath("StateMachineComponent")
@@ -136,6 +137,7 @@ _groundedChecker = NodePath("ActorComponent/GrounedCheckerComponent")
 _sprite = NodePath("AnimatedSprite2D")
 _primary = NodePath("SwordSlashAbilityComponent")
 _secondary = NodePath("LeapAbilityComponent")
+_passiveContainer = NodePath("PassiveContainerComponent")
 _coyoteTimer = NodePath("Timers/CoyoteTimer")
 _jumpBufferTimer = NodePath("Timers/JumpBufferTimer")
 _variableJumpTimer = NodePath("Timers/VariableJumpTimer")
@@ -175,6 +177,9 @@ Size = Vector2i(8, 2)
 
 [node name="DashCooldownTimer" parent="Timers" instance=ExtResource("8_vigfg")]
 
-[node name="LeapAbilityComponent" parent="." instance=ExtResource("12_v6h56")]
+[node name="PassiveContainerComponent" type="Node2D" parent="."]
+script = ExtResource("13_4q73u")
 
 [node name="SwordSlashAbilityComponent" parent="." instance=ExtResource("12_7bp5m")]
+
+[node name="LeapAbilityComponent" parent="." instance=ExtResource("12_v6h56")]

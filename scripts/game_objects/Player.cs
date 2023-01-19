@@ -4,6 +4,7 @@ using Incandescent.Components;
 using Incandescent.Components.Abilities;
 using Incandescent.Components.Graphics;
 using Incandescent.Components.Logic;
+using Incandescent.Components.Passives;
 using Incandescent.Components.Physics;
 using Incandescent.Managers;
 using Incandescent.Utils;
@@ -25,6 +26,8 @@ public partial class Player : Node2D
     [ExportSubgroup("Abilities")]
     [Export] private AbilityComponent _primary;
     [Export] private AbilityComponent _secondary;
+    [Export] private PassiveContainerComponent _passiveContainer;
+    // [Export] private PassiveComponent _initialPassive;
 
     #region Constants
 
@@ -103,7 +106,11 @@ public partial class Player : Node2D
 
     public override void _Ready()
     {
-        GD.Print(_primary.GetAbilityDefinition().GetName());
+        // _passiveContainer.AddPassive(_initialPassive);
+
+        var passive = new FlamePassiveComponent();
+        _passiveContainer.AddChild(passive);
+        _passiveContainer.AddPassive(passive);
 
         Vector2 t = _actor.GlobalPosition;
         _actor.TopLevel = true;
