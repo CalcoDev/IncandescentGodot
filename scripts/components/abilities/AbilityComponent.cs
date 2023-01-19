@@ -26,4 +26,21 @@ public abstract partial class AbilityComponent : Node
 
         return false;
     }
+
+    // TODO(calco): This is probably quite bad, and should be handled locally, but it's easier.
+    public StatefulAbilityComponent AsStateful()
+    {
+        if (GetAbilityDefinition().IsStateful())
+            return this as StatefulAbilityComponent;
+
+        return null;
+    }
+
+    public StatelessAbilityComponent AsStateless()
+    {
+        if (!GetAbilityDefinition().IsStateful())
+            return this as StatelessAbilityComponent;
+
+        return null;
+    }
 }

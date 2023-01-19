@@ -114,11 +114,25 @@ public partial class Player : Node2D
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
 
         // TODO(calco): Maybe make this a method to allow dynamically changing abilities mid game.
-        _primary.SetStates(StPrimary, StNormal);
-        _stateMachine.SetCallbacks(StPrimary, _primary.Update, _primary.Enter, _primary.Exit, _primary.Coroutine);
+        if (_primary.GetAbilityDefinition().IsStateful())
+        {
+            _primary.AsStateful().SetStates(StPrimary, StNormal);
+            _stateMachine.SetCallbacks(StPrimary,
+                _primary.AsStateful().Update,
+                _primary.AsStateful().Enter,
+                _primary.AsStateful().Exit,
+                _primary.AsStateful().Coroutine);
+        }
 
-        _secondary.SetStates(StSecondary, StNormal);
-        _stateMachine.SetCallbacks(StSecondary, _secondary.Update, _secondary.Enter, _secondary.Exit, _secondary.Coroutine);
+        if (_secondary.GetAbilityDefinition().IsStateful())
+        {
+            _secondary.AsStateful().SetStates(StSecondary, StNormal);
+            _stateMachine.SetCallbacks(StSecondary,
+                _secondary.AsStateful().Update,
+                _secondary.AsStateful().Enter,
+                _secondary.AsStateful().Exit,
+                _secondary.AsStateful().Coroutine);
+        }
 
         _stateMachine.SetState(StNormal);
 
@@ -181,7 +195,7 @@ public partial class Player : Node2D
                 if (_primary.GetAbilityDefinition().IsStateful())
                     return StPrimary;
                 else
-                    _primary.Activate();
+                    ((StatelessAbilityComponent)_primary).Activate();
             }
 
             if (_inputSecondaryPressed && _secondary.TryActivate(data))
@@ -189,7 +203,7 @@ public partial class Player : Node2D
                 if (_secondary.GetAbilityDefinition().IsStateful())
                     return StSecondary;
                 else
-                    _secondary.Activate();
+                    ((StatelessAbilityComponent)_secondary).Activate();
             }
         }
 
