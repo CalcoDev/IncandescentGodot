@@ -46,7 +46,7 @@ public partial class StateMachineComponent : Node
             SetState(newState);
         }
 
-        _currentCoroutine.Update((float)delta);
+        _currentCoroutine?.Update((float)delta);
     }
 
     public void SetState(int state)

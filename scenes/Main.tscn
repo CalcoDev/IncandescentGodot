@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=29 format=3 uid="uid://cjjin3npj7t0j"]
 
 [ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="PackedScene" uid="uid://dx18jygjwobrl" path="res://scenes/effects/PlayerJumpDust.tscn" id="3_g25um"]
@@ -12,6 +12,11 @@
 [ext_resource type="Texture2D" uid="uid://b6a2i1277xia7" path="res://assets/art/env/background.png" id="9_cxb55"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="10_u4j31"]
 [ext_resource type="Texture2D" uid="uid://2bx6prib062k" path="res://assets/art/particles/circle_8.png" id="11_buefb"]
+[ext_resource type="Script" path="res://scripts/game_objects/BowEnemy.cs" id="13_jo5kr"]
+[ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="14_pr42x"]
+[ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="15_qokh8"]
+[ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="16_ub7d0"]
+[ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="17_0cfk6"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rb27m"]
 cull_mode = 1
@@ -983,6 +988,9 @@ colors = PackedColorArray(0.745098, 0.466667, 0.168627, 1, 0.905882, 0.835294, 0
 [sub_resource type="Gradient" id="Gradient_i1gvf"]
 colors = PackedColorArray(0.905882, 0.835294, 0.701961, 1, 0.854902, 0.52549, 0.243137, 1)
 
+[sub_resource type="CanvasTexture" id="CanvasTexture_84erp"]
+diffuse_texture = ExtResource("14_pr42x")
+
 [node name="SceneMain" type="Node2D"]
 
 [node name="Background" type="Sprite2D" parent="."]
@@ -1064,3 +1072,24 @@ scale_amount_max = 1.5
 scale_amount_curve = SubResource("Curve_5287p")
 color_ramp = SubResource("Gradient_kh7x5")
 color_initial_ramp = SubResource("Gradient_i1gvf")
+
+[node name="BowEnemy" type="Node2D" parent="."]
+position = Vector2(220, 72)
+script = ExtResource("13_jo5kr")
+
+[node name="Sprite2D" type="Sprite2D" parent="BowEnemy"]
+position = Vector2(-7, -6)
+texture = SubResource("CanvasTexture_84erp")
+centered = false
+
+[node name="ActorComponent" parent="BowEnemy" node_paths=PackedStringArray("AABB") instance=ExtResource("15_qokh8")]
+AABB = NodePath("AABBComponent")
+
+[node name="AABBComponent" parent="BowEnemy/ActorComponent" instance=ExtResource("5_yd4tr")]
+z_index = 20
+position = Vector2(-1, -6)
+Size = Vector2i(5, 13)
+
+[node name="StateMachineComponent" parent="BowEnemy" instance=ExtResource("16_ub7d0")]
+
+[node name="VelocityComponent" parent="BowEnemy" instance=ExtResource("17_0cfk6")]

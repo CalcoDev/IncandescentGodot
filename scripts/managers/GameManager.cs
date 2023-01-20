@@ -1,12 +1,15 @@
 using Godot;
+using Incandescent.GameObjects;
 
 namespace Incandescent.Managers;
 
 public partial class GameManager : Node
 {
     public static GameManager Instance { get; private set; }
+    public static Node Root { get; private set; }
+    public static Player Player { get; private set; }
 
-    public Node Root { get; private set; }
+    public static float Delta { get; private set; }
 
     [Export] public bool Debug { get; set; } = false;
 
@@ -23,8 +26,16 @@ public partial class GameManager : Node
         Root = GetTree().Root;
     }
 
+    public override void _Ready()
+    {
+        Player = GetTree().GetFirstNodeInGroup("player") as Player;
+        GD.Print(Player);
+    }
+
     public override void _Process(double delta)
     {
+        Delta = (float)delta;
+
         if (Input.IsActionJustPressed("btn_toggle_debug"))
         {
             Debug = !Debug;
@@ -37,7 +48,7 @@ public partial class GameManager : Node
         var fxInstance = fx.Instantiate() as Node2D;
 
         if (root)
-            Instance.Root.AddChild(fxInstance);
+            Root.AddChild(fxInstance);
         else
             Instance.AddChild(fxInstance);
 

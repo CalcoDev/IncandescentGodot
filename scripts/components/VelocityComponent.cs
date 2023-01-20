@@ -16,6 +16,12 @@ public partial class VelocityComponent : Node
         return velocity;
     }
 
+    public void Apprach(Vector2 target, float maxDelta)
+    {
+        ApproachX(target.x, maxDelta);
+        ApproachY(target.y, maxDelta);
+    }
+
     public void ApproachX(float target, float maxDelta)
     {
         _velocity.x = _velocity.x < target ? Mathf.Min(_velocity.x + maxDelta, target) : Mathf.Max(_velocity.x - maxDelta, target);

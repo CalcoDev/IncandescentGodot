@@ -128,7 +128,7 @@ animations = [{
 "speed": 15.0
 }]
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_stateMachine", "_vel", "_groundedChecker", "_sprite", "_primary", "_secondary", "_passiveContainer", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_stateMachine", "_vel", "_groundedChecker", "_sprite", "_primary", "_secondary", "_passiveContainer", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer") groups=["player"]]
 script = ExtResource("1_bfr8j")
 _actor = NodePath("ActorComponent")
 _stateMachine = NodePath("StateMachineComponent")

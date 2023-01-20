@@ -112,10 +112,6 @@ public partial class Player : Node2D
         _passiveContainer.AddChild(passive);
         _passiveContainer.AddPassive(passive);
 
-        Vector2 t = _actor.GlobalPosition;
-        _actor.TopLevel = true;
-        _actor.GlobalPosition = t;
-
         _stateMachine.Init(10, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
