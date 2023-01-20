@@ -13,6 +13,9 @@ public partial class BowEnemy : Node2D
     [Node("ActorComponent")]
     private ActorComponent _actor;
 
+    [Node("ActorComponent/AngleBasedAABBComponent")]
+    private AngleBasedAABBComponent _actorAABB;
+
     [Node("StateMachineComponent")]
     private StateMachineComponent _stateMachine;
 
@@ -40,16 +43,29 @@ public partial class BowEnemy : Node2D
 
     public override void _Ready()
     {
-        _stateMachine.Init(StDash, StNormal);
+        _stateMachine.UpdateSelf = false;
+        _stateMachine.Init(StDash + 1, StNormal);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StAttack, AttackUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, null, null, null);
+
+        _actorAABB.UpdateSelf = false;
+        _actorAABB.OnAABBChanged += OnAABBChanged;
+    }
+
+    private void OnAABBChanged(AABBComponent aabb)
+    {
+        _actor.AABB = aabb;
     }
 
     public override void _Process(double delta)
     {
+        _actorAABB.Update(Rotation);
+
         int newSt = _stateMachine.Update();
         _stateMachine.SetState(newSt);
+
+        _actorAABB.Update(Rotation);
 
         GlobalPosition = _actor.GlobalPosition;
     }
@@ -63,6 +79,9 @@ public partial class BowEnemy : Node2D
 
         Vector2 startPos = player?.GlobalPosition ?? GlobalPosition;
         Vector2 endPos = GlobalPosition;
+
+        float angle = (startPos - endPos).Angle();
+        Rotation = angle;
 
         float distSqr = startPos.DistanceSquaredTo(endPos);
         if (distSqr < AttackRange * AttackRange)

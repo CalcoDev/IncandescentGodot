@@ -22,7 +22,6 @@ namespace GodotUtilities
         public NodeAttribute(string nodePath = null)
         {
             NodePath = nodePath;
-            GD.Print("NodeAttribute: " + NodePath);
         }
     }
 

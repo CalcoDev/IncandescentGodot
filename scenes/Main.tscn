@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=30 format=3 uid="uid://cjjin3npj7t0j"]
 
 [ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="PackedScene" uid="uid://dx18jygjwobrl" path="res://scenes/effects/PlayerJumpDust.tscn" id="3_g25um"]
@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="14_pr42x"]
 [ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="15_qokh8"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="16_ub7d0"]
+[ext_resource type="Script" path="res://scripts/components/physics/AngleBasedAABBComponent.cs" id="16_yc0w8"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="17_0cfk6"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rb27m"]
@@ -1074,21 +1075,66 @@ color_ramp = SubResource("Gradient_kh7x5")
 color_initial_ramp = SubResource("Gradient_i1gvf")
 
 [node name="BowEnemy" type="Node2D" parent="."]
-position = Vector2(220, 72)
+position = Vector2(219, 72)
 script = ExtResource("13_jo5kr")
 
 [node name="Sprite2D" type="Sprite2D" parent="BowEnemy"]
-position = Vector2(-7, -6)
+rotation = -6.28318
 texture = SubResource("CanvasTexture_84erp")
 centered = false
+offset = Vector2(-7, -7)
+flip_h = true
 
 [node name="ActorComponent" parent="BowEnemy" node_paths=PackedStringArray("AABB") instance=ExtResource("15_qokh8")]
-AABB = NodePath("AABBComponent")
+AABB = NodePath("AngleBasedAABBComponent/AABBComponent")
 
-[node name="AABBComponent" parent="BowEnemy/ActorComponent" instance=ExtResource("5_yd4tr")]
+[node name="AngleBasedAABBComponent" type="Node2D" parent="BowEnemy/ActorComponent"]
+script = ExtResource("16_yc0w8")
+_partitions = 8.0
+
+[node name="AABBComponent" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
 z_index = 20
-position = Vector2(-1, -6)
+position = Vector2(-2, -7)
 Size = Vector2i(5, 13)
+
+[node name="AABBComponent5" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-4, -4)
+
+[node name="AABBComponent2" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-7, -3)
+Size = Vector2i(13, 5)
+
+[node name="AABBComponent6" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-3, -3)
+
+[node name="AABBComponent3" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-3, -6)
+Size = Vector2i(5, 13)
+
+[node name="AABBComponent7" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-3, -5)
+
+[node name="AABBComponent4" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-6, -2)
+Size = Vector2i(13, 5)
+
+[node name="AABBComponent8" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
+visible = false
+z_index = 20
+position = Vector2(-4, -5)
 
 [node name="StateMachineComponent" parent="BowEnemy" instance=ExtResource("16_ub7d0")]
 
