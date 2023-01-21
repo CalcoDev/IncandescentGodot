@@ -40,6 +40,7 @@ project/assembly_name="Incandescent"
 
 [editor]
 
+export/convert_text_resources_to_binary=true
 scene/scene_naming=1
 
 [input]

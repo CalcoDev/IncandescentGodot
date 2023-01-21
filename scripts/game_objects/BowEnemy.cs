@@ -86,7 +86,7 @@ public partial class BowEnemy : Node2D
         Rotation = angle;
 
         float distSqr = startPos.DistanceSquaredTo(endPos);
-        GD.Print($"Dist: {Mathf.Sqrt(distSqr)}");
+        GD.Print($"Distance: {Mathf.Sqrt(distSqr)}");
 
         if (distSqr < AttackRange * AttackRange)
             return StAttack;
