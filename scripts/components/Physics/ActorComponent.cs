@@ -66,7 +66,7 @@ public partial class ActorComponent : PhysicsBodyComponent
         while (amount != 0)
         {
             Vector2i offset = Vector2i.Right * step;
-            List<PhysicsBodyComponent> bodies = GetCollidingBodies(LevelManager.Instance.Solids, offset).ToList();
+            List<PhysicsBodyComponent> bodies = GetCollidingBodies(LevelManager.Instance.Bodies, offset).ToList();
 
             if (bodies.Count > 0)
             {
@@ -88,7 +88,7 @@ public partial class ActorComponent : PhysicsBodyComponent
         while (amount != 0)
         {
             Vector2i offset = Vector2i.Down * step;
-            List<PhysicsBodyComponent> bodies = GetCollidingBodies(LevelManager.Instance.Solids, offset).ToList();
+            List<PhysicsBodyComponent> bodies = GetCollidingBodies(LevelManager.Instance.Bodies, offset).ToList();
 
             if (bodies.Count > 0)
             {

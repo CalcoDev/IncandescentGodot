@@ -32,6 +32,8 @@ public partial class BowEnemy : Node2D
     private const float Acceleration = 1600f;
 
     private const float FollowRange = 200f;
+    private const float FollowSpeed = 100f;
+
     private const float AttackRange = 125f;
     private const float DashRange = 50f;
 
@@ -84,6 +86,8 @@ public partial class BowEnemy : Node2D
         Rotation = angle;
 
         float distSqr = startPos.DistanceSquaredTo(endPos);
+        GD.Print($"Dist: {Mathf.Sqrt(distSqr)}");
+
         if (distSqr < AttackRange * AttackRange)
             return StAttack;
 
@@ -93,7 +97,7 @@ public partial class BowEnemy : Node2D
         if (distSqr < FollowRange * FollowRange)
             desiredVelocity = (startPos - endPos).Normalized();
 
-        _vel.Apprach(desiredVelocity, Acceleration);
+        _vel.Apprach(desiredVelocity * FollowSpeed, Acceleration);
 
         _actor.MoveX(_vel.X * GameManager.Delta);
         _actor.MoveY(_vel.Y * GameManager.Delta);
@@ -103,11 +107,13 @@ public partial class BowEnemy : Node2D
 
     private int AttackUpdate()
     {
+        // GD.Print("Attack");
         return StNormal;
     }
 
     private int DashUpdate()
     {
+        // GD.Print("Dash");
         return StNormal;
     }
 }

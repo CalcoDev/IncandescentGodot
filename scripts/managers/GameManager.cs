@@ -1,4 +1,5 @@
 using Godot;
+using Incandescent.Components.Physics;
 using Incandescent.GameObjects;
 
 namespace Incandescent.Managers;
@@ -18,7 +19,15 @@ public partial class GameManager : Node
     [Signal]
     public delegate void OnDebugModeChangedEventHandler(bool debugMode);
 
+    [Signal]
+    public delegate void OnActorCollidedEventHandler(ActorComponent actor, AABBComponent other);
+
     #endregion
+
+    public void InvokeOnActorCollided(ActorComponent actor, AABBComponent other)
+    {
+        EmitSignal(SignalName.OnActorCollided, actor, other);
+    }
 
     public override void _EnterTree()
     {
@@ -29,7 +38,6 @@ public partial class GameManager : Node
     public override void _Ready()
     {
         Player = GetTree().GetFirstNodeInGroup("player") as Player;
-        GD.Print(Player);
     }
 
     public override void _Process(double delta)

@@ -1002,7 +1002,7 @@ texture = ExtResource("9_cxb55")
 centered = false
 
 [node name="Player" parent="." instance=ExtResource("1_ialhu")]
-position = Vector2(152, 105)
+position = Vector2(218, 15)
 _jumpDust = ExtResource("3_g25um")
 _dashStartExplosionFX = ExtResource("4_w7eco")
 _dashEndExplosionFX = ExtResource("4_w7eco")

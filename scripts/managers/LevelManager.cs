@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Incandescent.Components;
+using System.Linq;
 using Godot;
+using Incandescent.Components;
 using Incandescent.Components.Physics;
 
 namespace Incandescent.Managers;
@@ -11,6 +12,8 @@ public partial class LevelManager : Node
 
     public List<ActorComponent> Actors { get; } = new List<ActorComponent>();
     public List<SolidComponent> Solids { get; } = new List<SolidComponent>();
+
+    public List<PhysicsBodyComponent> Bodies { get; } = new List<PhysicsBodyComponent>();
 
     public override void _EnterTree()
     {
@@ -49,21 +52,25 @@ public partial class LevelManager : Node
     public void AddSolid(SolidComponent solid)
     {
         Solids.Add(solid);
+        Bodies.Add(solid);
     }
 
     public void RemoveSolid(SolidComponent solid)
     {
         Solids.Remove(solid);
+        Bodies.Remove(solid);
     }
 
     public void AddActor(ActorComponent actor)
     {
         Actors.Add(actor);
+        Bodies.Add(actor);
     }
 
     public void RemoveActor(ActorComponent actor)
     {
         Actors.Remove(actor);
+        Bodies.Remove(actor);
     }
 
     #endregion
