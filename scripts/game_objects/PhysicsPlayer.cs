@@ -196,6 +196,18 @@ public partial class PhysicsPlayer : CharacterBody2D
                     OnCollideV(coll);
             }
         }
+
+        // NOTES(calco): This would work, but then it should be separated in X and
+        // frankly I don't care about that enough right now...
+        // var coll = MoveAndCollide(_vel.Get() * _delta, safeMargin: 0.001f);
+        // if (coll != null)
+        // {
+        //     if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
+        //         OnCollideH(coll);
+
+        //     if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
+        //         OnCollideV(coll);
+        // }
     }
 
     private void OnCollideH(KinematicCollision2D coll)

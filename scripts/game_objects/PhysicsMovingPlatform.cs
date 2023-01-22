@@ -65,7 +65,11 @@ public partial class PhysicsMovingPlatform : CharacterBody2D
             {
                 GD.Print($"Vel: {vel}");
                 // player.Slide(vel);
-                player.MoveAndCollide(vel * (float)delta);
+                // TOOD(calco): Replace with mode and collide for more pro
+                // player.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
+
+                player.Velocity = vel;
+                player.MoveAndSlide();
             }
         }
 
