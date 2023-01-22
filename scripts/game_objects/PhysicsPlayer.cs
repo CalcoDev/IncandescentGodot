@@ -105,15 +105,9 @@ public partial class PhysicsPlayer : CharacterBody2D
         _coyoteTimer.SetTime(0f);
     }
 
-    public void Slide(Vector2 v)
+    public void Squish(KinematicCollision2D coll)
     {
-        _vel.SetX(v.x);
-        _vel.SetY(v.y);
-    }
-
-    public override void _Process(double delta)
-    {
-        // Normal(delta);
+        GD.Print($"Squished by: {coll.GetCollider()}");
     }
 
     public override void _PhysicsProcess(double delta)

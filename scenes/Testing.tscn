@@ -1014,7 +1014,7 @@ shape = SubResource("RectangleShape2D_20dv4")
 position = Vector2(52, 139)
 
 [node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(125, 139)
+position = Vector2(162, 139)
 
 [node name="Area" type="Area2D" parent="MovingPlatform"]
 

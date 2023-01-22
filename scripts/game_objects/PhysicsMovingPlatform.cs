@@ -63,13 +63,21 @@ public partial class PhysicsMovingPlatform : CharacterBody2D
 
             if (coll.GetCollider() is PhysicsPlayer player)
             {
-                GD.Print($"Vel: {vel}");
+                // GD.Print($"Vel: {vel}");
                 // player.Slide(vel);
                 // TOOD(calco): Replace with mode and collide for more pro
                 // player.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
 
                 player.Velocity = vel;
-                player.MoveAndSlide();
+                if (player.MoveAndSlide())
+                {
+                    int cnt = player.GetSlideCollisionCount();
+                    for (int i = 0; i < cnt; i++)
+                    {
+                        var pColl = player.GetSlideCollision(i);
+                        player.Squish(pColl);
+                    }
+                }
             }
         }
 
