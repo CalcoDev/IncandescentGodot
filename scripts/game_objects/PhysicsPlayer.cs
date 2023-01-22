@@ -41,6 +41,9 @@ public partial class PhysicsPlayer : CharacterBody2D
     [Node("VelocityComponent")]
     private VelocityComponent _vel;
 
+    [Node("GroundedChecker")]
+    private Area2D _groundedChecker;
+
     [Node("CoyoteTimer")]
     private CustomTimerComponent _coyoteTimer;
 
@@ -68,6 +71,36 @@ public partial class PhysicsPlayer : CharacterBody2D
     public override void _EnterTree()
     {
         this.WireNodes();
+    }
+
+    public override void _Ready()
+    {
+        _groundedChecker.BodyEntered += OnEnterGround;
+        _groundedChecker.BodyExited += OnExitGround;
+    }
+
+    private void OnEnterGround(Node body)
+    {
+
+        if (body is not TileMap)
+            return;
+
+        GD.Print(body);
+
+        _isGrounded = true;
+
+        _coyoteTimer.SetTime(CoyoteTime);
+        _isJumping = false;
+    }
+
+    private void OnExitGround(Node body)
+    {
+        if (body is not StaticBody2D || body is not TileMap)
+            return;
+
+        _isGrounded = false;
+
+        _coyoteTimer.SetTime(0f);
     }
 
     public override void _Process(double delta)
@@ -103,16 +136,16 @@ public partial class PhysicsPlayer : CharacterBody2D
         _wasGrounded = _isGrounded;
         _isGrounded = IsOnFloor();
 
-        if (_isGrounded && !_wasGrounded)
-        {
-            _coyoteTimer.SetTime(CoyoteTime);
-            _isJumping = false;
-        }
-        else if (_wasGrounded && !_isGrounded)
-        {
-            _coyoteTimer.SetTime(0f);
-            _isJumping = true;
-        }
+        // if (_isGrounded && !_wasGrounded)
+        // {
+        //     _coyoteTimer.SetTime(CoyoteTime);
+        //     _isJumping = false;
+        // }
+        // else if (_wasGrounded && !_isGrounded)
+        // {
+        //     _coyoteTimer.SetTime(0f);
+        //     _isJumping = true;
+        // }
 
         // Gravity
         if (!_isGrounded)
@@ -159,13 +192,23 @@ public partial class PhysicsPlayer : CharacterBody2D
         if (MoveAndSlide())
         {
             var coll = GetLastSlideCollision();
-            // GD.Print(coll);
+
+            if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
+                OnCollideH();
+
+            if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
+                OnCollideV();
         }
+    }
 
-        // MoveX(_vel.X * _delta);
-        // MoveY(_vel.Y * _delta);
+    private void OnCollideH()
+    {
+        _vel.SetX(0f);
+    }
 
-        // GD.Print(GlobalPosition);
+    private void OnCollideV()
+    {
+        _vel.SetY(0f);
     }
 
     private void MoveY(float amount)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b4gs86v21u6"]
+[gd_scene load_steps=11 format=3 uid="uid://b4gs86v21u6"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/PhysicsPlayer.cs" id="1_7nf18"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="2_p4fpk"]
@@ -8,6 +8,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_re6q1"]
 size = Vector2(7.999, 12.999)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pfo3i"]
+size = Vector2(7.999, 1.999)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s174l"]
 resource_name = "Prototype"
@@ -970,6 +973,12 @@ shape = SubResource("RectangleShape2D_re6q1")
 [node name="JumpBufferTimer" parent="PhysicsPlayer" instance=ExtResource("3_4usu8")]
 
 [node name="VariableJumpTimer" parent="PhysicsPlayer" instance=ExtResource("3_4usu8")]
+
+[node name="GroundedChecker" type="Area2D" parent="PhysicsPlayer"]
+position = Vector2(0, 6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsPlayer/GroundedChecker"]
+shape = SubResource("RectangleShape2D_pfo3i")
 
 [node name="TileMap" type="TileMap" parent="."]
 z_index = 2
