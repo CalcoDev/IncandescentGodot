@@ -105,6 +105,12 @@ public partial class PhysicsPlayer : CharacterBody2D
         _coyoteTimer.SetTime(0f);
     }
 
+    public void Slide(Vector2 v)
+    {
+        _vel.SetX(v.x);
+        _vel.SetY(v.y);
+    }
+
     public override void _Process(double delta)
     {
         // Normal(delta);
