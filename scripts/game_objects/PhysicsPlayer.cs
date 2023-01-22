@@ -85,7 +85,7 @@ public partial class PhysicsPlayer : CharacterBody2D
         if (body is not TileMap)
             return;
 
-        GD.Print(body);
+        GD.Print($"{body} entered.");
 
         _isGrounded = true;
 
@@ -95,8 +95,10 @@ public partial class PhysicsPlayer : CharacterBody2D
 
     private void OnExitGround(Node body)
     {
-        if (body is not StaticBody2D || body is not TileMap)
+        if (body is not TileMap)
             return;
+
+        GD.Print($"{body} exit.");
 
         _isGrounded = false;
 
@@ -132,20 +134,6 @@ public partial class PhysicsPlayer : CharacterBody2D
 
         if (_isJumping)
             _variableJumpTimer.Update(_delta);
-
-        _wasGrounded = _isGrounded;
-        _isGrounded = IsOnFloor();
-
-        // if (_isGrounded && !_wasGrounded)
-        // {
-        //     _coyoteTimer.SetTime(CoyoteTime);
-        //     _isJumping = false;
-        // }
-        // else if (_wasGrounded && !_isGrounded)
-        // {
-        //     _coyoteTimer.SetTime(0f);
-        //     _isJumping = true;
-        // }
 
         // Gravity
         if (!_isGrounded)
@@ -194,21 +182,70 @@ public partial class PhysicsPlayer : CharacterBody2D
             var coll = GetLastSlideCollision();
 
             if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
-                OnCollideH();
+                OnCollideH(coll);
 
             if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
-                OnCollideV();
+                OnCollideV(coll);
         }
     }
 
-    private void OnCollideH()
+    private void OnCollideH(KinematicCollision2D coll)
     {
         _vel.SetX(0f);
     }
 
-    private void OnCollideV()
+    private void OnCollideV(KinematicCollision2D coll)
     {
+        if (Calc.FloatEquals(_vel.Y, 0f))
+            return;
+
+        GD.Print("Collided vertically.");
+
+        if (_vel.Y <= 0 && Calc.FloatEquals(coll.GetNormal().y, 1f)) // Frick inverted Y axis
+        {
+            GD.Print("Collided on head.");
+
+            Vector2 offset = AttemptVerticalCornerCorrection();
+            GD.Print("Attempted correction. Result: " + offset);
+            if (offset != Vector2i.Zero)
+            {
+                GlobalPosition += offset;
+                GD.Print("CORRECTED + " + Time.GetTicksMsec());
+                return;
+            }
+
+            // var bodies = _groundedChecker.GetOverlappingBodies();
+            // GD.Print(bodies.Count);
+            // if (bodies.Count > 1)
+            // {
+            //     _coyoteTimer.SetTime(CoyoteTime);
+            //     _isJumping = false;
+            // }
+        }
+
+        // _actor.SetRemainderY(0f);
         _vel.SetY(0f);
+    }
+
+    private Vector2 AttemptVerticalCornerCorrection()
+    {
+        for (float i = 0; i < CornerCorrectionPixels; i += 0.25f)
+        {
+            for (int j = -1; j < 2; j++)
+            {
+                Vector2 offset = new Vector2((i + 1f) * j, 0f);
+                var transf = GlobalTransform;
+                transf.origin.y -= _vel.Y * _delta;
+                bool collided = TestMove(transf.Translated(offset), Vector2.Up, null, 0.001f);
+                // bool collided = TestMove(transf, offset, null, 0.001f);
+                if (collided)
+                    continue;
+
+                return offset;
+            }
+        }
+
+        return Vector2i.Zero;
     }
 
     private void MoveY(float amount)
