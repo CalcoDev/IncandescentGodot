@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cvxeqr0ka2i4v" path="res://assets/art/tilesets/attemp1.png" id="3_mig26"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_re6q1"]
-size = Vector2(8, 13)
+size = Vector2(7.999, 12.999)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s174l"]
 resource_name = "Prototype"
@@ -955,8 +955,8 @@ sources/1 = SubResource("TileSetAtlasSource_jp46a")
 [node name="Testing" type="Node2D"]
 
 [node name="PhysicsPlayer" type="CharacterBody2D" parent="."]
-position = Vector2(153, 17)
-rotation = -0.785397
+position = Vector2(157, 59)
+safe_margin = 0.001
 script = ExtResource("1_7nf18")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsPlayer"]
@@ -980,8 +980,3 @@ layer_0/tile_data = PackedInt32Array(1441797, 458753, 1, 1441798, 327681, 3, 144
 
 [node name="Marker2D" type="Marker2D" parent="."]
 position = Vector2(157, 17)
-
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
-polygon = PackedVector2Array(132, 113, 162, 124, 162, 134, 132, 134)

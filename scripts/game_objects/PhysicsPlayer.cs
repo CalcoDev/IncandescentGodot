@@ -60,6 +60,7 @@ public partial class PhysicsPlayer : CharacterBody2D
 
     private float _delta;
     private bool _isGrounded;
+    private bool _wasGrounded;
     private bool _isJumping;
 
     #endregion
@@ -69,15 +70,20 @@ public partial class PhysicsPlayer : CharacterBody2D
         this.WireNodes();
     }
 
+    public override void _Process(double delta)
+    {
+        // Normal(delta);
+    }
+
     public override void _PhysicsProcess(double delta)
+    {
+        Normal(delta);
+    }
+
+    private void Normal(double delta)
     {
         _delta = (float)delta;
 
-        Normal();
-    }
-
-    private void Normal()
-    {
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_space");
         _inputJumpReleased = Input.IsActionJustReleased("btn_space");
@@ -93,6 +99,20 @@ public partial class PhysicsPlayer : CharacterBody2D
 
         if (_isJumping)
             _variableJumpTimer.Update(_delta);
+
+        _wasGrounded = _isGrounded;
+        _isGrounded = IsOnFloor();
+
+        if (_isGrounded && !_wasGrounded)
+        {
+            _coyoteTimer.SetTime(CoyoteTime);
+            _isJumping = false;
+        }
+        else if (_wasGrounded && !_isGrounded)
+        {
+            _coyoteTimer.SetTime(0f);
+            _isJumping = true;
+        }
 
         // Gravity
         if (!_isGrounded)
@@ -135,8 +155,15 @@ public partial class PhysicsPlayer : CharacterBody2D
 
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
 
-        MoveX(_vel.X * _delta);
-        MoveY(_vel.Y * _delta);
+        Velocity = _vel.Get();
+        if (MoveAndSlide())
+        {
+            var coll = GetLastSlideCollision();
+            // GD.Print(coll);
+        }
+
+        // MoveX(_vel.X * _delta);
+        // MoveY(_vel.Y * _delta);
 
         // GD.Print(GlobalPosition);
     }
