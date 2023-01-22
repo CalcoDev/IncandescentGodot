@@ -179,18 +179,24 @@ public partial class PhysicsPlayer : CharacterBody2D
         Velocity = _vel.Get();
         if (MoveAndSlide())
         {
-            var coll = GetLastSlideCollision();
+            int collCount = GetSlideCollisionCount();
+            for (int i = 0; i < collCount; i++)
+            {
+                var coll = GetSlideCollision(i);
+                if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
+                    OnCollideH(coll);
 
-            if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
-                OnCollideH(coll);
-
-            if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
-                OnCollideV(coll);
+                if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
+                    OnCollideV(coll);
+            }
         }
     }
 
     private void OnCollideH(KinematicCollision2D coll)
     {
+        if (Calc.FloatEquals(_vel.X, 0f))
+            return;
+
         _vel.SetX(0f);
     }
 
@@ -199,31 +205,16 @@ public partial class PhysicsPlayer : CharacterBody2D
         if (Calc.FloatEquals(_vel.Y, 0f))
             return;
 
-        GD.Print("Collided vertically.");
-
         if (_vel.Y <= 0 && Calc.FloatEquals(coll.GetNormal().y, 1f)) // Frick inverted Y axis
         {
-            GD.Print("Collided on head.");
-
             Vector2 offset = AttemptVerticalCornerCorrection();
-            GD.Print("Attempted correction. Result: " + offset);
             if (offset != Vector2i.Zero)
             {
                 GlobalPosition += offset;
-                GD.Print("CORRECTED + " + Time.GetTicksMsec());
                 return;
             }
-
-            // var bodies = _groundedChecker.GetOverlappingBodies();
-            // GD.Print(bodies.Count);
-            // if (bodies.Count > 1)
-            // {
-            //     _coyoteTimer.SetTime(CoyoteTime);
-            //     _isJumping = false;
-            // }
         }
 
-        // _actor.SetRemainderY(0f);
         _vel.SetY(0f);
     }
 
@@ -237,7 +228,6 @@ public partial class PhysicsPlayer : CharacterBody2D
                 var transf = GlobalTransform;
                 transf.origin.y -= _vel.Y * _delta;
                 bool collided = TestMove(transf.Translated(offset), Vector2.Up, null, 0.001f);
-                // bool collided = TestMove(transf, offset, null, 0.001f);
                 if (collided)
                     continue;
 
@@ -246,53 +236,5 @@ public partial class PhysicsPlayer : CharacterBody2D
         }
 
         return Vector2i.Zero;
-    }
-
-    private void MoveY(float amount)
-    {
-        var space = GetWorld2d().DirectSpaceState;
-
-        Vector2 offset = amount > 0 ? Vector2.Down * 6f : Vector2.Up * 6f;
-        var startPos = GlobalPosition + offset;
-
-        var query = PhysicsRayQueryParameters2D.Create(
-            startPos + ((amount > 0 ? Vector2.Up : Vector2.Down) * 0.1f),
-            startPos + (Vector2.Down * amount)
-        );
-
-        var res = space.IntersectRay(query);
-        if (res.Count > 0)
-        {
-            var hitPoint = (Vector2)res["position"];
-            GlobalPosition = hitPoint - offset;
-        }
-        else
-        {
-            GlobalPosition += Vector2.Down * amount;
-        }
-    }
-
-    private void MoveX(float amount)
-    {
-        var space = GetWorld2d().DirectSpaceState;
-
-        Vector2 offset = amount > 0 ? Vector2.Right * 4f : Vector2.Left * 4f;
-        var startPos = GlobalPosition + offset;
-
-        var query = PhysicsRayQueryParameters2D.Create(
-            startPos + ((amount > 0 ? Vector2.Left : Vector2.Right) * 0.1f),
-            startPos + (Vector2.Right * amount)
-        );
-
-        var res = space.IntersectRay(query);
-        if (res.Count > 0)
-        {
-            var hitPoint = (Vector2)res["position"];
-            GlobalPosition = hitPoint - offset;
-        }
-        else
-        {
-            GlobalPosition += Vector2.Right * amount;
-        }
     }
 }

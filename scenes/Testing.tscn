@@ -1,16 +1,17 @@
-[gd_scene load_steps=11 format=3 uid="uid://b4gs86v21u6"]
+[gd_scene load_steps=12 format=3 uid="uid://b4gs86v21u6"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/PhysicsPlayer.cs" id="1_7nf18"]
+[ext_resource type="Texture2D" uid="uid://ckihyaab1up4u" path="res://assets/art/entities/player/player.png" id="2_4ygqh"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="2_p4fpk"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_savgq"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="3_4usu8"]
 [ext_resource type="Texture2D" uid="uid://cvxeqr0ka2i4v" path="res://assets/art/tilesets/attemp1.png" id="3_mig26"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_re6q1"]
-size = Vector2(7.999, 12.999)
+size = Vector2(7.99, 12.999)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pfo3i"]
-size = Vector2(7.999, 1.999)
+size = Vector2(7.98, 1.999)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s174l"]
 resource_name = "Prototype"
@@ -961,6 +962,11 @@ sources/1 = SubResource("TileSetAtlasSource_jp46a")
 position = Vector2(157, 59)
 safe_margin = 0.001
 script = ExtResource("1_7nf18")
+
+[node name="Sprite2D" type="Sprite2D" parent="PhysicsPlayer" groups=["pixelated"]]
+visible = false
+position = Vector2(0, -1)
+texture = ExtResource("2_4ygqh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsPlayer"]
 position = Vector2(0, -0.5)
