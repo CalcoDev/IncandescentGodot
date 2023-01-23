@@ -5,13 +5,13 @@ using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class PhysicsMovingPlatform : CharacterBody2D
+public partial class PhysicsMovingPlatform : AnimatableBody2D
 {
     [Node("Path")]
     private Node _path;
 
-    [Node("Area")]
-    private Area2D _area;
+    [Node("CollisionShape2D")]
+    private CollisionShape2D _shape;
 
     [Export] private float _duration = 1f;
     [Export] private float _delay = 0.5f;
@@ -53,69 +53,24 @@ public partial class PhysicsMovingPlatform : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         var vel = (_targetPos - GlobalPosition) / (float)delta;
-        Velocity = vel;
 
-        var coll = MoveAndCollide(vel * (float)delta);
-        if (coll != null)
+        var state = GetWorld2d().DirectSpaceState;
+
+        var query = new PhysicsShapeQueryParameters2D
         {
-            if (!Calc.FloatEquals(vel.y, 0f) || !Calc.FloatEquals(coll.GetNormal().y, 0f))
-                return;
+            Exclude = new Godot.Collections.Array<RID> { this.GetRid() },
+            Shape = _shape.Shape,
+            Transform = GlobalTransform,
+            Motion = vel * (float)delta,
+        };
 
-            if (coll.GetCollider() is PhysicsPlayer player)
-            {
-                // GD.Print($"Vel: {vel}");
-                // player.Slide(vel);
-                // TOOD(calco): Replace with mode and collide for more pro
-                // player.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
-
-                player.Velocity = vel;
-                if (player.MoveAndSlide())
-                {
-                    int cnt = player.GetSlideCollisionCount();
-                    for (int i = 0; i < cnt; i++)
-                    {
-                        var pColl = player.GetSlideCollision(i);
-                        player.Squish(pColl);
-                    }
-                }
-            }
+        var colls = state.IntersectShape(query);
+        for (int i = 0; i < colls.Count; i++)
+        {
+            var body = (PhysicsBody2D)colls[i]["collider"];
+            body.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
         }
 
-        // if (MoveAndSlide())
-        // {
-        //     int collCount = GetSlideCollisionCount();
-        //     for (int i = 0; i < collCount; i++)
-        //     {
-        //         var coll = GetSlideCollision(i);
-        //         // if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
-        //         //     OnCollideH(coll);
-
-        //         // if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
-        //         //     OnCollideV(coll);
-        //         if (!Calc.FloatEquals(vel.y, 0f) || !Calc.FloatEquals(coll.GetNormal().y, 0f))
-        //             continue;
-
-        //         if (coll.GetCollider() is PhysicsPlayer player)
-        //         {
-        //             GD.Print($"Vel: {vel}");
-        //             // player.Slide(vel);
-        //             player.MoveAndCollide(vel * (float)delta);
-        //         }
-        //     }
+        GlobalPosition = _targetPos;
     }
-
-    // var vel = _targetPos - GlobalPosition;
-    // GlobalPosition = _targetPos;
-
-    // _area.GlobalPosition = GlobalPosition;
-    // var bodies = _area.GetOverlappingBodies();
-
-    // foreach (var body in bodies)
-    // {
-    //     if (body is PhysicsPlayer player)
-    //     {
-    //         player.Velocity = vel;
-    //         player.MoveAndSlide();
-    //     }
-    // }
 }

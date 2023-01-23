@@ -81,11 +81,13 @@ public partial class PhysicsPlayer : CharacterBody2D
 
     private void OnEnterGround(Node body)
     {
-
-        if (body is not TileMap)
+        if (body is not PhysicsBody2D && body is not TileMap)
+        {
             return;
+        }
 
-        GD.Print($"{body} entered.");
+        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
+            return;
 
         _isGrounded = true;
 
@@ -95,10 +97,13 @@ public partial class PhysicsPlayer : CharacterBody2D
 
     private void OnExitGround(Node body)
     {
-        if (body is not TileMap)
+        if (body is not PhysicsBody2D && body is not TileMap)
+        {
             return;
+        }
 
-        GD.Print($"{body} exit.");
+        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
+            return;
 
         _isGrounded = false;
 
