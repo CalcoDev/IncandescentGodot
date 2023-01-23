@@ -68,7 +68,11 @@ public partial class PhysicsMovingPlatform : AnimatableBody2D
         for (int i = 0; i < colls.Count; i++)
         {
             var body = (PhysicsBody2D)colls[i]["collider"];
-            body.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
+            var coll = body.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
+            if (coll != null)
+            {
+                // Squish
+            }
         }
 
         GlobalPosition = _targetPos;

@@ -182,19 +182,34 @@ public partial class PhysicsPlayer : CharacterBody2D
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
 
         Velocity = _vel.Get();
-        if (MoveAndSlide())
-        {
-            int collCount = GetSlideCollisionCount();
-            for (int i = 0; i < collCount; i++)
-            {
-                var coll = GetSlideCollision(i);
-                if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
-                    OnCollideH(coll);
 
-                if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
-                    OnCollideV(coll);
-            }
+        var collX = MoveAndCollide(Vector2.Right * _vel.X * _delta, safeMargin: 0.001f);
+        if (collX != null)
+        {
+            if (!Calc.FloatEquals(collX.GetNormal().x, 0f))
+                OnCollideH(collX);
         }
+
+        var collY = MoveAndCollide(Vector2.Down * _vel.Y * _delta, safeMargin: 0.001f);
+        if (collY != null)
+        {
+            if (!Calc.FloatEquals(collY.GetNormal().y, 0f))
+                OnCollideV(collY);
+        }
+
+        // if (MoveAndSlide())
+        // {
+        //     int collCount = GetSlideCollisionCount();
+        //     for (int i = 0; i < collCount; i++)
+        //     {
+        //         var coll = GetSlideCollision(i);
+        //         if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
+        //             OnCollideH(coll);
+
+        //         if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
+        //             OnCollideV(coll);
+        //     }
+        // }
 
         // NOTES(calco): This would work, but then it should be separated in X and
         // frankly I don't care about that enough right now...

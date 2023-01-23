@@ -1011,7 +1011,7 @@ shape = SubResource("RectangleShape2D_20dv4")
 position = Vector2(52, 139)
 
 [node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(142, 139)
+position = Vector2(164, 139)
 
 [node name="TileMap" type="TileMap" parent="."]
 z_index = 2
