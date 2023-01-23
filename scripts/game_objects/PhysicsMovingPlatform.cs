@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Godot;
 using GodotUtilities;
+using Incandescent.GameObjects.Base;
 using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class PhysicsMovingPlatform : AnimatableBody2D
+public partial class PhysicsMovingPlatform : Solid
 {
     [Node("Path")]
     private Node _path;
@@ -54,27 +55,9 @@ public partial class PhysicsMovingPlatform : AnimatableBody2D
     {
         var vel = (_targetPos - GlobalPosition) / (float)delta;
 
-        var state = GetWorld2d().DirectSpaceState;
+        MoveX(vel.x * (float)delta);
+        MoveY(vel.y * (float)delta);
 
-        var query = new PhysicsShapeQueryParameters2D
-        {
-            Exclude = new Godot.Collections.Array<RID> { this.GetRid() },
-            Shape = _shape.Shape,
-            Transform = GlobalTransform,
-            Motion = vel * (float)delta,
-        };
-
-        var colls = state.IntersectShape(query);
-        for (int i = 0; i < colls.Count; i++)
-        {
-            var body = (PhysicsBody2D)colls[i]["collider"];
-            var coll = body.MoveAndCollide(vel * (float)delta, safeMargin: 0.001f);
-            if (coll != null)
-            {
-                // Squish
-            }
-        }
-
-        GlobalPosition = _targetPos;
+        // GlobalPosition = _targetPos;
     }
 }

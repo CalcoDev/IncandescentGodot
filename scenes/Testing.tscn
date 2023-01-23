@@ -963,9 +963,9 @@ sources/1 = SubResource("TileSetAtlasSource_jp46a")
 
 [node name="Testing" type="Node2D"]
 
-[node name="PhysicsPlayer" type="CharacterBody2D" parent="."]
+[node name="PhysicsPlayer" type="AnimatableBody2D" parent="."]
 position = Vector2(157, 59)
-safe_margin = 0.001
+sync_to_physics = false
 script = ExtResource("1_7nf18")
 
 [node name="Sprite2D" type="Sprite2D" parent="PhysicsPlayer" groups=["pixelated"]]
@@ -987,12 +987,14 @@ shape = SubResource("RectangleShape2D_re6q1")
 
 [node name="GroundedChecker" type="Area2D" parent="PhysicsPlayer"]
 position = Vector2(0, 6)
+collision_mask = 1835009
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsPlayer/GroundedChecker"]
 shape = SubResource("RectangleShape2D_pfo3i")
 
 [node name="MovingPlatform" type="AnimatableBody2D" parent="."]
 position = Vector2(52, 139)
+sync_to_physics = false
 script = ExtResource("5_7ceit")
 
 [node name="Sprite2D" type="Sprite2D" parent="MovingPlatform"]
@@ -1011,7 +1013,7 @@ shape = SubResource("RectangleShape2D_20dv4")
 position = Vector2(52, 139)
 
 [node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(164, 139)
+position = Vector2(52, 86)
 
 [node name="TileMap" type="TileMap" parent="."]
 z_index = 2

@@ -3,11 +3,12 @@ using Godot;
 using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
+using Incandescent.GameObjects.Base;
 using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class PhysicsPlayer : CharacterBody2D
+public partial class PhysicsPlayer : Actor
 {
     #region Constants
 
@@ -86,7 +87,7 @@ public partial class PhysicsPlayer : CharacterBody2D
             return;
         }
 
-        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
+        if (body is AnimatableBody2D cB && cB.GetRid().Equals(this.GetRid()))
             return;
 
         _isGrounded = true;
@@ -102,7 +103,7 @@ public partial class PhysicsPlayer : CharacterBody2D
             return;
         }
 
-        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
+        if (body is AnimatableBody2D cB && cB.GetRid().Equals(this.GetRid()))
             return;
 
         _isGrounded = false;
@@ -181,51 +182,18 @@ public partial class PhysicsPlayer : CharacterBody2D
 
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
 
-        Velocity = _vel.Get();
+        // GD.Print($"Vel: {_vel.Get()}");
 
-        var collX = MoveAndCollide(Vector2.Right * _vel.X * _delta, safeMargin: 0.001f);
-        if (collX != null)
-        {
-            if (!Calc.FloatEquals(collX.GetNormal().x, 0f))
-                OnCollideH(collX);
-        }
+        MoveX(_vel.X * _delta, OnCollideH);
 
-        var collY = MoveAndCollide(Vector2.Down * _vel.Y * _delta, safeMargin: 0.001f);
-        if (collY != null)
-        {
-            if (!Calc.FloatEquals(collY.GetNormal().y, 0f))
-                OnCollideV(collY);
-        }
-
-        // if (MoveAndSlide())
-        // {
-        //     int collCount = GetSlideCollisionCount();
-        //     for (int i = 0; i < collCount; i++)
-        //     {
-        //         var coll = GetSlideCollision(i);
-        //         if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
-        //             OnCollideH(coll);
-
-        //         if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
-        //             OnCollideV(coll);
-        //     }
-        // }
-
-        // NOTES(calco): This would work, but then it should be separated in X and
-        // frankly I don't care about that enough right now...
-        // var coll = MoveAndCollide(_vel.Get() * _delta, safeMargin: 0.001f);
-        // if (coll != null)
-        // {
-        //     if (!Calc.FloatEquals(coll.GetNormal().x, 0f))
-        //         OnCollideH(coll);
-
-        //     if (!Calc.FloatEquals(coll.GetNormal().y, 0f))
-        //         OnCollideV(coll);
-        // }
+        // GD.Print(Time.GetTicksMsec() + ": Player: " + _isGrounded);
+        MoveY(_vel.Y * _delta, OnCollideV);
     }
 
     private void OnCollideH(KinematicCollision2D coll)
     {
+        GD.Print(Time.GetTicksMsec() + "Collided horizontally with: " + coll.GetCollider());
+
         if (Calc.FloatEquals(_vel.X, 0f))
             return;
 
@@ -234,6 +202,8 @@ public partial class PhysicsPlayer : CharacterBody2D
 
     private void OnCollideV(KinematicCollision2D coll)
     {
+        GD.Print(Time.GetTicksMsec() + "Collided vertically with: " + coll.GetCollider());
+
         if (Calc.FloatEquals(_vel.Y, 0f))
             return;
 

@@ -45,6 +45,8 @@ public partial class MovingPlatform : Node2D
 
     public override void _Process(double delta)
     {
+        // GlobalPosition = _targetPos;
+
         _solid.MoveX(_targetPos.x - (_solid.GlobalPosition.x + _solid.Remainder.x));
         _solid.MoveY(_targetPos.y - (_solid.GlobalPosition.y + _solid.Remainder.y));
     }
