@@ -11,9 +11,15 @@ public partial class VelocityComponent : Node
     public float X => _velocity.x;
     public float Y => _velocity.y;
 
-    public static implicit operator Vector2(VelocityComponent velocity)
+    public Vector2 Get()
     {
-        return velocity;
+        return _velocity;
+    }
+
+    public void Apprach(Vector2 target, float maxDelta)
+    {
+        ApproachX(target.x, maxDelta);
+        ApproachY(target.y, maxDelta);
     }
 
     public void ApproachX(float target, float maxDelta)

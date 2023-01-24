@@ -1,12 +1,16 @@
 using Godot;
+using Incandescent.Components.Physics;
+using Incandescent.GameObjects;
 
 namespace Incandescent.Managers;
 
 public partial class GameManager : Node
 {
     public static GameManager Instance { get; private set; }
+    public static Node Root { get; private set; }
+    public static Player Player { get; private set; }
 
-    public Node Root { get; private set; }
+    public static float Delta { get; private set; }
 
     [Export] public bool Debug { get; set; } = false;
 
@@ -15,7 +19,15 @@ public partial class GameManager : Node
     [Signal]
     public delegate void OnDebugModeChangedEventHandler(bool debugMode);
 
+    [Signal]
+    public delegate void OnActorCollidedEventHandler(ActorComponent actor, AABBComponent other);
+
     #endregion
+
+    public void InvokeOnActorCollided(ActorComponent actor, AABBComponent other)
+    {
+        EmitSignal(SignalName.OnActorCollided, actor, other);
+    }
 
     public override void _EnterTree()
     {
@@ -23,8 +35,15 @@ public partial class GameManager : Node
         Root = GetTree().Root;
     }
 
+    public override void _Ready()
+    {
+        Player = GetTree().GetFirstNodeInGroup("player") as Player;
+    }
+
     public override void _Process(double delta)
     {
+        Delta = (float)delta;
+
         if (Input.IsActionJustPressed("btn_toggle_debug"))
         {
             Debug = !Debug;
@@ -32,16 +51,18 @@ public partial class GameManager : Node
         }
     }
 
-    public static void SpawnPixelatedFX(PackedScene fx, Vector2 position, bool root = true)
+    public static Node2D SpawnPixelatedFX(PackedScene fx, Vector2 position, bool root = true)
     {
         var fxInstance = fx.Instantiate() as Node2D;
 
         if (root)
-            Instance.Root.AddChild(fxInstance);
+            Root.AddChild(fxInstance);
         else
             Instance.AddChild(fxInstance);
 
         fxInstance.GlobalPosition = position;
         RenderingManager.Instance.TryAddNodeToLayer(fxInstance);
+
+        return fxInstance;
     }
 }

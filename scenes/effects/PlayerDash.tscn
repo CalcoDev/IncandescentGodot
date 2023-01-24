@@ -1,0 +1,55 @@
+[gd_scene load_steps=8 format=3 uid="uid://ctm4iwclrw40o"]
+
+[ext_resource type="Texture2D" uid="uid://2bx6prib062k" path="res://assets/art/particles/circle_8.png" id="1_u2j0j"]
+[ext_resource type="Script" path="res://scenes/components/graphics/CallbackParticlesComponent.cs" id="2_rwyiy"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_7p3nl"]
+diffuse_texture = ExtResource("1_u2j0j")
+
+[sub_resource type="Curve" id="Curve_frpns"]
+max_value = 2.0
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 2), 5.32146, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_83fgq"]
+_data = [Vector2(0, 0), 0.0, 0.0379021, 0, 0, Vector2(1, 1), 0.111983, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_5287p"]
+_data = [Vector2(0, 0.990909), 0.0, 0.0, 0, 0, Vector2(1, 0.3), -0.752778, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_kh7x5"]
+offsets = PackedFloat32Array(0, 0.262097, 0.314516, 0.487903, 0.741935, 1)
+colors = PackedColorArray(0.745098, 0.466667, 0.168627, 1, 0.905882, 0.835294, 0.701961, 1, 0.888567, 0.795596, 0.644525, 1, 0.533333, 0.294118, 0.168627, 1, 0.117647, 0.113725, 0.223529, 1, 0.0352941, 0.0392157, 0.0784314, 0.231373)
+
+[node name="PlayerDash" type="CPUParticles2D"]
+z_index = 1
+z_as_relative = false
+position = Vector2(240, 77)
+emitting = false
+amount = 50
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.9
+randomness = 0.8
+lifetime_randomness = 0.5
+texture = SubResource("CanvasTexture_7p3nl")
+emission_shape = 1
+emission_sphere_radius = 7.0
+direction = Vector2(0, 0)
+spread = 180.0
+gravity = Vector2(0, 40)
+initial_velocity_max = 50.0
+linear_accel_max = 51.96
+damping_min = 34.26
+damping_max = 56.05
+damping_curve = SubResource("Curve_frpns")
+angle_min = -171.2
+angle_max = 211.5
+angle_curve = SubResource("Curve_83fgq")
+scale_amount_min = 0.5
+scale_amount_max = 1.5
+scale_amount_curve = SubResource("Curve_5287p")
+color_ramp = SubResource("Gradient_kh7x5")
+script = ExtResource("2_rwyiy")

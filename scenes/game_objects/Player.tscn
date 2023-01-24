@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=39 format=3 uid="uid://d1t61exxeefqg"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
@@ -10,6 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://de3rhxf13tl4y" path="res://assets/art/entities/player/player_run_temp.png" id="7_blxg0"]
 [ext_resource type="PackedScene" uid="uid://bd8ix1u1l8j63" path="res://scenes/components/physics/CollisionCheckerComponent.tscn" id="7_mshr8"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
+[ext_resource type="PackedScene" uid="uid://v33eworj57he" path="res://scenes/components/abilities/SwordSlashAbilityComponent.tscn" id="12_7bp5m"]
+[ext_resource type="PackedScene" uid="uid://tnxlxxpxxndc" path="res://scenes/components/abilities/LeapAbilityComponent.tscn" id="12_v6h56"]
+[ext_resource type="Script" path="res://scripts/components/passives/base/PassiveContainerComponent.cs" id="13_4q73u"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ev6pv"]
 atlas = ExtResource("5_dw34v")
@@ -109,58 +112,132 @@ region = Rect2(144, 0, 12, 18)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ftf3o"]
 animations = [{
-"frames": [SubResource("AtlasTexture_ev6pv")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ev6pv")
+}],
 "loop": true,
 "name": &"default",
 "speed": 10.0
 }, {
-"frames": [SubResource("AtlasTexture_8qqvq"), SubResource("AtlasTexture_y013d"), SubResource("AtlasTexture_3bep0"), SubResource("AtlasTexture_oo3af"), SubResource("AtlasTexture_wioqa"), SubResource("AtlasTexture_qhsn4"), SubResource("AtlasTexture_egyiv"), SubResource("AtlasTexture_8wh2i"), SubResource("AtlasTexture_nhw6b"), SubResource("AtlasTexture_46bbx")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8qqvq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y013d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3bep0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oo3af")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wioqa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qhsn4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_egyiv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8wh2i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nhw6b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_46bbx")
+}],
 "loop": true,
 "name": &"idle",
 "speed": 10.0
 }, {
-"frames": [SubResource("AtlasTexture_kgi2s"), SubResource("AtlasTexture_joab3"), SubResource("AtlasTexture_hq5bt"), SubResource("AtlasTexture_wwx3a"), SubResource("AtlasTexture_u2yat"), SubResource("AtlasTexture_ha8od"), SubResource("AtlasTexture_fjggj"), SubResource("AtlasTexture_qhdl7"), SubResource("AtlasTexture_v861i"), SubResource("AtlasTexture_8o53p"), SubResource("AtlasTexture_s1fsv"), SubResource("AtlasTexture_fg2og"), SubResource("AtlasTexture_cilsc")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kgi2s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_joab3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hq5bt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wwx3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u2yat")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ha8od")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fjggj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qhdl7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v861i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8o53p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s1fsv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fg2og")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cilsc")
+}],
 "loop": true,
 "name": &"run",
 "speed": 15.0
 }]
 
-[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_vel", "_stateMachine", "_groundedChecker", "_sprite", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer")]
+[node name="Player" type="Node2D" node_paths=PackedStringArray("_actor", "_stateMachine", "_vel", "_groundedChecker", "_sprite", "_primary", "_secondary", "_passiveContainer", "_coyoteTimer", "_jumpBufferTimer", "_variableJumpTimer", "_dashCooldownTimer") groups=["player"]]
 script = ExtResource("1_bfr8j")
 _actor = NodePath("ActorComponent")
-_vel = NodePath("VelocityComponent")
 _stateMachine = NodePath("StateMachineComponent")
+_vel = NodePath("VelocityComponent")
 _groundedChecker = NodePath("ActorComponent/GrounedCheckerComponent")
-_sprite = NodePath("ActorComponent/AnimatedSprite2D")
+_sprite = NodePath("AnimatedSprite2D")
+_primary = NodePath("SwordSlashAbilityComponent")
+_secondary = NodePath("LeapAbilityComponent")
+_passiveContainer = NodePath("PassiveContainerComponent")
 _coyoteTimer = NodePath("Timers/CoyoteTimer")
 _jumpBufferTimer = NodePath("Timers/JumpBufferTimer")
 _variableJumpTimer = NodePath("Timers/VariableJumpTimer")
 _dashCooldownTimer = NodePath("Timers/DashCooldownTimer")
 
-[node name="VelocityComponent" parent="." instance=ExtResource("2_0apfh")]
-
-[node name="StateMachineComponent" parent="." instance=ExtResource("3_j5h5e")]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_as_relative = false
+frames = SubResource("SpriteFrames_ftf3o")
 
 [node name="ActorComponent" parent="." node_paths=PackedStringArray("AABB") instance=ExtResource("4_fwujc")]
 AABB = NodePath("AABBComponent")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="ActorComponent"]
-z_as_relative = false
-position = Vector2(4, 8)
-frames = SubResource("SpriteFrames_ftf3o")
-
 [node name="AABBComponent" parent="ActorComponent" instance=ExtResource("6_03tc4")]
 z_index = 20
-Size = Vector2i(8, 12)
-PositionOffset = Vector2i(0, 2)
+position = Vector2(-4, -6)
+Size = Vector2i(8, 13)
 
 [node name="GrounedCheckerComponent" parent="ActorComponent" node_paths=PackedStringArray("_aabb") instance=ExtResource("7_mshr8")]
-position = Vector2(0, 14)
+position = Vector2(-4, 6)
 _aabb = NodePath("AABBComponent")
 
 [node name="AABBComponent" parent="ActorComponent/GrounedCheckerComponent" instance=ExtResource("6_03tc4")]
 z_index = 20
-Size = Vector2i(8, 1)
+Size = Vector2i(8, 2)
+
+[node name="StateMachineComponent" parent="." instance=ExtResource("3_j5h5e")]
+
+[node name="VelocityComponent" parent="." instance=ExtResource("2_0apfh")]
 
 [node name="Timers" type="Node" parent="."]
 
@@ -171,3 +248,10 @@ Size = Vector2i(8, 1)
 [node name="VariableJumpTimer" parent="Timers" instance=ExtResource("8_vigfg")]
 
 [node name="DashCooldownTimer" parent="Timers" instance=ExtResource("8_vigfg")]
+
+[node name="PassiveContainerComponent" type="Node2D" parent="."]
+script = ExtResource("13_4q73u")
+
+[node name="SwordSlashAbilityComponent" parent="." instance=ExtResource("12_7bp5m")]
+
+[node name="LeapAbilityComponent" parent="." instance=ExtResource("12_v6h56")]

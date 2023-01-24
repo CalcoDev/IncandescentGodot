@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://v33eworj57he"]
+
+[ext_resource type="Script" path="res://scripts/components/abilities/SwordSlashAbilityComponent.cs" id="1_1ppyg"]
+[ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="2_hxrg3"]
+
+[node name="SwordSlashAbilityComponent" type="Node2D" node_paths=PackedStringArray("_timer", "CooldownTimer")]
+script = ExtResource("1_1ppyg")
+_timer = NodePath("AbilityTimer")
+CooldownTimer = NodePath("CooldownTimer")
+
+[node name="CooldownTimer" parent="." instance=ExtResource("2_hxrg3")]
+UpdateSelf = true
+
+[node name="AbilityTimer" parent="." instance=ExtResource("2_hxrg3")]
+UpdateSelf = true

@@ -1,7 +1,10 @@
 using System.Collections;
 using Godot;
 using Incandescent.Components;
+using Incandescent.Components.Abilities;
+using Incandescent.Components.Graphics;
 using Incandescent.Components.Logic;
+using Incandescent.Components.Passives;
 using Incandescent.Components.Physics;
 using Incandescent.Managers;
 using Incandescent.Utils;
@@ -11,11 +14,20 @@ namespace Incandescent.GameObjects;
 public partial class Player : Node2D
 {
     [ExportGroup("Refs")]
+    [ExportSubgroup("Logic")]
     [Export] private ActorComponent _actor;
-    [Export] private VelocityComponent _vel;
     [Export] private StateMachineComponent _stateMachine;
+    [Export] private VelocityComponent _vel;
     [Export] private CollisionCheckerComponent _groundedChecker;
+
+    [ExportSubgroup("Animation")]
     [Export] private AnimatedSprite2D _sprite;
+
+    [ExportSubgroup("Abilities")]
+    [Export] private AbilityComponent _primary;
+    [Export] private AbilityComponent _secondary;
+    [Export] private PassiveContainerComponent _passiveContainer;
+    // [Export] private PassiveComponent _initialPassive;
 
     #region Constants
 
@@ -61,6 +73,8 @@ public partial class Player : Node2D
 
     [ExportSubgroup("Dash")]
     [Export] private CustomTimerComponent _dashCooldownTimer;
+    [Export] private PackedScene _dashStartExplosionFX;
+    [Export] private PackedScene _dashEndExplosionFX;
 
     private Vector2 _dashDir;
     private bool _groundDash;
@@ -74,11 +88,16 @@ public partial class Player : Node2D
     private bool _inputDashPressed;
     private Vector2 _lastNonZeroDir;
 
+    private bool _inputPrimaryPressed;
+    private bool _inputSecondaryPressed;
+
     // State
     private float _delta;
 
     private const int StNormal = 0;
     private const int StDash = 1;
+    private const int StPrimary = 2;
+    private const int StSecondary = 3;
 
     private bool _isJumping;
     private bool _isGrounded;
@@ -87,13 +106,23 @@ public partial class Player : Node2D
 
     public override void _Ready()
     {
-        Vector2 t = _actor.GlobalPosition;
-        _actor.TopLevel = true;
-        _actor.GlobalPosition = t;
+        // _passiveContainer.AddPassive(_initialPassive);
 
-        _stateMachine.Init(3, -1);
+        var passive = new FlamePassiveComponent();
+        _passiveContainer.AddChild(passive);
+        _passiveContainer.AddPassive(passive);
+
+        _stateMachine.Init(10, -1);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
+
+        // TODO(calco): Maybe make this a method to allow dynamically changing abilities mid game.
+        if (_primary.GetAbilityDefinition().IsStateful())
+            _primary.AsStateful().AddSelfToStateMachine(_stateMachine, StPrimary, StNormal);
+
+        if (_secondary.GetAbilityDefinition().IsStateful())
+            _secondary.AsStateful().AddSelfToStateMachine(_stateMachine, StSecondary, StNormal);
+
         _stateMachine.SetState(StNormal);
 
         _actor.OnSquish += OnSquish;
@@ -103,12 +132,8 @@ public partial class Player : Node2D
             _coyoteTimer.SetTime(CoyoteTime);
             _dashCooldownTimer.SetTime(0f);
 
-            // var inst = _hitGroundParticles.Instantiate<CPUParticles2D>();
-            // inst.GlobalPosition = GlobalPosition;
-            // inst.Position += new Vector2(6f, 16f);
-            // GetNode("/root").AddChild(inst);
-
-            GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
+            // TODO(calco): Add this back in.
+            // GameManager.SpawnPixelatedFX(_jumpDust, GlobalPosition + new Vector2(5f, 13f));
 
             _isJumping = false;
         };
@@ -126,6 +151,9 @@ public partial class Player : Node2D
         _inputJumpHeld = Input.IsActionPressed("btn_space");
 
         _inputDashPressed = Input.IsActionJustPressed("btn_shift");
+
+        _inputPrimaryPressed = Input.IsActionJustPressed("btn_primary");
+        _inputSecondaryPressed = Input.IsActionJustPressed("btn_secondary");
 
         if (Mathf.Abs(_inputX) > 0f)
             _lastNonZeroDir = new Vector2(_inputX, 0f);
@@ -148,6 +176,24 @@ public partial class Player : Node2D
         if (_inputDashPressed && _dashCooldownTimer.HasFinished())
             return StDash;
 
+        if (_inputPrimaryPressed || _inputSecondaryPressed)
+        {
+            AbilityActivationData data = new AbilityActivationData(_actor, _vel, _lastNonZeroDir);
+            if (_inputPrimaryPressed && _primary.CanActivate())
+            {
+                int st = _primary.Activate(data);
+                if (st != -1)
+                    return st;
+            }
+
+            if (_inputSecondaryPressed && _secondary.CanActivate())
+            {
+                int st = _secondary.Activate(data);
+                if (st != -1)
+                    return st;
+            }
+        }
+
         // Timers
         if (!_isGrounded)
             _coyoteTimer.Update(_delta);
@@ -162,7 +208,8 @@ public partial class Player : Node2D
         // Sprite
         if (Mathf.Abs(_inputX) > 0f)
         {
-            _sprite.FlipH = _lastNonZeroDir.x > 0f;
+            Scale = new Vector2(_lastNonZeroDir.x > 0f ? -1f : 1f, 1f);
+
             _sprite.Play("run");
         }
         else
@@ -204,14 +251,14 @@ public partial class Player : Node2D
 
         // Horizontal
         float accel = RunAccel;
-        bool sameDir = Calc.SameSign(_inputX, _vel.X);
+        bool sameDir = Calc.SameSignZero(_inputX, _vel.X);
         if (Mathf.Abs(_vel.X) > MaxRunSpeed && sameDir)
             accel = RunReduce;
         if (Mathf.Abs(_inputX) > 0f && !sameDir)
             accel *= 2f;
 
+        // GD.Print($"Accel: {accel} | Input: {_inputX} | Vel: {_vel.X}");
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
-
 
         _actor.MoveX(_vel.X * _delta, OnCollideX);
         _actor.MoveY(_vel.Y * _delta, OnCollideY);
@@ -229,6 +276,19 @@ public partial class Player : Node2D
         // _dashTrail.ClearPoints();
         // _dashTrail.ResetTimerToZero();
         // _dashTrail.Emitting = true;
+
+        Node2D fx = GameManager.SpawnPixelatedFX(_dashStartExplosionFX, GlobalPosition);
+        if (fx is CallbackParticlesComponent callback)
+        {
+            callback.Emitting = true;
+            callback.Init(true);
+            callback.OnParticlesFinished += () =>
+            {
+                CallDeferred(nameof(RemoveNode), fx);
+                // GD.Print("Hheheheha");
+            };
+        }
+        _sprite.Visible = false;
     }
 
     private int DashUpdate()
@@ -245,8 +305,27 @@ public partial class Player : Node2D
 
     private void DashExit()
     {
+        // TODO(calco): This is such a scuffed wya of just creating particles lmao.
+        Node2D fx = GameManager.SpawnPixelatedFX(_dashEndExplosionFX, GlobalPosition);
+        if (fx is CallbackParticlesComponent callback)
+        {
+            callback.Emitting = true;
+            callback.Init(true);
+            callback.OnParticlesFinished += () =>
+            {
+                CallDeferred(nameof(RemoveNode), fx);
+                // GD.Print("Hheheheha");
+            };
+        }
+        _sprite.Visible = true;
+
         // _dashTrail.Emitting = false;
         // CustomTimerComponent.Create(this, 0.2f, true).Timeout += () => _dashTrail.StartClearingPoints();
+    }
+
+    private void RemoveNode(Node node)
+    {
+        node.QueueFree();
     }
 
     private IEnumerator DashCoroutine()
@@ -319,7 +398,7 @@ public partial class Player : Node2D
 
     private void OnSquish(AABBComponent other)
     {
-        GD.Print("Player was squished!");
+        // GD.Print("Player was squished!");
     }
 
     #endregion

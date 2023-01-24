@@ -1,14 +1,19 @@
 using System.Collections.Generic;
 using Godot;
-using Incandescent.Components.Physics;
+using GodotUtilities;
+using Incandescent.GameObjects.Base;
+using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class MovingPlatform : Node2D
+public partial class PhysicsMovingPlatform : Solid
 {
-    [Export] private SolidComponent _solid;
+    [Node("Path")]
+    private Node _path;
 
-    [Export] private Node _path;
+    [Node("CollisionShape2D")]
+    private CollisionShape2D _shape;
+
     [Export] private float _duration = 1f;
     [Export] private float _delay = 0.5f;
 
@@ -18,10 +23,13 @@ public partial class MovingPlatform : Node2D
     private Tween _tween;
     private Vector2 _targetPos;
 
+    public override void _EnterTree()
+    {
+        this.WireNodes();
+    }
+
     public override void _Ready()
     {
-        base._Ready();
-
         int cnt = _path.GetChildCount();
         _points = new List<Node2D>(cnt);
         for (int i = 0; i < cnt; i++)
@@ -43,11 +51,13 @@ public partial class MovingPlatform : Node2D
         _tween.Play();
     }
 
-    public override void _Process(double delta)
+    public override void _PhysicsProcess(double delta)
     {
-        // GlobalPosition = _targetPos;
+        var vel = (_targetPos - GlobalPosition) / (float)delta;
 
-        _solid.MoveX(_targetPos.x - (_solid.GlobalPosition.x + _solid.Remainder.x));
-        _solid.MoveY(_targetPos.y - (_solid.GlobalPosition.y + _solid.Remainder.y));
+        MoveX(vel.x * (float)delta);
+        MoveY(vel.y * (float)delta);
+
+        // GlobalPosition = _targetPos;
     }
 }

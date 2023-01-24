@@ -42,24 +42,29 @@ public partial class AABBComponent : Node2D
 	private Vector2i _size;
 	private Vector2i _positionOffset;
 
-	public override void _Ready()
-	{
-		GameManager.Instance.OnDebugModeChanged += OnDebugModeChanged;
-	}
+  public override void _Ready()
+  {
+      if (Engine.IsEditorHint())
+          return;
+
+      GameManager.Instance.OnDebugModeChanged += OnDebugModeChanged;
+  }
 
 	private void OnDebugModeChanged(bool debugMode)
 	{
 		QueueRedraw();
 	}
 
-	public override void _Draw()
-	{
-		if (Engine.IsEditorHint() || GameManager.Instance.Debug)
-		{
-			ZIndex = 20;
-			DrawRect(new Rect2(_positionOffset, _size), new Color(0f, .65f, .75f, 0.5f));
-		}
-	}
+  public override void _Draw()
+  {
+      if (Engine.IsEditorHint() || GameManager.Instance.Debug)
+      {
+          ZIndex = 20;
+
+          GlobalRotation = 0f;
+          DrawRect(new Rect2(_positionOffset, _size), new Color(0f, .65f, .75f, 0.5f));
+      }
+  }
 
 	public bool IntersectsRel(AABBComponent other, Vector2i positionOffset)
 	{

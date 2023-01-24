@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://tnxlxxpxxndc"]
+
+[ext_resource type="Script" path="res://scripts/components/abilities/LeapAbilityComponent.cs" id="1_vrnc4"]
+[ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="2_7nv3x"]
+[ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="3_jjt6u"]
+
+[node name="LeapAbilityComponent" type="Node2D" node_paths=PackedStringArray("CooldownTimer")]
+script = ExtResource("1_vrnc4")
+CooldownTimer = NodePath("CooldownTimer")
+
+[node name="CooldownTimer" parent="." instance=ExtResource("2_7nv3x")]
+UpdateSelf = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-14, 0)
+texture = ExtResource("3_jjt6u")
