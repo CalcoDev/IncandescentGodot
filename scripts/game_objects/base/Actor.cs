@@ -4,7 +4,7 @@ using Godot;
 namespace Incandescent.GameObjects.Base;
 
 // TODO(calco): Replace MoveAndCollide to custom position settings and stuff
-public abstract partial class Actor : AnimatableBody2D
+public abstract partial class Actor : CharacterBody2D
 {
     public virtual void Squish(KinematicCollision2D coll) { }
 

@@ -87,7 +87,7 @@ public partial class PhysicsPlayer : Actor
             return;
         }
 
-        if (body is AnimatableBody2D cB && cB.GetRid().Equals(this.GetRid()))
+        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
             return;
 
         _isGrounded = true;
@@ -103,7 +103,7 @@ public partial class PhysicsPlayer : Actor
             return;
         }
 
-        if (body is AnimatableBody2D cB && cB.GetRid().Equals(this.GetRid()))
+        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
             return;
 
         _isGrounded = false;
@@ -182,11 +182,7 @@ public partial class PhysicsPlayer : Actor
 
         _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
 
-        // GD.Print($"Vel: {_vel.Get()}");
-
         MoveX(_vel.X * _delta, OnCollideH);
-
-        // GD.Print(Time.GetTicksMsec() + ": Player: " + _isGrounded);
         MoveY(_vel.Y * _delta, OnCollideV);
     }
 
