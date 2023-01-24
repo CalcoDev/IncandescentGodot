@@ -1020,7 +1020,6 @@ texture = ExtResource("7_6en6j")
 centered = false
 
 [node name="AABBComponent" parent="MovingPlatform/SolidComponent" instance=ExtResource("5_yd4tr")]
-z_index = 20
 Size = Vector2i(24, 8)
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="MovingPlatform/SolidComponent"]
