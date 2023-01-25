@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://b00we5mqxw4f1"]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/components/physics/AABBComponent.cs" id="1_8ny7w"]
+[ext_resource type="Script" path="res://scripts/_old/components/physics/AABBComponent.cs" id="1_8ny7w"]
 
 [node name="AABBComponent" type="Node2D"]
 z_index = 20

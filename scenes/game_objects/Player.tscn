@@ -1,6 +1,6 @@
-[gd_scene load_steps=39 format=3 uid="uid://d1t61exxeefqg"]
+[gd_scene load_steps=39 format=3]
 
-[ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_bfr8j"]
+[ext_resource type="Script" path="res://scripts/_old/game_objects/Player.cs" id="1_bfr8j"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_j5h5e"]
 [ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="4_fwujc"]

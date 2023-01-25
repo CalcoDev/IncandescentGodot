@@ -1,10 +1,10 @@
-[gd_scene load_steps=29 format=3 uid="uid://cjjin3npj7t0j"]
+[gd_scene load_steps=29 format=3 uid="uid://8qi127rchqod"]
 
-[ext_resource type="PackedScene" uid="uid://d1t61exxeefqg" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
+[ext_resource type="PackedScene" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="PackedScene" uid="uid://dx18jygjwobrl" path="res://scenes/effects/PlayerJumpDust.tscn" id="3_g25um"]
-[ext_resource type="PackedScene" uid="uid://dhqnaeg7tprh6" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
-[ext_resource type="Script" path="res://scripts/game_objects/MovingPlatform.cs" id="5_8ikv8"]
-[ext_resource type="PackedScene" uid="uid://b00we5mqxw4f1" path="res://scenes/components/physics/AABBComponent.tscn" id="5_yd4tr"]
+[ext_resource type="Script" path="res://scripts/_old/game_objects/MovingPlatform.cs" id="4_4spet"]
+[ext_resource type="PackedScene" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
+[ext_resource type="PackedScene" path="res://scenes/components/physics/AABBComponent.tscn" id="5_yd4tr"]
 [ext_resource type="PackedScene" uid="uid://tv1y58xwivo4" path="res://scenes/components/CustomTilemapComponent.tscn" id="6_rflvr"]
 [ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="7_6en6j"]
 [ext_resource type="Texture2D" uid="uid://cvxeqr0ka2i4v" path="res://assets/art/tilesets/attemp1.png" id="8_2nbd2"]
@@ -13,9 +13,9 @@
 [ext_resource type="Texture2D" uid="uid://2bx6prib062k" path="res://assets/art/particles/circle_8.png" id="11_buefb"]
 [ext_resource type="Script" path="res://scripts/game_objects/BowEnemy.cs" id="13_jo5kr"]
 [ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="14_pr42x"]
-[ext_resource type="PackedScene" uid="uid://bpa7lhh84ko1k" path="res://scenes/components/physics/ActorComponent.tscn" id="15_qokh8"]
+[ext_resource type="Script" path="res://scripts/_old/components/physics/AngleBasedAABBComponent.cs" id="15_gb7f3"]
+[ext_resource type="PackedScene" path="res://scenes/components/physics/ActorComponent.tscn" id="15_qokh8"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="16_ub7d0"]
-[ext_resource type="Script" path="res://scripts/components/physics/AngleBasedAABBComponent.cs" id="16_yc0w8"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="17_0cfk6"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rb27m"]
@@ -1004,11 +1004,9 @@ centered = false
 position = Vector2(156, 102)
 _jumpDust = ExtResource("3_g25um")
 
-[node name="MovingPlatform" type="Node2D" parent="." node_paths=PackedStringArray("_solid", "_path")]
+[node name="MovingPlatform" type="Node2D" parent="."]
 position = Vector2(46, 132)
-script = ExtResource("5_8ikv8")
-_solid = NodePath("SolidComponent")
-_path = NodePath("Path")
+script = ExtResource("4_4spet")
 
 [node name="SolidComponent" parent="MovingPlatform" node_paths=PackedStringArray("AABB") instance=ExtResource("4_bsa8u")]
 AABB = NodePath("AABBComponent")
@@ -1084,51 +1082,43 @@ flip_h = true
 AABB = NodePath("AngleBasedAABBComponent/AABBComponent")
 
 [node name="AngleBasedAABBComponent" type="Node2D" parent="BowEnemy/ActorComponent"]
-script = ExtResource("16_yc0w8")
+script = ExtResource("15_gb7f3")
 _partitions = 8.0
 
 [node name="AABBComponent" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-2, -7)
 Size = Vector2i(5, 13)
 
 [node name="AABBComponent5" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-4, -4)
 
 [node name="AABBComponent2" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-7, -3)
 Size = Vector2i(13, 5)
 
 [node name="AABBComponent6" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-3, -3)
 
 [node name="AABBComponent3" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-3, -6)
 Size = Vector2i(5, 13)
 
 [node name="AABBComponent7" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-3, -5)
 
 [node name="AABBComponent4" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-6, -2)
 Size = Vector2i(13, 5)
 
 [node name="AABBComponent8" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
 visible = false
-z_index = 20
 position = Vector2(-4, -5)
 
 [node name="StateMachineComponent" parent="BowEnemy" instance=ExtResource("16_ub7d0")]
