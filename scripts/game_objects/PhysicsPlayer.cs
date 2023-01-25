@@ -104,6 +104,7 @@ public partial class PhysicsPlayer : Actor
         _stateMachine.SetState(StNormal);
     }
 
+    // _PhysicsProcess
     public override void _PhysicsProcess(double delta)
     {
         _delta = (float)delta;
@@ -122,13 +123,8 @@ public partial class PhysicsPlayer : Actor
         if (Mathf.Abs(_inputX) > 0f)
             _lastNonZeroDir = new Vector2(_inputX, 0f);
 
-        // _groundedChecker.Update();
-        // _isGrounded = _groundedChecker.IsColliding;
-
         int newState = _stateMachine.Update();
         _stateMachine.SetState(newState);
-
-        // GlobalPosition = _actor.GlobalPosition;
     }
 
     #region States
@@ -160,6 +156,7 @@ public partial class PhysicsPlayer : Actor
         }
 
         // Jumping
+        GD.Print(_coyoteTimer.Time);
         if (_jumpBufferTimer.IsRunning() && _coyoteTimer.IsRunning())
         {
             _coyoteTimer.SetTime(0f);
@@ -247,13 +244,10 @@ public partial class PhysicsPlayer : Actor
 
     public override void Squish(KinematicCollision2D coll)
     {
-        GD.Print($"Squished by: {coll.GetCollider()}");
     }
 
     private void OnCollideH(KinematicCollision2D coll)
     {
-        GD.Print(Time.GetTicksMsec() + "Collided horizontally with: " + coll.GetCollider());
-
         if (Calc.FloatEquals(_vel.X, 0f))
             return;
 
@@ -262,8 +256,6 @@ public partial class PhysicsPlayer : Actor
 
     private void OnCollideV(KinematicCollision2D coll)
     {
-        GD.Print(Time.GetTicksMsec() + "Collided vertically with: " + coll.GetCollider());
-
         if (Calc.FloatEquals(_vel.Y, 0f))
             return;
 
@@ -309,7 +301,7 @@ public partial class PhysicsPlayer : Actor
 
         _isGrounded = false;
 
-        _coyoteTimer.SetTime(0f);
+        _coyoteTimer.SetTime(CoyoteTime);
     }
 
     #endregion

@@ -1,5 +1,5 @@
 using Godot;
-using Incandescent.Components.Physics;
+using Incandescent.GameObjects.Base;
 
 namespace Incandescent.Components.Abilities;
 
@@ -9,11 +9,11 @@ namespace Incandescent.Components.Abilities;
 /// </summary>
 public class AbilityActivationData
 {
-    public ActorComponent Sender { get; }
+    public Actor Sender { get; }
     public VelocityComponent SenderVelocity { get; }
     public Vector2 Direction { get; }
 
-    public AbilityActivationData(ActorComponent sender, VelocityComponent senderVelocity, Vector2 direction)
+    public AbilityActivationData(Actor sender, VelocityComponent senderVelocity, Vector2 direction)
     {
         Sender = sender;
         SenderVelocity = senderVelocity;

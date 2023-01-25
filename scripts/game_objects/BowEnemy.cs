@@ -2,25 +2,19 @@ using Godot;
 using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
-using Incandescent.Components.Physics;
+using Incandescent.GameObjects.Base;
 using Incandescent.Managers;
 
 namespace Incandescent.GameObjects.Enemies;
 
-public partial class BowEnemy : Node2D
+public partial class BowEnemy : Actor
 {
     // References
-    [Node("ActorComponent")]
-    private ActorComponent _actor;
-
-    [Node("ActorComponent/AngleBasedAABBComponent")]
-    private AngleBasedAABBComponent _actorAABB;
+    [Node("VelocityComponent")]
+    private VelocityComponent _vel;
 
     [Node("StateMachineComponent")]
     private StateMachineComponent _stateMachine;
-
-    [Node("VelocityComponent")]
-    private VelocityComponent _vel;
 
     // State
     // Enemy should wander about, until player is within a certain distance. Then, it should attack, by firing an arrow.
@@ -50,43 +44,29 @@ public partial class BowEnemy : Node2D
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StAttack, AttackUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, null, null, null);
-
-        _actorAABB.UpdateSelf = false;
-        _actorAABB.OnAABBChanged += OnAABBChanged;
-    }
-
-    private void OnAABBChanged(AABBComponent aabb)
-    {
-        _actor.AABB = aabb;
     }
 
     public override void _Process(double delta)
     {
-        _actorAABB.Update(Rotation);
-
         int newSt = _stateMachine.Update();
         _stateMachine.SetState(newSt);
-
-        _actorAABB.Update(Rotation);
-
-        GlobalPosition = _actor.GlobalPosition;
     }
 
     private int NormalUpdate()
     {
         // Get the player.
-        Player player = GameManager.Player;
+        PhysicsPlayer player = GameManager.Player;
 
         Vector2 desiredVelocity = Vector2.Zero;
 
         Vector2 startPos = player?.GlobalPosition ?? GlobalPosition;
         Vector2 endPos = GlobalPosition;
 
-        float angle = (startPos - endPos).Angle();
-        Rotation = angle;
+        // float angle = (startPos - endPos).Angle();
+        // Rotation = angle;
 
         float distSqr = startPos.DistanceSquaredTo(endPos);
-        GD.Print($"Distance: {Mathf.Sqrt(distSqr)}");
+        // GD.Print($"Distance: {Mathf.Sqrt(distSqr)}");
 
         if (distSqr < AttackRange * AttackRange)
             return StAttack;
@@ -99,21 +79,19 @@ public partial class BowEnemy : Node2D
 
         _vel.Apprach(desiredVelocity * FollowSpeed, Acceleration);
 
-        _actor.MoveX(_vel.X * GameManager.Delta);
-        _actor.MoveY(_vel.Y * GameManager.Delta);
+        MoveX(_vel.X * GameManager.Delta);
+        MoveY(_vel.Y * GameManager.Delta);
 
         return StNormal;
     }
 
     private int AttackUpdate()
     {
-        // GD.Print("Attack");
         return StNormal;
     }
 
     private int DashUpdate()
     {
-        // GD.Print("Dash");
         return StNormal;
     }
 }

@@ -1,26 +1,48 @@
-[gd_scene load_steps=29 format=3 uid="uid://8qi127rchqod"]
+[gd_scene load_steps=24 format=3 uid="uid://8qi127rchqod"]
 
-[ext_resource type="PackedScene" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
-[ext_resource type="PackedScene" uid="uid://dx18jygjwobrl" path="res://scenes/effects/PlayerJumpDust.tscn" id="3_g25um"]
-[ext_resource type="Script" path="res://scripts/_old/game_objects/MovingPlatform.cs" id="4_4spet"]
-[ext_resource type="PackedScene" path="res://scenes/components/physics/SolidComponent.tscn" id="4_bsa8u"]
-[ext_resource type="PackedScene" path="res://scenes/components/physics/AABBComponent.tscn" id="5_yd4tr"]
-[ext_resource type="PackedScene" uid="uid://tv1y58xwivo4" path="res://scenes/components/CustomTilemapComponent.tscn" id="6_rflvr"]
+[ext_resource type="PackedScene" uid="uid://ojl074exjn23" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="7_6en6j"]
 [ext_resource type="Texture2D" uid="uid://cvxeqr0ka2i4v" path="res://assets/art/tilesets/attemp1.png" id="8_2nbd2"]
 [ext_resource type="Texture2D" uid="uid://b6a2i1277xia7" path="res://assets/art/env/background.png" id="9_cxb55"]
 [ext_resource type="Texture2D" uid="uid://dd2vf2dpjucbv" path="res://assets/art/tilesets/full.png" id="10_u4j31"]
 [ext_resource type="Texture2D" uid="uid://2bx6prib062k" path="res://assets/art/particles/circle_8.png" id="11_buefb"]
+[ext_resource type="Script" path="res://scripts/game_objects/PhysicsMovingPlatform.cs" id="13_0pnag"]
 [ext_resource type="Script" path="res://scripts/game_objects/BowEnemy.cs" id="13_jo5kr"]
 [ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="14_pr42x"]
-[ext_resource type="Script" path="res://scripts/_old/components/physics/AngleBasedAABBComponent.cs" id="15_gb7f3"]
-[ext_resource type="PackedScene" path="res://scenes/components/physics/ActorComponent.tscn" id="15_qokh8"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="16_ub7d0"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="17_0cfk6"]
 
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_rb27m"]
-cull_mode = 1
-polygon = PackedVector2Array(0, 0, 0, 8, 24, 8, 24, 0)
+[sub_resource type="CanvasTexture" id="CanvasTexture_7p3nl"]
+diffuse_texture = ExtResource("11_buefb")
+
+[sub_resource type="Curve" id="Curve_frpns"]
+max_value = 2.0
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 2), 5.32146, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_83fgq"]
+_data = [Vector2(0, 0), 0.0, 0.0379021, 0, 0, Vector2(1, 1), 0.111983, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_5287p"]
+_data = [Vector2(0, 0.990909), 0.0, 0.0, 0, 0, Vector2(1, 0.3), -0.752778, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_kh7x5"]
+offsets = PackedFloat32Array(0, 0.262097, 0.314516, 0.487903, 0.741935, 1)
+colors = PackedColorArray(0.745098, 0.466667, 0.168627, 1, 0.905882, 0.835294, 0.701961, 1, 0.888567, 0.795596, 0.644525, 1, 0.533333, 0.294118, 0.168627, 1, 0.117647, 0.113725, 0.223529, 1, 0.0352941, 0.0392157, 0.0784314, 0.231373)
+
+[sub_resource type="Gradient" id="Gradient_i1gvf"]
+colors = PackedColorArray(0.905882, 0.835294, 0.701961, 1, 0.854902, 0.52549, 0.243137, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5bw46"]
+size = Vector2(4, 11)
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_84erp"]
+diffuse_texture = ExtResource("14_pr42x")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_76ife"]
+size = Vector2(24, 8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s174l"]
 resource_name = "Prototype"
@@ -953,7 +975,7 @@ texture_region_size = Vector2i(8, 8)
 3:4/0/terrains_peering_bit/left_side = 1
 3:4/0/terrains_peering_bit/top_side = 1
 
-[sub_resource type="TileSet" id="TileSet_30wja"]
+[sub_resource type="TileSet" id="TileSet_pyu8t"]
 tile_size = Vector2i(8, 8)
 uv_clipping = true
 physics_layer_0/collision_layer = 1
@@ -965,32 +987,6 @@ terrain_set_0/terrain_1/color = Color(0.568627, 0.537255, 1, 1)
 sources/0 = SubResource("TileSetAtlasSource_s174l")
 sources/1 = SubResource("TileSetAtlasSource_jp46a")
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_7p3nl"]
-diffuse_texture = ExtResource("11_buefb")
-
-[sub_resource type="Curve" id="Curve_frpns"]
-max_value = 2.0
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 2), 5.32146, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_83fgq"]
-_data = [Vector2(0, 0), 0.0, 0.0379021, 0, 0, Vector2(1, 1), 0.111983, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_5287p"]
-_data = [Vector2(0, 0.990909), 0.0, 0.0, 0, 0, Vector2(1, 0.3), -0.752778, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Gradient" id="Gradient_kh7x5"]
-offsets = PackedFloat32Array(0, 0.262097, 0.314516, 0.487903, 0.741935, 1)
-colors = PackedColorArray(0.745098, 0.466667, 0.168627, 1, 0.905882, 0.835294, 0.701961, 1, 0.888567, 0.795596, 0.644525, 1, 0.533333, 0.294118, 0.168627, 1, 0.117647, 0.113725, 0.223529, 1, 0.0352941, 0.0392157, 0.0784314, 0.231373)
-
-[sub_resource type="Gradient" id="Gradient_i1gvf"]
-colors = PackedColorArray(0.905882, 0.835294, 0.701961, 1, 0.854902, 0.52549, 0.243137, 1)
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_84erp"]
-diffuse_texture = ExtResource("14_pr42x")
-
 [node name="SceneMain" type="Node2D"]
 
 [node name="Background" type="Sprite2D" parent="."]
@@ -1000,49 +996,8 @@ z_as_relative = false
 texture = ExtResource("9_cxb55")
 centered = false
 
-[node name="Player" parent="." instance=ExtResource("1_ialhu")]
-position = Vector2(156, 102)
-_jumpDust = ExtResource("3_g25um")
-
-[node name="MovingPlatform" type="Node2D" parent="."]
-position = Vector2(46, 132)
-script = ExtResource("4_4spet")
-
-[node name="SolidComponent" parent="MovingPlatform" node_paths=PackedStringArray("AABB") instance=ExtResource("4_bsa8u")]
-AABB = NodePath("AABBComponent")
-
-[node name="Sprite2D" type="Sprite2D" parent="MovingPlatform/SolidComponent"]
-position = Vector2(-3.8147e-06, 0)
-scale = Vector2(24, 8)
-texture = ExtResource("7_6en6j")
-centered = false
-
-[node name="AABBComponent" parent="MovingPlatform/SolidComponent" instance=ExtResource("5_yd4tr")]
-Size = Vector2i(24, 8)
-
-[node name="LightOccluder2D" type="LightOccluder2D" parent="MovingPlatform/SolidComponent"]
-occluder = SubResource("OccluderPolygon2D_rb27m")
-
-[node name="Path" type="Node" parent="MovingPlatform"]
-
-[node name="Marker2D" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(46, 132)
-
-[node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(70, 132)
-
-[node name="CustomTilemapComponent" parent="." node_paths=PackedStringArray("_tilemap") instance=ExtResource("6_rflvr")]
-_tilemap = NodePath("TileMap")
-
-[node name="TileMap" type="TileMap" parent="CustomTilemapComponent"]
-z_index = 2
-z_as_relative = false
-tile_set = SubResource("TileSet_30wja")
-format = 2
-layer_0/tile_data = PackedInt32Array(1441797, 458753, 1, 1441798, 327681, 3, 1441799, 327681, 3, 1441800, 327681, 3, 1441801, 327681, 3, 1441802, 327681, 3, 1441803, 327681, 3, 1441804, 327681, 3, 1441805, 327681, 3, 1441806, 327681, 3, 1441807, 327681, 3, 1441808, 327681, 3, 1441809, 327681, 3, 1441810, 327681, 3, 1441811, 327681, 3, 1441812, 327681, 3, 1441813, 327681, 3, 1441816, 327681, 3, 1441815, 327681, 3, 1441814, 327681, 3, 1441817, 327681, 3, 1441818, 327681, 3, 1441819, 327681, 3, 1441820, 327681, 3, 1441821, 327681, 3, 1441822, 327681, 3, 1441823, 327681, 3, 1441824, 327681, 3, 1441825, 327681, 3, 1441826, 524289, 1, 1376290, 327681, 2, 1376289, 393217, 2, 1376288, 393217, 2, 1376287, 393217, 2, 1376286, 393217, 2, 1376285, 393217, 2, 1376284, 393217, 2, 1376283, 393217, 2, 1376282, 393217, 2, 1376281, 393217, 2, 1376280, 393217, 2, 1376279, 393217, 2, 1376278, 393217, 2, 1376277, 393217, 2, 1376276, 393217, 2, 1376275, 393217, 2, 1376274, 393217, 2, 1376273, 393217, 2, 1376272, 393217, 2, 1376271, 393217, 2, 1376270, 393217, 2, 1376269, 393217, 2, 1376268, 393217, 2, 1376267, 393217, 2, 1376266, 393217, 2, 1376265, 393217, 2, 1376264, 393217, 2, 1376263, 393217, 2, 1376262, 393217, 2, 1376261, 262145, 2, 1245189, 458753, 0, 1245190, 262145, 3, 1245191, 262145, 3, 1245192, 262145, 3, 1245193, 262145, 3, 1245194, 262145, 3, 1245195, 262145, 3, 1245196, 262145, 3, 1245197, 262145, 3, 1245198, 262145, 3, 1245199, 262145, 3, 1245200, 262145, 3, 1245201, 262145, 3, 1245202, 262145, 3, 1245203, 262145, 3, 1245204, 262145, 3, 1245205, 262145, 3, 1245206, 196609, 2, 1245207, 262145, 3, 1245208, 65537, 3, 1245209, 393217, 2, 1245210, 1, 3, 1245211, 262145, 3, 1245212, 65537, 3, 1245213, 393217, 2, 1245214, 1, 3, 1245215, 262145, 3, 1245216, 262145, 3, 1245218, 524289, 0, 1245217, 262145, 3, 1310754, 327681, 2, 1310753, 393217, 2, 1310752, 393217, 2, 1310751, 393217, 2, 1310750, 393217, 2, 1310749, 393217, 2, 1310748, 393217, 2, 1310747, 393217, 2, 1310746, 393217, 2, 1310745, 393217, 2, 1310744, 393217, 2, 1310743, 393217, 2, 1310742, 393217, 2, 1310741, 393217, 2, 1310740, 393217, 2, 1310739, 393217, 2, 1310738, 393217, 2, 1310737, 393217, 2, 1310736, 393217, 2, 1310735, 393217, 2, 1310734, 393217, 2, 1310733, 393217, 2, 1310732, 393217, 2, 1310731, 393217, 2, 1310730, 393217, 2, 1310729, 393217, 2, 1310728, 393217, 2, 1310727, 393217, 2, 1310726, 393217, 2, 1310725, 262145, 2, 1179676, 262145, 2, 1114140, 262145, 2, 1048604, 262145, 2, 983068, 262145, 2, 917532, 262145, 2, 851996, 458753, 0, 851997, 262145, 3, 917533, 393217, 2, 983069, 393217, 2, 1048605, 393217, 2, 1114141, 393217, 2, 1179677, 393217, 2, 786445, 458753, 0, 786446, 524289, 0, 851982, 327681, 2, 851981, 262145, 2, 917518, 524289, 1, 917517, 458753, 1, 1179678, 327681, 2, 1114142, 327681, 2, 1048606, 327681, 2, 983070, 327681, 2, 917534, 327681, 2, 851998, 524289, 0, 1048602, 524289, 0, 1114138, 327681, 2, 1179674, 327681, 2, 1179673, 393217, 2, 1179672, 262145, 2, 1114136, 262145, 2, 1114137, 393217, 2, 1048601, 262145, 3, 1048600, 458753, 0, 1114134, 327681, 1, 1179670, 131073, 1, 983072, 458753, 0, 983073, 524289, 0, 1048609, 524289, 1, 1048608, 458753, 1)
-
 [node name="CPUParticles2D3" type="CPUParticles2D" parent="." groups=["pixelated"]]
-position = Vector2(178, 73)
+position = Vector2(84, 119)
 amount = 50
 explosiveness = 0.9
 randomness = 0.8
@@ -1067,60 +1022,54 @@ scale_amount_curve = SubResource("Curve_5287p")
 color_ramp = SubResource("Gradient_kh7x5")
 color_initial_ramp = SubResource("Gradient_i1gvf")
 
-[node name="BowEnemy" type="Node2D" parent="."]
+[node name="BowEnemy" type="CharacterBody2D" parent="."]
 position = Vector2(219, 72)
+rotation = -0.65351
 script = ExtResource("13_jo5kr")
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BowEnemy"]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_5bw46")
+
 [node name="Sprite2D" type="Sprite2D" parent="BowEnemy"]
-rotation = -6.28318
 texture = SubResource("CanvasTexture_84erp")
 centered = false
 offset = Vector2(-7, -7)
 flip_h = true
 
-[node name="ActorComponent" parent="BowEnemy" node_paths=PackedStringArray("AABB") instance=ExtResource("15_qokh8")]
-AABB = NodePath("AngleBasedAABBComponent/AABBComponent")
-
-[node name="AngleBasedAABBComponent" type="Node2D" parent="BowEnemy/ActorComponent"]
-script = ExtResource("15_gb7f3")
-_partitions = 8.0
-
-[node name="AABBComponent" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-2, -7)
-Size = Vector2i(5, 13)
-
-[node name="AABBComponent5" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-4, -4)
-
-[node name="AABBComponent2" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-7, -3)
-Size = Vector2i(13, 5)
-
-[node name="AABBComponent6" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-3, -3)
-
-[node name="AABBComponent3" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-3, -6)
-Size = Vector2i(5, 13)
-
-[node name="AABBComponent7" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-3, -5)
-
-[node name="AABBComponent4" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-6, -2)
-Size = Vector2i(13, 5)
-
-[node name="AABBComponent8" parent="BowEnemy/ActorComponent/AngleBasedAABBComponent" instance=ExtResource("5_yd4tr")]
-visible = false
-position = Vector2(-4, -5)
-
 [node name="StateMachineComponent" parent="BowEnemy" instance=ExtResource("16_ub7d0")]
 
 [node name="VelocityComponent" parent="BowEnemy" instance=ExtResource("17_0cfk6")]
+
+[node name="Player" parent="." instance=ExtResource("1_ialhu")]
+CoyoteTime = 0.2
+
+[node name="MovingPlatform" type="AnimatableBody2D" parent="."]
+position = Vector2(52, 139)
+sync_to_physics = false
+script = ExtResource("13_0pnag")
+
+[node name="Sprite2D" type="Sprite2D" parent="MovingPlatform"]
+position = Vector2(-12, -4)
+scale = Vector2(24, 8)
+texture = ExtResource("7_6en6j")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MovingPlatform"]
+position = Vector2(3.8147e-06, 0)
+shape = SubResource("RectangleShape2D_76ife")
+
+[node name="Path" type="Node" parent="MovingPlatform"]
+
+[node name="Marker2D" type="Marker2D" parent="MovingPlatform/Path"]
+position = Vector2(52, 139)
+
+[node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
+position = Vector2(52, 86)
+
+[node name="TileMap" type="TileMap" parent="."]
+z_index = 2
+z_as_relative = false
+tile_set = SubResource("TileSet_pyu8t")
+format = 2
+layer_0/tile_data = PackedInt32Array(1441797, 458753, 1, 1441798, 327681, 3, 1441799, 327681, 3, 1441800, 327681, 3, 1441801, 327681, 3, 1441802, 327681, 3, 1441803, 327681, 3, 1441804, 327681, 3, 1441805, 327681, 3, 1441806, 327681, 3, 1441807, 327681, 3, 1441808, 327681, 3, 1441809, 327681, 3, 1441810, 327681, 3, 1441811, 327681, 3, 1441812, 327681, 3, 1441813, 327681, 3, 1441816, 327681, 3, 1441815, 327681, 3, 1441814, 327681, 3, 1441817, 327681, 3, 1441818, 327681, 3, 1441819, 327681, 3, 1441820, 327681, 3, 1441821, 327681, 3, 1441822, 327681, 3, 1441823, 327681, 3, 1441824, 327681, 3, 1441825, 327681, 3, 1441826, 524289, 1, 1376290, 327681, 2, 1376289, 393217, 2, 1376288, 393217, 2, 1376287, 393217, 2, 1376286, 393217, 2, 1376285, 393217, 2, 1376284, 393217, 2, 1376283, 393217, 2, 1376282, 393217, 2, 1376281, 393217, 2, 1376280, 393217, 2, 1376279, 393217, 2, 1376278, 393217, 2, 1376277, 393217, 2, 1376276, 393217, 2, 1376275, 393217, 2, 1376274, 393217, 2, 1376273, 393217, 2, 1376272, 393217, 2, 1376271, 393217, 2, 1376270, 393217, 2, 1376269, 393217, 2, 1376268, 393217, 2, 1376267, 393217, 2, 1376266, 393217, 2, 1376265, 393217, 2, 1376264, 393217, 2, 1376263, 393217, 2, 1376262, 393217, 2, 1376261, 262145, 2, 1245189, 458753, 0, 1245190, 262145, 3, 1245191, 262145, 3, 1245192, 262145, 3, 1245193, 262145, 3, 1245194, 262145, 3, 1245195, 262145, 3, 1245196, 262145, 3, 1245197, 262145, 3, 1245198, 262145, 3, 1245199, 262145, 3, 1245200, 262145, 3, 1245201, 262145, 3, 1245202, 262145, 3, 1245203, 262145, 3, 1245204, 262145, 3, 1245205, 262145, 3, 1245206, 196609, 2, 1245207, 262145, 3, 1245208, 65537, 3, 1245209, 393217, 2, 1245210, 1, 3, 1245211, 262145, 3, 1245212, 65537, 3, 1245213, 393217, 2, 1245214, 1, 3, 1245215, 262145, 3, 1245216, 262145, 3, 1245218, 524289, 0, 1245217, 262145, 3, 1310754, 327681, 2, 1310753, 393217, 2, 1310752, 393217, 2, 1310751, 393217, 2, 1310750, 393217, 2, 1310749, 393217, 2, 1310748, 393217, 2, 1310747, 393217, 2, 1310746, 393217, 2, 1310745, 393217, 2, 1310744, 393217, 2, 1310743, 393217, 2, 1310742, 393217, 2, 1310741, 393217, 2, 1310740, 393217, 2, 1310739, 393217, 2, 1310738, 393217, 2, 1310737, 393217, 2, 1310736, 393217, 2, 1310735, 393217, 2, 1310734, 393217, 2, 1310733, 393217, 2, 1310732, 393217, 2, 1310731, 393217, 2, 1310730, 393217, 2, 1310729, 393217, 2, 1310728, 393217, 2, 1310727, 393217, 2, 1310726, 393217, 2, 1310725, 262145, 2, 1179676, 262145, 2, 1114140, 262145, 2, 1048604, 262145, 2, 983068, 262145, 2, 917532, 262145, 2, 851996, 458753, 0, 851997, 262145, 3, 917533, 393217, 2, 983069, 393217, 2, 1048605, 393217, 2, 1114141, 393217, 2, 1179677, 393217, 2, 1179678, 327681, 2, 1114142, 327681, 2, 1048606, 327681, 2, 983070, 327681, 2, 917534, 327681, 2, 851998, 524289, 0, 1048602, 524289, 0, 1114138, 327681, 2, 1179674, 327681, 2, 1179673, 393217, 2, 1179672, 262145, 2, 1114136, 262145, 2, 1114137, 393217, 2, 1048601, 262145, 3, 1048600, 458753, 0, 1114134, 327681, 1, 1179670, 131073, 1, 983072, 458753, 0, 983073, 524289, 0, 1048609, 524289, 1, 1048608, 458753, 1)

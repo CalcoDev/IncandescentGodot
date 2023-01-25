@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scripts/_old/components/physics/AABBComponent.cs" id="1_8ny7w"]
-
-[node name="AABBComponent" type="Node2D"]
-z_index = 20
-script = ExtResource("1_8ny7w")
-Size = Vector2i(8, 8)
