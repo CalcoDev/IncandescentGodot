@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://b4gs86v21u6"]
+[gd_scene load_steps=17 format=3 uid="uid://b4gs86v21u6"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/PhysicsPlayer.cs" id="1_7nf18"]
 [ext_resource type="Texture2D" uid="uid://ckihyaab1up4u" path="res://assets/art/entities/player/player.png" id="2_4ygqh"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="3_4usu8"]
 [ext_resource type="Texture2D" uid="uid://cvxeqr0ka2i4v" path="res://assets/art/tilesets/attemp1.png" id="3_mig26"]
 [ext_resource type="Script" path="res://scripts/game_objects/PhysicsMovingPlatform.cs" id="5_7ceit"]
+[ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="5_cj6yg"]
 [ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="6_nceqh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_re6q1"]
@@ -993,6 +994,10 @@ collision_mask = 1835009
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PhysicsPlayer/GroundedChecker"]
 shape = SubResource("RectangleShape2D_pfo3i")
+
+[node name="StateMachine" parent="PhysicsPlayer" instance=ExtResource("5_cj6yg")]
+
+[node name="DashCooldownTimer" parent="PhysicsPlayer" instance=ExtResource("3_4usu8")]
 
 [node name="MovingPlatform" type="AnimatableBody2D" parent="."]
 position = Vector2(52, 139)

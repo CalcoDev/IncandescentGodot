@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Godot;
 using GodotUtilities;
 using Incandescent.Components;
@@ -35,37 +36,54 @@ public partial class PhysicsPlayer : Actor
     [Export(PropertyHint.Range, "0, 5")] private float JumpApexControl = 3f;
     [Export(PropertyHint.Range, "0, 1")] private float JumpApexControlMultiplier = 0.5f;
 
+    [ExportSubgroup("Dash")]
+    [Export] private float DashCooldown = 0.2f;
+    [Export] private float DashSpeed = 14f * 8.5f * 3f;
+    [Export] private float DashTime = 0.15f;
+    [Export(PropertyHint.Range, "0, 1")] private float DashFinishMultiplier = 0.75f;
+
     #endregion
 
     #region Variables
 
-    [Node("VelocityComponent")]
-    private VelocityComponent _vel;
+    // General
+    [Node("VelocityComponent")] private VelocityComponent _vel;
+    [Node("GroundedChecker")] private Area2D _groundedChecker;
+    [Node("StateMachine")] private StateMachineComponent _stateMachine;
 
-    [Node("GroundedChecker")]
-    private Area2D _groundedChecker;
+    // States
+    private float _delta;
 
-    [Node("CoyoteTimer")]
-    private CustomTimerComponent _coyoteTimer;
+    private const int StNormal = 0;
+    private const int StDash = 1;
+    private const int StPrimary = 2;
+    private const int StSecondary = 3;
 
-    [Node("JumpBufferTimer")]
-    private CustomTimerComponent _jumpBufferTimer;
+    // Jump
+    [Node("CoyoteTimer")] private CustomTimerComponent _coyoteTimer;
+    [Node("JumpBufferTimer")] private CustomTimerComponent _jumpBufferTimer;
+    [Node("VariableJumpTimer")] private CustomTimerComponent _variableJumpTimer;
 
-    [Node("VariableJumpTimer")]
-    private CustomTimerComponent _variableJumpTimer;
+    private bool _isGrounded;
+    private bool _isJumping;
 
-    [Node("CollisionShape2D")]
-    private CollisionShape2D _collisionShape;
+    // Dash
+    [Node("DashCooldownTimer")] private CustomTimerComponent _dashCooldownTimer;
 
+    private Vector2 _dashDir;
+    private bool _groundDash;
+    private bool _queueDashStop;
+
+    // Input
     private float _inputX;
     private bool _inputJumpPressed;
     private bool _inputJumpReleased;
     private bool _inputJumpHeld;
+    private bool _inputDashPressed;
+    private Vector2 _lastNonZeroDir;
 
-    private float _delta;
-    private bool _isGrounded;
-    private bool _wasGrounded;
-    private bool _isJumping;
+    private bool _inputPrimaryPressed;
+    private bool _inputSecondaryPressed;
 
     #endregion
 
@@ -78,57 +96,48 @@ public partial class PhysicsPlayer : Actor
     {
         _groundedChecker.BodyEntered += OnEnterGround;
         _groundedChecker.BodyExited += OnExitGround;
-    }
 
-    private void OnEnterGround(Node body)
-    {
-        if (body is not PhysicsBody2D && body is not TileMap)
-        {
-            return;
-        }
+        _stateMachine.Init(10, -1);
+        _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
+        _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, DashCoroutine);
 
-        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
-            return;
-
-        _isGrounded = true;
-
-        _coyoteTimer.SetTime(CoyoteTime);
-        _isJumping = false;
-    }
-
-    private void OnExitGround(Node body)
-    {
-        if (body is not PhysicsBody2D && body is not TileMap)
-        {
-            return;
-        }
-
-        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
-            return;
-
-        _isGrounded = false;
-
-        _coyoteTimer.SetTime(0f);
-    }
-
-    public void Squish(KinematicCollision2D coll)
-    {
-        GD.Print($"Squished by: {coll.GetCollider()}");
+        _stateMachine.SetState(StNormal);
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        Normal(delta);
-    }
-
-    private void Normal(double delta)
-    {
         _delta = (float)delta;
 
+        // Gather Input
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_space");
         _inputJumpReleased = Input.IsActionJustReleased("btn_space");
         _inputJumpHeld = Input.IsActionPressed("btn_space");
+
+        _inputDashPressed = Input.IsActionJustPressed("btn_shift");
+
+        _inputPrimaryPressed = Input.IsActionJustPressed("btn_primary");
+        _inputSecondaryPressed = Input.IsActionJustPressed("btn_secondary");
+
+        if (Mathf.Abs(_inputX) > 0f)
+            _lastNonZeroDir = new Vector2(_inputX, 0f);
+
+        // _groundedChecker.Update();
+        // _isGrounded = _groundedChecker.IsColliding;
+
+        int newState = _stateMachine.Update();
+        _stateMachine.SetState(newState);
+
+        // GlobalPosition = _actor.GlobalPosition;
+    }
+
+    #region States
+
+    private int NormalUpdate()
+    {
+        // States
+        if (_inputDashPressed && _dashCooldownTimer.HasFinished())
+            return StDash;
 
         // Timers
         if (!_isGrounded)
@@ -184,6 +193,61 @@ public partial class PhysicsPlayer : Actor
 
         MoveX(_vel.X * _delta, OnCollideH);
         MoveY(_vel.Y * _delta, OnCollideV);
+
+        return StNormal;
+    }
+
+    // Dash
+    private void DashEnter()
+    {
+        _vel.Set(0f, 0f);
+        _dashDir = Vector2.Zero;
+
+        _groundDash = _isGrounded;
+    }
+
+    private int DashUpdate()
+    {
+        MoveX(_vel.X * _delta, OnCollideH);
+        if (_queueDashStop)
+        {
+            _queueDashStop = false;
+            return StNormal;
+        }
+
+        return StDash;
+    }
+
+    private void DashExit()
+    {
+    }
+
+    private IEnumerator DashCoroutine()
+    {
+        yield return null;
+
+        _dashDir = _lastNonZeroDir;
+
+        Vector2 speed = _dashDir * DashSpeed;
+
+        if (Calc.SameSign(_vel.X, speed.x) && Mathf.Abs(_vel.X) > Mathf.Abs(speed.x))
+            speed.x = _vel.X;
+
+        _vel.Set(speed);
+
+        yield return DashTime;
+
+        _vel.MultiplyX(DashFinishMultiplier);
+        _stateMachine.SetState(StNormal);
+    }
+
+    #endregion
+
+    #region Collision Events
+
+    public override void Squish(KinematicCollision2D coll)
+    {
+        GD.Print($"Squished by: {coll.GetCollider()}");
     }
 
     private void OnCollideH(KinematicCollision2D coll)
@@ -216,6 +280,42 @@ public partial class PhysicsPlayer : Actor
         _vel.SetY(0f);
     }
 
+    private void OnEnterGround(Node body)
+    {
+        if (body is not PhysicsBody2D && body is not TileMap)
+        {
+            return;
+        }
+
+        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
+            return;
+
+        _isGrounded = true;
+
+        _coyoteTimer.SetTime(CoyoteTime);
+        _dashCooldownTimer.SetTime(0f);
+        _isJumping = false;
+    }
+
+    private void OnExitGround(Node body)
+    {
+        if (body is not PhysicsBody2D && body is not TileMap)
+        {
+            return;
+        }
+
+        if (body is CharacterBody2D cB && cB.GetRid().Equals(this.GetRid()))
+            return;
+
+        _isGrounded = false;
+
+        _coyoteTimer.SetTime(0f);
+    }
+
+    #endregion
+
+    #region Corner Correction
+
     private Vector2 AttemptVerticalCornerCorrection()
     {
         for (float i = 0; i < CornerCorrectionPixels; i += 0.25f)
@@ -235,4 +335,6 @@ public partial class PhysicsPlayer : Actor
 
         return Vector2i.Zero;
     }
+
+    #endregion
 }
