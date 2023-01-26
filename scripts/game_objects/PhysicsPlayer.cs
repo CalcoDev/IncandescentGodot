@@ -47,9 +47,12 @@ public partial class PhysicsPlayer : Actor
     #region Variables
 
     // General
-    [Node("VelocityComponent")] private VelocityComponent _vel;
-    [Node("GroundedChecker")] private Area2D _groundedChecker;
-    [Node("StateMachine")] private StateMachineComponent _stateMachine;
+    [Node("StateMachine")]
+    private StateMachineComponent _stateMachine;
+    [Node("VelocityComponent")]
+    private VelocityComponent _vel;
+    [Node("GroundedChecker")]
+    private Area2D _groundedChecker;
 
     // States
     private float _delta;
@@ -60,9 +63,12 @@ public partial class PhysicsPlayer : Actor
     private const int StSecondary = 3;
 
     // Jump
-    [Node("CoyoteTimer")] private CustomTimerComponent _coyoteTimer;
-    [Node("JumpBufferTimer")] private CustomTimerComponent _jumpBufferTimer;
-    [Node("VariableJumpTimer")] private CustomTimerComponent _variableJumpTimer;
+    [Node("CoyoteTimer")]
+    private CustomTimerComponent _coyoteTimer;
+    [Node("JumpBufferTimer")]
+    private CustomTimerComponent _jumpBufferTimer;
+    [Node("VariableJumpTimer")]
+    private CustomTimerComponent _variableJumpTimer;
 
     private bool _isGrounded;
     private bool _isJumping;
@@ -87,9 +93,10 @@ public partial class PhysicsPlayer : Actor
 
     #endregion
 
-    public override void _EnterTree()
+    public override void _Notification(long what)
     {
-        this.WireNodes();
+        if (what == NotificationEnterTree)
+            this.WireNodes();
     }
 
     public override void _Ready()
@@ -104,7 +111,7 @@ public partial class PhysicsPlayer : Actor
         _stateMachine.SetState(StNormal);
     }
 
-    // _PhysicsProcess
+    // _PhysicsProcess or Process should work interchangeably
     public override void _PhysicsProcess(double delta)
     {
         _delta = (float)delta;
@@ -156,7 +163,6 @@ public partial class PhysicsPlayer : Actor
         }
 
         // Jumping
-        GD.Print(_coyoteTimer.Time);
         if (_jumpBufferTimer.IsRunning() && _coyoteTimer.IsRunning())
         {
             _coyoteTimer.SetTime(0f);

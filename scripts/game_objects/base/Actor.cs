@@ -12,13 +12,13 @@ public abstract partial class Actor : CharacterBody2D
     {
         var collX = MoveAndCollide(Vector2.Right * amount, safeMargin: 0.001f);
         if (collX != null)
-            onCollide(collX);
+            onCollide?.Invoke(collX);
     }
 
     public void MoveY(float amount, Action<KinematicCollision2D> onCollide = null)
     {
         var collY = MoveAndCollide(Vector2.Down * amount, safeMargin: 0.001f);
         if (collY != null)
-            onCollide(collY);
+            onCollide?.Invoke(collY);
     }
 }

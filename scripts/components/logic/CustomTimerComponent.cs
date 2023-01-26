@@ -15,7 +15,7 @@ public partial class CustomTimerComponent : Node
 
     public float Time => _time;
 
-    private bool _triggeredEvent;
+    public bool _triggeredEvent;
 
     public static CustomTimerComponent Create(Node parent, float time, bool updateAutomatically = false)
     {
@@ -53,8 +53,8 @@ public partial class CustomTimerComponent : Node
         _time = Mathf.Max(_time - deltaTime, 0f);
         if (HasFinished() && !_triggeredEvent)
         {
-            EmitSignal(SignalName.OnTimeout);
             _triggeredEvent = true;
+            EmitSignal(SignalName.OnTimeout);
         }
     }
 

@@ -16,6 +16,9 @@ public partial class BowEnemy : Actor
     [Node("StateMachineComponent")]
     private StateMachineComponent _stateMachine;
 
+    [Node("PathfindingComponent")]
+    private PathfindingComponent _pathfinding;
+
     // State
     // Enemy should wander about, until player is within a certain distance. Then, it should attack, by firing an arrow.
     // If the player gets too close, it will try dashing away.
@@ -30,6 +33,9 @@ public partial class BowEnemy : Actor
 
     private const float AttackRange = 125f;
     private const float DashRange = 50f;
+
+    // TODO(calco): Should really make this a global thing.
+    private float _delta;
 
     public override void _Notification(long what)
     {
@@ -48,45 +54,56 @@ public partial class BowEnemy : Actor
 
     public override void _Process(double delta)
     {
+        _delta = (float)delta;
+
         int newSt = _stateMachine.Update();
         _stateMachine.SetState(newSt);
     }
 
     private int NormalUpdate()
     {
-        // Get the player.
+        // Check if the player is within the dash range, then attack range and then follow range.
         PhysicsPlayer player = GameManager.Player;
 
-        Vector2 desiredVelocity = Vector2.Zero;
+        float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+        // if (sqrDist < DashRange * DashRange)
+        // {
+        //     return StDash;
+        // }
+        // else if (sqrDist < AttackRange * AttackRange)
+        // {
+        //     return StAttack;
+        // }
+        if (sqrDist < FollowRange * FollowRange)
+        {
+            if (_pathfinding.Agent.IsNavigationFinished())
+                GD.Print("Navigation Finished");
 
-        Vector2 startPos = player?.GlobalPosition ?? GlobalPosition;
-        Vector2 endPos = GlobalPosition;
+            _pathfinding.SetTargetPosition(player.GlobalPosition);
 
-        // float angle = (startPos - endPos).Angle();
-        // Rotation = angle;
+            var target = _pathfinding.Agent.GetNextLocation();
+            var dir = GlobalPosition.DirectionTo(target);
 
-        float distSqr = startPos.DistanceSquaredTo(endPos);
-        // GD.Print($"Distance: {Mathf.Sqrt(distSqr)}");
+            _vel.Set(dir * FollowSpeed);
 
-        if (distSqr < AttackRange * AttackRange)
-            return StAttack;
+            _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
+            GD.Print(_pathfinding.LastComputedVelocity);
 
-        if (distSqr < DashRange * DashRange)
-            return StDash;
-
-        if (distSqr < FollowRange * FollowRange)
-            desiredVelocity = (startPos - endPos).Normalized();
-
-        _vel.Apprach(desiredVelocity * FollowSpeed, Acceleration);
-
-        MoveX(_vel.X * GameManager.Delta);
-        MoveY(_vel.Y * GameManager.Delta);
+            // Move
+            MoveX(_vel.X * _delta);
+            MoveY(_vel.Y * _delta);
+        }
+        else
+        {
+            // Wander
+        }
 
         return StNormal;
     }
 
     private int AttackUpdate()
     {
+        GD.Print("Attack");
         return StNormal;
     }
 

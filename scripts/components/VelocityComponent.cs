@@ -11,7 +11,7 @@ public partial class VelocityComponent : Node
     public float X => _velocity.x;
     public float Y => _velocity.y;
 
-    public Vector2 Get()
+    public Vector2 GetVelocity()
     {
         return _velocity;
     }

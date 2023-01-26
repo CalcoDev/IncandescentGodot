@@ -83,6 +83,12 @@ btn_secondary={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="Solid"
+2d_physics/layer_2="ActorA"
+2d_physics/layer_3="ActorB"
+
 [physics]
 
 common/physics_ticks_per_second=240
