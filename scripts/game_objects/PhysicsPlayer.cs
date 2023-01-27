@@ -5,6 +5,7 @@ using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
 using Incandescent.GameObjects.Base;
+using Incandescent.Managers;
 using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
@@ -59,9 +60,6 @@ public partial class PhysicsPlayer : Actor
     [Node("GroundedChecker")]
     private Area2D _groundedChecker;
 
-    // States
-    private float _delta;
-
     // Jump
     [Node("CoyoteTimer")]
     private CustomTimerComponent _coyoteTimer;
@@ -111,12 +109,8 @@ public partial class PhysicsPlayer : Actor
         _stateMachine.SetState(StNormal);
     }
 
-    // _PhysicsProcess or Process should work interchangeably
-    public override void _PhysicsProcess(double delta)
+    public override void _Process(double delta)
     {
-        _delta = (float)delta;
-
-        // Gather Input
         _inputX = Input.GetAxis("axis_horizontal_negative", "axis_horizontal_positive");
         _inputJumpPressed = Input.IsActionJustPressed("btn_space");
         _inputJumpReleased = Input.IsActionJustReleased("btn_space");
@@ -129,7 +123,10 @@ public partial class PhysicsPlayer : Actor
 
         if (Mathf.Abs(_inputX) > 0f)
             _lastNonZeroDir = new Vector2(_inputX, 0f);
+    }
 
+    public override void _PhysicsProcess(double delta)
+    {
         int newState = _stateMachine.Update();
         _stateMachine.SetState(newState);
     }
@@ -144,22 +141,22 @@ public partial class PhysicsPlayer : Actor
 
         // Timers
         if (!_isGrounded)
-            _coyoteTimer.Update(_delta);
+            _coyoteTimer.Update(GameManager.PhysicsDelta);
 
-        _jumpBufferTimer.Update(_delta);
+        _jumpBufferTimer.Update(GameManager.PhysicsDelta);
         if (_inputJumpPressed)
             _jumpBufferTimer.SetTime(JumpBufferTime);
 
         if (_isJumping)
-            _variableJumpTimer.Update(_delta);
+            _variableJumpTimer.Update(GameManager.PhysicsDelta);
 
         // Gravity
         if (!_isGrounded)
         {
             if (_isJumping && _inputJumpHeld && Mathf.Abs(_vel.Y) < JumpApexControl)
-                _vel.ApproachY(MaxFall, Gravity * JumpApexControlMultiplier * _delta);
+                _vel.ApproachY(MaxFall, Gravity * JumpApexControlMultiplier * GameManager.PhysicsDelta);
             else
-                _vel.ApproachY(MaxFall, Gravity * _delta);
+                _vel.ApproachY(MaxFall, Gravity * GameManager.PhysicsDelta);
         }
 
         // Jumping
@@ -192,10 +189,10 @@ public partial class PhysicsPlayer : Actor
         if (Mathf.Abs(_inputX) > 0f && !sameDir)
             accel *= 2f;
 
-        _vel.ApproachX(_inputX * MaxRunSpeed, accel * _delta);
+        _vel.ApproachX(_inputX * MaxRunSpeed, accel * GameManager.PhysicsDelta);
 
-        MoveX(_vel.X * _delta, OnCollideH);
-        MoveY(_vel.Y * _delta, OnCollideV);
+        MoveX(_vel.X * GameManager.PhysicsDelta, OnCollideH);
+        MoveY(_vel.Y * GameManager.PhysicsDelta, OnCollideV);
 
         return StNormal;
     }
@@ -211,7 +208,7 @@ public partial class PhysicsPlayer : Actor
 
     private int DashUpdate()
     {
-        MoveX(_vel.X * _delta, OnCollideH);
+        MoveX(_vel.X * GameManager.PhysicsDelta, OnCollideH);
         if (_queueDashStop)
         {
             _queueDashStop = false;
@@ -322,7 +319,7 @@ public partial class PhysicsPlayer : Actor
             {
                 Vector2 offset = new Vector2((i + 1f) * j, 0f);
                 var transf = GlobalTransform;
-                transf.origin.y -= _vel.Y * _delta;
+                transf.origin.y -= _vel.Y * GameManager.PhysicsDelta;
                 bool collided = TestMove(transf.Translated(offset), Vector2.Up, null, 0.001f);
                 if (collided)
                     continue;

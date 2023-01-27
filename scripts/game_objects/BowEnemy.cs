@@ -44,9 +44,6 @@ public partial class BowEnemy : Actor
 
     #region Variables
 
-    // TODO(calco): Should really make this a global thing.
-    private float _delta;
-
     // Dash
     private Vector2 _dashDir;
     private Vector2 _dashStartPos;
@@ -72,8 +69,6 @@ public partial class BowEnemy : Actor
 
     public override void _PhysicsProcess(double delta)
     {
-        _delta = (float)delta;
-
         int newSt = _stateMachine.Update();
         _stateMachine.SetState(newSt);
     }
@@ -86,17 +81,10 @@ public partial class BowEnemy : Actor
         PhysicsPlayer player = GameManager.Player;
 
         // Timers
-        _dashCooldownTimer.Update(_delta);
+        _dashCooldownTimer.Update(GameManager.PhysicsDelta);
 
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-        // TODO(calco): Move this to the game class.
-        var space = GetWorld2d().DirectSpaceState;
-        var query = PhysicsRayQueryParameters2D.Create(
-            GlobalPosition, player.GlobalPosition,
-            1 << 0, null
-        );
-        var res = space.IntersectRay(query);
-        bool playerInSight = res.Count == 0;
+        bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
 
         if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
         {
@@ -119,8 +107,8 @@ public partial class BowEnemy : Actor
             _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
 
             // TODO(calco): Acceleration.
-            MoveX(_vel.X * _delta);
-            MoveY(_vel.Y * _delta);
+            MoveX(_vel.X * GameManager.PhysicsDelta);
+            MoveY(_vel.Y * GameManager.PhysicsDelta);
         }
         else
         {
@@ -147,14 +135,14 @@ public partial class BowEnemy : Actor
 
     private int DashUpdate()
     {
-        _dashTimer.Update(_delta);
+        _dashTimer.Update(GameManager.PhysicsDelta);
 
         if (_dashTimer.HasFinished())
             return StNormal;
 
         bool collidedWithAnything = false;
-        MoveX(_dashDir.x * DashSpeed * _delta, (_) => collidedWithAnything = true);
-        MoveY(_dashDir.y * DashSpeed * _delta, (_) => collidedWithAnything = true);
+        MoveX(_dashDir.x * DashSpeed * GameManager.PhysicsDelta, (_) => collidedWithAnything = true);
+        MoveY(_dashDir.y * DashSpeed * GameManager.PhysicsDelta, (_) => collidedWithAnything = true);
 
         float dashTravel = GlobalPosition.DistanceSquaredTo(_dashStartPos);
 

@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using Incandescent.GameObjects;
 
 namespace Incandescent.Managers;
@@ -6,10 +7,19 @@ namespace Incandescent.Managers;
 public partial class GameManager : Node
 {
     public static GameManager Instance { get; private set; }
+
     public static Node Root { get; private set; }
+
+    // TODO(calco): Actual proper management of stuff
+    public static Node2D SceneRoot { get; private set; }
+
     public static PhysicsPlayer Player { get; private set; }
 
     public static float Delta { get; private set; }
+    public static float PhysicsDelta { get; private set; }
+
+    public static World2D GlobalWorld { get; private set; }
+    public static PhysicsDirectSpaceState2D GlobalPhysicsSpace => GlobalWorld.DirectSpaceState;
 
     [Export] public bool Debug { get; set; } = false;
 
@@ -20,14 +30,23 @@ public partial class GameManager : Node
 
     #endregion
 
+    public override void _Notification(long what)
+    {
+        if (what == NotificationEnterTree)
+        {
+            Instance = this;
+        }
+    }
+
     public override void _EnterTree()
     {
-        Instance = this;
-        Root = GetTree().Root;
+        ProcessPriority = -1;
     }
 
     public override void _Ready()
     {
+        Root = GetTree().Root;
+        SceneRoot = GetTree().CurrentScene as Node2D;
         Player = GetTree().GetFirstNodeInGroup("player") as PhysicsPlayer;
     }
 
@@ -41,6 +60,26 @@ public partial class GameManager : Node
             EmitSignal(SignalName.OnDebugModeChanged, Debug);
         }
     }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        GlobalWorld = SceneRoot.GetWorld2d();
+        PhysicsDelta = (float)delta;
+    }
+
+    #region Physics Helpers
+
+    public static bool Raycast(Vector2 from, Vector2 to, uint mask)
+    {
+        PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(from, to, mask, null);
+        Dictionary res = GameManager.GlobalPhysicsSpace.IntersectRay(query);
+
+        return res.Count > 0;
+    }
+
+    #endregion
+
+    #region FX Helpers
 
     public static Node2D SpawnPixelatedFX(PackedScene fx, Vector2 position, bool root = true)
     {
@@ -56,4 +95,6 @@ public partial class GameManager : Node
 
         return fxInstance;
     }
+
+    #endregion
 }
