@@ -51,13 +51,13 @@ public partial class BowEnemy : Actor
         _stateMachine.SetCallbacks(StAttack, AttackUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, null, null, null);
 
-        _pathfinding.OnVelocityChanged += vel =>
-        {
-            _vel.Set(vel);
+        // _pathfinding.OnVelocityChanged += vel =>
+        // {
+        //     _vel.Set(vel);
 
-            MoveX(_vel.X * _delta);
-            MoveY(_vel.Y * _delta);
-        };
+        //     MoveX(_vel.X * _delta);
+        //     MoveY(_vel.Y * _delta);
+        // };
     }
 
     public override void _PhysicsProcess(double delta)
@@ -74,23 +74,26 @@ public partial class BowEnemy : Actor
         PhysicsPlayer player = GameManager.Player;
 
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-        if (sqrDist < FollowRange * FollowRange)
+        if (true) //sqrDist < FollowRange * FollowRange
         {
             var desiredVelocity = Vector2.Zero;
-            var targetPos = player?.GlobalPosition ?? GlobalPosition;
-            _pathfinding.SetTargetInterval(targetPos);
+            var targetPos = player?.GlobalPosition ?? Vector2.Zero;
+            // _pathfinding.SetTargetInterval(targetPos);
 
+            _pathfinding.Agent.TargetLocation = targetPos;
             var next = _pathfinding.Agent.GetNextLocation();
 
-            desiredVelocity = (next - GlobalPosition).Normalized() * FollowSpeed;
+            // desiredVelocity = (next - GlobalPosition).Normalized() * FollowSpeed;
 
-            _vel.Set(desiredVelocity);
-            _pathfinding.Agent.SetVelocity(desiredVelocity);
+            // _vel.Set(desiredVelocity);
+            // _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
+
+            GD.Print($"{targetPos}");
 
             // MoveX(_vel.X * _delta);
             // MoveY(_vel.Y * _delta);
 
-            GD.Print($"Next: {next} | Global: {GlobalPosition} | Desired: {desiredVelocity} | Velocity: {_vel}");
+            GlobalPosition = next;
         }
         else
         {
