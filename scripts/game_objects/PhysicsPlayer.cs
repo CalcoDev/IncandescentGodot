@@ -42,6 +42,11 @@ public partial class PhysicsPlayer : Actor
     [Export] private float DashTime = 0.15f;
     [Export(PropertyHint.Range, "0, 1")] private float DashFinishMultiplier = 0.75f;
 
+    private const int StNormal = 0;
+    private const int StDash = 1;
+    private const int StPrimary = 2;
+    private const int StSecondary = 3;
+
     #endregion
 
     #region Variables
@@ -56,11 +61,6 @@ public partial class PhysicsPlayer : Actor
 
     // States
     private float _delta;
-
-    private const int StNormal = 0;
-    private const int StDash = 1;
-    private const int StPrimary = 2;
-    private const int StSecondary = 3;
 
     // Jump
     [Node("CoyoteTimer")]

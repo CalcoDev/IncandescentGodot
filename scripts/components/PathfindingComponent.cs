@@ -45,8 +45,6 @@ public partial class PathfindingComponent : Node2D
         if (_intervalTimer.IsRunning() || Agent.TargetLocation == targetPos)
             return;
 
-        GD.Print("Set target interval.");
-
         _intervalTimer.Start(_interval);
         Agent.TargetLocation = targetPos;
     }
