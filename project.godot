@@ -89,6 +89,10 @@ btn_secondary={
 2d_physics/layer_2="ActorA"
 2d_physics/layer_3="ActorB"
 
+[navigation]
+
+2d/default_edge_connection_margin=4
+
 [physics]
 
 common/physics_ticks_per_second=240

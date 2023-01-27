@@ -72,7 +72,7 @@ public partial class GameManager : Node
     public static bool Raycast(Vector2 from, Vector2 to, uint mask)
     {
         PhysicsRayQueryParameters2D query = PhysicsRayQueryParameters2D.Create(from, to, mask, null);
-        Dictionary res = GameManager.GlobalPhysicsSpace.IntersectRay(query);
+        Dictionary res = GlobalPhysicsSpace.IntersectRay(query);
 
         return res.Count > 0;
     }

@@ -86,10 +86,11 @@ public partial class BowEnemy : Actor
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
 
-        if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
-        {
-            return StDash;
-        }
+        // if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
+        // {
+        //     return StDash;
+        // }
+        if (false) { }
         // else if (sqrDist < AttackRange * AttackRange)
         // {
         //     return StAttack;
