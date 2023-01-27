@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using GodotUtilities;
 
@@ -12,8 +13,13 @@ public partial class PathfindingComponent : Node2D
 
     public Vector2 LastComputedVelocity { get; private set; }
 
+    [Signal]
+    public delegate void OnVelocityChangedEventHandler(Vector2 velocity);
+
     [Export]
-    private float _interval = 0.1f;
+    private float _interval = 0.2f;
+
+    private Vector2 _targetPos;
 
     public override void _Notification(long what)
     {
@@ -27,11 +33,6 @@ public partial class PathfindingComponent : Node2D
     public override void _Ready()
     {
         Agent.VelocityComputed += OnVelocityComputed;
-
-        _intervalTimer.OnTimeout += () =>
-        {
-            _intervalTimer.SetTime(_interval);
-        };
     }
 
     public override void _PhysicsProcess(double delta)
@@ -39,21 +40,18 @@ public partial class PathfindingComponent : Node2D
         _intervalTimer.Update((float)delta);
     }
 
-    public void SetTargetPosition(Vector2 targetPos)
+    public void SetTargetInterval(Vector2 targetPos)
     {
+        if (_intervalTimer.IsRunning() || Agent.TargetLocation == targetPos)
+            return;
+
+        _intervalTimer.Start(_interval);
         Agent.TargetLocation = targetPos;
-
-        if (!_intervalTimer.IsRunning())
-            _intervalTimer.SetTime(_interval);
-    }
-
-    public void SetCurrentVelocity(Vector2 velocity)
-    {
-        Agent.SetVelocity(velocity);
     }
 
     private void OnVelocityComputed(Vector2 velocity)
     {
         LastComputedVelocity = velocity;
+        EmitSignal(SignalName.OnVelocityChanged, velocity);
     }
 }

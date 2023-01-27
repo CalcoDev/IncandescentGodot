@@ -50,9 +50,17 @@ public partial class BowEnemy : Actor
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         _stateMachine.SetCallbacks(StAttack, AttackUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, null, null, null);
+
+        _pathfinding.OnVelocityChanged += vel =>
+        {
+            _vel.Set(vel);
+
+            MoveX(_vel.X * _delta);
+            MoveY(_vel.Y * _delta);
+        };
     }
 
-    public override void _Process(double delta)
+    public override void _PhysicsProcess(double delta)
     {
         _delta = (float)delta;
 
@@ -66,32 +74,23 @@ public partial class BowEnemy : Actor
         PhysicsPlayer player = GameManager.Player;
 
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-        // if (sqrDist < DashRange * DashRange)
-        // {
-        //     return StDash;
-        // }
-        // else if (sqrDist < AttackRange * AttackRange)
-        // {
-        //     return StAttack;
-        // }
         if (sqrDist < FollowRange * FollowRange)
         {
-            if (_pathfinding.Agent.IsNavigationFinished())
-                GD.Print("Navigation Finished");
+            var desiredVelocity = Vector2.Zero;
+            var targetPos = player?.GlobalPosition ?? GlobalPosition;
+            _pathfinding.SetTargetInterval(targetPos);
 
-            _pathfinding.SetTargetPosition(player.GlobalPosition);
+            var next = _pathfinding.Agent.GetNextLocation();
 
-            var target = _pathfinding.Agent.GetNextLocation();
-            var dir = GlobalPosition.DirectionTo(target);
+            desiredVelocity = (next - GlobalPosition).Normalized() * FollowSpeed;
 
-            _vel.Set(dir * FollowSpeed);
+            _vel.Set(desiredVelocity);
+            _pathfinding.Agent.SetVelocity(desiredVelocity);
 
-            _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
-            GD.Print(_pathfinding.LastComputedVelocity);
+            // MoveX(_vel.X * _delta);
+            // MoveY(_vel.Y * _delta);
 
-            // Move
-            MoveX(_vel.X * _delta);
-            MoveY(_vel.Y * _delta);
+            GD.Print($"Next: {next} | Global: {GlobalPosition} | Desired: {desiredVelocity} | Velocity: {_vel}");
         }
         else
         {

@@ -13,12 +13,10 @@ size = Vector2(7.99, 12.999)
 size = Vector2(7.98, 1.999)
 
 [node name="Player" type="CharacterBody2D"]
-position = Vector2(157, 59)
 safe_margin = 0.001
 script = ExtResource("1_521ab")
 
-[node name="Sprite2D" type="Sprite2D" parent="." groups=["pixelated"]]
-visible = false
+[node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -1)
 texture = ExtResource("5_dw34v")
 
