@@ -15,8 +15,11 @@ public partial class GameManager : Node
 
     public static PhysicsPlayer Player { get; private set; }
 
-    public static float Delta { get; private set; }
-    public static float PhysicsDelta { get; private set; }
+    public static float Time { get; private set; } = 0f;
+    public static uint FrameCount { get; private set; } = 0;
+
+    public static float Delta { get; private set; } = 0f;
+    public static float PhysicsDelta { get; private set; } = 0f;
 
     public static World2D GlobalWorld { get; private set; }
     public static PhysicsDirectSpaceState2D GlobalPhysicsSpace => GlobalWorld.DirectSpaceState;
@@ -53,6 +56,9 @@ public partial class GameManager : Node
     public override void _Process(double delta)
     {
         Delta = (float)delta;
+        Time += Delta;
+
+        FrameCount++;
 
         if (Input.IsActionJustPressed("btn_toggle_debug"))
         {

@@ -11,6 +11,8 @@ public partial class BowEnemy : Actor
 {
     #region Constants
 
+    [Export] private float StrafeCoefficient;
+
     [Node("VelocityComponent")]
     private VelocityComponent _vel;
     [Node("StateMachineComponent")]
@@ -48,12 +50,22 @@ public partial class BowEnemy : Actor
     private Vector2 _dashDir;
     private Vector2 _dashStartPos;
 
+    private FastNoiseLite _dirNoise = new FastNoiseLite();
+
     #endregion
 
     public override void _Notification(long what)
     {
         if (what == NotificationEnterTree)
             this.WireNodes();
+    }
+
+    public override void _EnterTree()
+    {
+        GD.Randomize();
+        _dirNoise.Seed = (int)GD.Randi();
+        _dirNoise.FractalOctaves = 4;
+        _dirNoise.Frequency = 1.0f / 20.0f;
     }
 
     public override void _Ready()
@@ -86,26 +98,45 @@ public partial class BowEnemy : Actor
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
 
-        // if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
-        // {
-        //     return StDash;
-        // }
-        if (false) { }
+        if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
+        {
+            return StDash;
+        }
         // else if (sqrDist < AttackRange * AttackRange)
         // {
         //     return StAttack;
         // }
         else if (sqrDist < FollowRange * FollowRange)
         {
-            var targetPos = player?.GlobalPosition ?? GlobalPosition;
-            _pathfinding.SetTargetInterval(targetPos);
+            _pathfinding.SetTargetInterval(CalculateTargetPos());
 
-            _pathfinding.Agent.TargetLocation = targetPos;
             var next = _pathfinding.Agent.GetNextLocation();
 
-            var desiredVelocity = (next - GlobalPosition).Normalized() * FollowSpeed;
-            _vel.Set(desiredVelocity);
-            _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
+            Vector2 finalVelocity = Vector2.Zero;
+
+            var desiredVelocity = (next - GlobalPosition).Normalized();
+            finalVelocity += desiredVelocity;
+
+            var angle = (_dirNoise.GetNoise1d(GameManager.Time * 5f) + 0f) * 1f;
+            angle = Mathf.Lerp(0, Mathf.Pi * 2, angle);
+            Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+
+            // Strafe around player
+            if (sqrDist < (DashRange * DashRange) + 400f)
+            {
+                var d = dir.Dot(desiredVelocity);
+                finalVelocity = dir * d * StrafeCoefficient;
+                finalVelocity = finalVelocity.Normalized() * FollowSpeed;
+                GD.Print("aaa");
+                _vel.Set(finalVelocity);
+            }
+            else
+            {
+                finalVelocity = finalVelocity.Normalized() * FollowSpeed;
+
+                _vel.Set(finalVelocity);
+                _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
+            }
 
             // TODO(calco): Acceleration.
             MoveX(_vel.X * GameManager.PhysicsDelta);
@@ -117,6 +148,13 @@ public partial class BowEnemy : Actor
         }
 
         return StNormal;
+    }
+
+    private Vector2 CalculateTargetPos()
+    {
+        var targetPos = GameManager.Player?.GlobalPosition ?? GlobalPosition;
+        targetPos += (GlobalPosition - targetPos).Normalized() * (DashRange + 1f);
+        return targetPos;
     }
 
     private int AttackUpdate()

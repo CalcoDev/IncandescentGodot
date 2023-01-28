@@ -25,7 +25,6 @@ public partial class PathfindingComponent : Node2D
     {
         if (what == NotificationEnterTree)
         {
-            GD.Print("Wired nodes.");
             this.WireNodes();
         }
     }
