@@ -32,23 +32,23 @@ public partial class VelocityComponent : Node
         _velocity.y = _velocity.y < target ? Mathf.Min(_velocity.y + maxDelta, target) : Mathf.Max(_velocity.y - maxDelta, target);
     }
 
-    public void SetX(float value)
+    public void SetVelocityX(float value)
     {
         _velocity.x = value;
     }
 
-    public void SetY(float value)
+    public void SetVelocityY(float value)
     {
         _velocity.y = value;
     }
 
-    public void Set(float x, float y)
+    public void SetVelocity(float x, float y)
     {
         _velocity.x = x;
         _velocity.y = y;
     }
 
-    public void Set(Vector2 v)
+    public void SetVelocity(Vector2 v)
     {
         _velocity = v;
     }

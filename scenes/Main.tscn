@@ -1109,7 +1109,9 @@ rotation = 0.65351
 script = ExtResource("7_tbtcw")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="BowEnemy/PathfindingComponent"]
+target_desired_distance = 30.0
 avoidance_enabled = true
+radius = 30.0
 
 [node name="IntervalTimer" parent="BowEnemy/PathfindingComponent" instance=ExtResource("8_tb6wk")]
 

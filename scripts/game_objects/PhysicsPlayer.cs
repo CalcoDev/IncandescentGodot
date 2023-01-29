@@ -166,7 +166,7 @@ public partial class PhysicsPlayer : Actor
             _jumpBufferTimer.SetTime(0f);
 
             _vel.AddX(JumpHBoost * _inputX);
-            _vel.SetY(-JumpForce);
+            _vel.SetVelocityY(-JumpForce);
 
             _variableJumpTimer.SetTime(VariableJumpTime);
             _isJumping = true;
@@ -200,7 +200,7 @@ public partial class PhysicsPlayer : Actor
     // Dash
     private void DashEnter()
     {
-        _vel.Set(0f, 0f);
+        _vel.SetVelocity(0f, 0f);
         _dashDir = Vector2.Zero;
 
         _groundDash = _isGrounded;
@@ -233,7 +233,7 @@ public partial class PhysicsPlayer : Actor
         if (Calc.SameSign(_vel.X, speed.x) && Mathf.Abs(_vel.X) > Mathf.Abs(speed.x))
             speed.x = _vel.X;
 
-        _vel.Set(speed);
+        _vel.SetVelocity(speed);
 
         yield return DashTime;
 
@@ -254,7 +254,7 @@ public partial class PhysicsPlayer : Actor
         if (Calc.FloatEquals(_vel.X, 0f))
             return;
 
-        _vel.SetX(0f);
+        _vel.SetVelocityX(0f);
     }
 
     private void OnCollideV(KinematicCollision2D coll)
@@ -272,7 +272,7 @@ public partial class PhysicsPlayer : Actor
             }
         }
 
-        _vel.SetY(0f);
+        _vel.SetVelocityY(0f);
     }
 
     private void OnEnterGround(Node body)
