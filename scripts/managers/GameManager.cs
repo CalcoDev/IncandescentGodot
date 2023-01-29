@@ -24,7 +24,7 @@ public partial class GameManager : Node
     public static World2D GlobalWorld { get; private set; }
     public static PhysicsDirectSpaceState2D GlobalPhysicsSpace => GlobalWorld.DirectSpaceState;
 
-    [Export] public bool Debug { get; set; } = false;
+    public static bool Debug { get; set; } = false;
 
     #region Game Events
 

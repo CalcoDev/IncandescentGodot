@@ -1,9 +1,12 @@
+using System;
+using System.Collections.Generic;
 using Godot;
 using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
 using Incandescent.GameObjects.Base;
 using Incandescent.Managers;
+using Incandescent.Utils;
 
 namespace Incandescent.GameObjects.Enemies;
 
@@ -25,6 +28,9 @@ public partial class BowEnemy : Actor
     [Node("DashCooldownTimer")]
     private CustomTimerComponent _dashCooldownTimer;
 
+    [Node("SteerTimer")]
+    private CustomTimerComponent _steerTimer;
+
     private const int StNormal = 0;
     private const int StAttack = 1;
     private const int StDash = 2;
@@ -32,7 +38,7 @@ public partial class BowEnemy : Actor
     private const float Acceleration = 1600f;
 
     private const float FollowRange = 200f;
-    private const float FollowSpeed = 100f;
+    private const float FollowSpeed = 75f;
 
     private const float AttackRange = 125f;
 
@@ -50,12 +56,16 @@ public partial class BowEnemy : Actor
     private Vector2 _dashDir;
     private Vector2 _dashStartPos;
 
-    // private FastNoiseLite _dirNoise = new FastNoiseLite();
-    // private Vector2 _pathfindVel;
+    // TODO(calco); Make this it's own component...
+    // Steering
+    private const int DirCount = 24;
+    private static Func<float, float> AttractionShapingFunction = DotProductShapingFunctions.Avoid;
+    private static Func<float, float> RepulsionShapingFunction = DotProductShapingFunctions.Normalized;
 
-    private const int DirCount = 16;
     private readonly Vector2[] _dirs = new Vector2[DirCount];
-    private readonly float[] _weights = new float[DirCount];
+
+    private readonly float[] _interest = new float[DirCount];
+    private readonly float[] _danger = new float[DirCount];
 
     #endregion
 
@@ -67,11 +77,6 @@ public partial class BowEnemy : Actor
 
     public override void _EnterTree()
     {
-        // GD.Randomize();
-        // _dirNoise.Seed = (int)GD.Randi();
-        // _dirNoise.FractalOctaves = 4;
-        // _dirNoise.Frequency = 1.0f / 20.0f;
-
         for (int i = 0; i < DirCount; i++)
         {
             float angle = Mathf.Pi * 2 * i / DirCount;
@@ -96,22 +101,26 @@ public partial class BowEnemy : Actor
         _stateMachine.SetState(newSt);
     }
 
-    private int _maxWeightIdx = 0;
+    private int _steerDirIdx = 0;
     public override void _Draw()
     {
+        if (!GameManager.Debug)
+            return;
+
         const float Unit = 20f;
 
         for (int i = 0; i < DirCount; i++)
         {
-            float length = _weights[i] * Unit;
-            Color col = _weights[i] > 0f ? Colors.DarkOliveGreen : Colors.Red;
-            if (i == _maxWeightIdx)
+            float weight = _interest[i] + _danger[i];
+            float length = Mathf.Abs(weight) * Unit;
+            Color col = weight > 0f ? Colors.DarkOliveGreen : Colors.Red;
+            if (i == _steerDirIdx)
                 col = Colors.Green;
 
-            DrawLine(Vector2.Zero, _dirs[i] * length, col, 0.33f);
+            DrawLine(Vector2.Zero, _dirs[i] * length, col, 1f);
         }
 
-        DrawArc(Vector2.Zero, Unit, 0f, Mathf.Pi * 2f, 32, Colors.DarkRed, 0.5f);
+        DrawArc(Vector2.Zero, Unit, 0f, Mathf.Pi * 2f, 32, Colors.DarkRed, 1.5f);
     }
 
     #region States
@@ -127,48 +136,43 @@ public partial class BowEnemy : Actor
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
 
-        if (false) { }
-        // if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
-        // {
-        //     return StDash;
-        // }
+        if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
+        {
+            return StDash;
+        }
         // else if (sqrDist < AttackRange * AttackRange)
         // {
         //     return StAttack;
         // }
         else if (sqrDist < FollowRange * FollowRange)
         {
-            _pathfinding.SetTargetInterval(CalculateTargetPos());
+            _pathfinding.SetTargetInterval(player.GlobalPosition);
 
             Vector2 nextPos = _pathfinding.Agent.GetNextLocation();
             Vector2 nextPosDir = (nextPos - GlobalPosition).Normalized();
             Vector2 playerDir = (player.GlobalPosition - GlobalPosition).Normalized();
 
             // Hacky, but it works.
-            Vector2 targetVel = Vector2.Zero;
-
+            Vector2 targetVel;
             if (playerInSight)
             {
-                Vector2 desiredDir = playerDir;
-
-                float maxDot = -1f;
-                for (int i = 0; i < DirCount; i++)
+                // TODO(calco): This is an ugly hack instead of manipulating weights.
+                _steerTimer.Update(GameManager.PhysicsDelta);
+                if (_steerTimer.HasFinished())
                 {
-                    float dot = (_dirs[i].Dot(desiredDir) + 1f) * 0.5f;
-                    if (dot > maxDot)
-                    {
-                        maxDot = dot;
-                        _maxWeightIdx = i;
-                    }
-
-                    _weights[i] = dot;
+                    ComputeSteeringInterest();
+                    ComputeSteeringDanger();
+                    ChooseSteeringDirection();
+                    _steerTimer.SetTime(0.25f);
                 }
-                QueueRedraw();
 
-                targetVel = _dirs[_maxWeightIdx] * FollowSpeed;
+                targetVel = _dirs[_steerDirIdx] * FollowSpeed;
+
+                QueueRedraw();
             }
             else
             {
+                GD.Print("Player not in sight");
                 targetVel = nextPosDir * FollowSpeed;
             }
 
@@ -178,24 +182,8 @@ public partial class BowEnemy : Actor
             MoveX(_vel.X * GameManager.PhysicsDelta);
             MoveY(_vel.Y * GameManager.PhysicsDelta);
         }
-        else
-        {
-            // Wander
-        }
 
         return StNormal;
-    }
-
-    private Vector2 CalculateTargetPos()
-    {
-
-        var targetPos = GameManager.Player?.GlobalPosition ?? GlobalPosition;
-
-        // TODO(calco): Come up with a better check
-        // if (!GameManager.Raycast(GlobalPosition, targetPos, 1 << 0))
-        //     targetPos += (GlobalPosition - targetPos).Normalized() * (DashRange + 5f); // 10f to give room for strafe
-
-        return targetPos;
     }
 
     private int AttackUpdate()
@@ -235,6 +223,159 @@ public partial class BowEnemy : Actor
     private void DashExit()
     {
         _dashCooldownTimer.SetTime(DashCooldown);
+    }
+
+    #endregion
+
+
+    // TODO(calco): Make these function not dependant on state, but parameters.
+    #region Steering
+
+    private void ComputeSteeringInterest()
+    {
+        Vector2 towards = (GameManager.Player.GlobalPosition - GlobalPosition).Normalized();
+
+        float sqrDist = GameManager.Player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+        for (int i = 0; i < DirCount; i++)
+            _interest[i] = 0f;
+
+        // TODO(calco): Especially abstract this away.
+        towards = towards.Normalized();
+        const float SqrDashDist = (DashRange + 15f) * (DashRange + 15f);
+        if (sqrDist < SqrDashDist)
+        {
+            AttractionShapingFunction = DotProductShapingFunctions.Sideways;
+            // towards = -towards;
+        }
+        else
+        {
+            AttractionShapingFunction = DotProductShapingFunctions.Normalized;
+        }
+
+        for (int i = 0; i < DirCount; i++)
+        {
+            float dot = _dirs[i].Dot(towards);
+            float weight = AttractionShapingFunction(dot);
+
+            _interest[i] = Mathf.Max(weight, _interest[i]);
+        }
+
+        float max = 0f;
+        for (int i = 0; i < DirCount; i++)
+            max = Mathf.Max(max, _interest[i]);
+        if (!Calc.FloatEquals(max, 0f))
+        {
+            for (int i = 0; i < DirCount; i++)
+                _interest[i] /= max;
+        }
+
+        // Check if that direction is blocked.
+        for (int i = 0; i < DirCount; i++)
+        {
+            // TODO(calco): Do something about this magic number.
+            Vector2 target = GlobalPosition + (_dirs[i] * 10f) + (_dirs[i] * FollowSpeed * GameManager.PhysicsDelta);
+            if (GameManager.Raycast(GlobalPosition, target, 1 << 0))
+                _interest[i] = 0f;
+        }
+    }
+
+    private void ComputeSteeringDanger()
+    {
+        for (int i = 0; i < DirCount; i++)
+            _danger[i] = 0f;
+
+        float sqrDist = GameManager.Player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+        const float SqrDashDist = (DashRange + 5f) * (DashRange + 5f);
+        if (sqrDist < SqrDashDist)
+        {
+            Vector2 awayFrom = (GameManager.Player.GlobalPosition - GlobalPosition).Normalized();
+
+            for (int i = 0; i < DirCount; i++)
+            {
+                float dot = _dirs[i].Dot(awayFrom);
+                float weight = RepulsionShapingFunction(dot);
+
+                _danger[i] = Mathf.Max(weight, _danger[i]);
+            }
+
+            float max = 0f;
+            for (int i = 0; i < DirCount; i++)
+                max = Mathf.Max(max, _danger[i]);
+            if (!Calc.FloatEquals(max, 0f))
+            {
+                for (int i = 0; i < DirCount; i++)
+                {
+                    _danger[i] /= max;
+                    _danger[i] = -_danger[i];
+                }
+            }
+        }
+    }
+
+    private void ChooseSteeringDirection()
+    {
+        // List<int> maxIndices = new List<int>();
+
+        // float max = float.MinValue;
+        // for (int i = 0; i < DirCount; i++)
+        // {
+        //     float weight = _interest[i] + _danger[i];
+        //     if (weight > max)
+        //         max = weight;
+        // }
+
+        // for (int i = 0; i < DirCount; i++)
+        // {
+        //     float weight = _interest[i] + _danger[i];
+        //     if (Calc.FloatEquals(weight, max))
+        //         maxIndices.Add(i);
+        // }
+
+        // _steerDirIdx = maxIndices[GD.RandRange(0, maxIndices.Count - 1)];
+
+        // Create a list of all the directions indices in sorted order.
+        List<int> sortedIndices = new List<int>();
+        for (int i = 0; i < DirCount; i++)
+            sortedIndices.Add(i);
+        sortedIndices.Sort(SortSteeringDirections);
+
+        // Pick a random direction from the first 25% of the list, or less if one is o.
+        List<int> checks = new List<int>();
+        int count = Mathf.Max(sortedIndices.Count / 4, 1);
+        for (int i = 0; i < count; i++)
+        {
+            if (_interest[sortedIndices[i]] < 0f)
+                break;
+
+            checks.Add(sortedIndices[i]);
+        }
+
+        _steerDirIdx = checks[GD.RandRange(0, checks.Count - 1)];
+    }
+
+    private int SortSteeringDirections(int a, int b)
+    {
+        float weightA = _interest[a] + _danger[a];
+        float weightB = _interest[b] + _danger[b];
+
+        if (weightA == weightB)
+        {
+            float distA = GlobalPosition.DistanceSquaredTo(GameManager.Player.GlobalPosition);
+            float distB = GlobalPosition.DistanceSquaredTo(GameManager.Player.GlobalPosition);
+
+            // Favour the direction that is closer to the player.
+            if (distA < distB)
+                return -1;
+            else if (distA > distB)
+                return 1;
+            else
+                return 0;
+        }
+
+        if (weightA > weightB)
+            return -1;
+        else
+            return 1;
     }
 
     #endregion
