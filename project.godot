@@ -21,7 +21,6 @@ run/frame_delay_msec=1
 
 CoroutineManager="*res://scenes/managers/CoroutineManager.tscn"
 GameManager="*res://scenes/managers/GameManager.tscn"
-LevelManager="*res://scenes/managers/LevelManager.tscn"
 RenderingManager="*res://scenes/managers/RenderingManager.tscn"
 
 [display]
@@ -40,6 +39,7 @@ project/assembly_name="Incandescent"
 
 [editor]
 
+movie_writer/disable_vsync=true
 export/convert_text_resources_to_binary=true
 scene/scene_naming=1
 
@@ -82,6 +82,16 @@ btn_secondary={
 "events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":2,"pressed":false,"double_click":false,"script":null)
 ]
 }
+
+[layer_names]
+
+2d_physics/layer_1="Solid"
+2d_physics/layer_2="ActorA"
+2d_physics/layer_3="ActorB"
+
+[navigation]
+
+2d/default_edge_connection_margin=4
 
 [physics]
 

@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://tv1y58xwivo4"]
-
-[ext_resource type="Script" path="res://scripts/components/CustomTilemapComponent.cs" id="1_ln7mh"]
-
-[node name="CustomTilemapComponent" type="Node"]
-script = ExtResource("1_ln7mh")
