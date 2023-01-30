@@ -1,6 +1,7 @@
-[gd_scene load_steps=30 format=3 uid="uid://8qi127rchqod"]
+[gd_scene load_steps=31 format=3 uid="uid://8qi127rchqod"]
 
 [ext_resource type="PackedScene" uid="uid://ojl074exjn23" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
+[ext_resource type="Script" path="res://scripts/components/SteeringBehaviourComponent.cs" id="4_cswtm"]
 [ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="7_6en6j"]
 [ext_resource type="Script" path="res://scripts/components/PathfindingComponent.cs" id="7_tbtcw"]
 [ext_resource type="Texture2D" uid="uid://cvxeqr0ka2i4v" path="res://assets/art/tilesets/attemp1.png" id="8_2nbd2"]
@@ -1092,6 +1093,9 @@ collision_layer = 4
 safe_margin = 0.001
 script = ExtResource("13_jo5kr")
 StrafeCoefficient = 0.5
+
+[node name="SteeringBehaviourComponent" type="Node2D" parent="BowEnemy"]
+script = ExtResource("4_cswtm")
 
 [node name="Sprite2D" type="Sprite2D" parent="BowEnemy"]
 texture = SubResource("CanvasTexture_84erp")

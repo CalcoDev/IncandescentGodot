@@ -4,6 +4,11 @@ namespace Incandescent.Utils;
 
 public static class DotProductShapingFunctions
 {
+    public static float Null(float _)
+    {
+        return 0f;
+    }
+
     public static float Linear(float x)
     {
         return x;

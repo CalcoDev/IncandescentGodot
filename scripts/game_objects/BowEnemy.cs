@@ -4,6 +4,7 @@ using Godot;
 using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
+using Incandescent.Components.Steering;
 using Incandescent.GameObjects.Base;
 using Incandescent.Managers;
 using Incandescent.Utils;
@@ -30,6 +31,8 @@ public partial class BowEnemy : Actor
 
     [Node("SteerTimer")]
     private CustomTimerComponent _steerTimer;
+    [Node("SteeringBehaviourComponent")]
+    private SteeringBehaviourComponent _steeringBehaviour;
 
     private const int StNormal = 0;
     private const int StAttack = 1;
@@ -56,32 +59,12 @@ public partial class BowEnemy : Actor
     private Vector2 _dashDir;
     private Vector2 _dashStartPos;
 
-    // TODO(calco); Make this it's own component...
-    // Steering
-    private const int DirCount = 24;
-    private static Func<float, float> AttractionShapingFunction = DotProductShapingFunctions.Avoid;
-    private static Func<float, float> RepulsionShapingFunction = DotProductShapingFunctions.Normalized;
-
-    private readonly Vector2[] _dirs = new Vector2[DirCount];
-
-    private readonly float[] _interest = new float[DirCount];
-    private readonly float[] _danger = new float[DirCount];
-
     #endregion
 
     public override void _Notification(long what)
     {
         if (what == NotificationEnterTree)
             this.WireNodes();
-    }
-
-    public override void _EnterTree()
-    {
-        for (int i = 0; i < DirCount; i++)
-        {
-            float angle = Mathf.Pi * 2 * i / DirCount;
-            _dirs[i] = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-        }
     }
 
     public override void _Ready()
@@ -99,28 +82,6 @@ public partial class BowEnemy : Actor
     {
         int newSt = _stateMachine.Update();
         _stateMachine.SetState(newSt);
-    }
-
-    private int _steerDirIdx = 0;
-    public override void _Draw()
-    {
-        if (!GameManager.Debug)
-            return;
-
-        const float Unit = 20f;
-
-        for (int i = 0; i < DirCount; i++)
-        {
-            float weight = _interest[i] + _danger[i];
-            float length = Mathf.Abs(weight) * Unit;
-            Color col = weight > 0f ? Colors.DarkOliveGreen : Colors.Red;
-            if (i == _steerDirIdx)
-                col = Colors.Green;
-
-            DrawLine(Vector2.Zero, _dirs[i] * length, col, 1f);
-        }
-
-        DrawArc(Vector2.Zero, Unit, 0f, Mathf.Pi * 2f, 32, Colors.DarkRed, 1.5f);
     }
 
     #region States
@@ -160,13 +121,13 @@ public partial class BowEnemy : Actor
                 _steerTimer.Update(GameManager.PhysicsDelta);
                 if (_steerTimer.HasFinished())
                 {
-                    ComputeSteeringInterest();
-                    ComputeSteeringDanger();
-                    ChooseSteeringDirection();
+                    _steeringBehaviour.Target = player.GlobalPosition;
+                    _steeringBehaviour.Velocity = FollowSpeed * GameManager.PhysicsDelta;
+                    _steeringBehaviour.GetSteeringDirection();
                     _steerTimer.SetTime(0.25f);
                 }
 
-                targetVel = _dirs[_steerDirIdx] * FollowSpeed;
+                targetVel = _steeringBehaviour.LastSteeringDirection * FollowSpeed;
 
                 QueueRedraw();
             }
@@ -223,159 +184,6 @@ public partial class BowEnemy : Actor
     private void DashExit()
     {
         _dashCooldownTimer.SetTime(DashCooldown);
-    }
-
-    #endregion
-
-
-    // TODO(calco): Make these function not dependant on state, but parameters.
-    #region Steering
-
-    private void ComputeSteeringInterest()
-    {
-        Vector2 towards = (GameManager.Player.GlobalPosition - GlobalPosition).Normalized();
-
-        float sqrDist = GameManager.Player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-        for (int i = 0; i < DirCount; i++)
-            _interest[i] = 0f;
-
-        // TODO(calco): Especially abstract this away.
-        towards = towards.Normalized();
-        const float SqrDashDist = (DashRange + 15f) * (DashRange + 15f);
-        if (sqrDist < SqrDashDist)
-        {
-            AttractionShapingFunction = DotProductShapingFunctions.Sideways;
-            // towards = -towards;
-        }
-        else
-        {
-            AttractionShapingFunction = DotProductShapingFunctions.Normalized;
-        }
-
-        for (int i = 0; i < DirCount; i++)
-        {
-            float dot = _dirs[i].Dot(towards);
-            float weight = AttractionShapingFunction(dot);
-
-            _interest[i] = Mathf.Max(weight, _interest[i]);
-        }
-
-        float max = 0f;
-        for (int i = 0; i < DirCount; i++)
-            max = Mathf.Max(max, _interest[i]);
-        if (!Calc.FloatEquals(max, 0f))
-        {
-            for (int i = 0; i < DirCount; i++)
-                _interest[i] /= max;
-        }
-
-        // Check if that direction is blocked.
-        for (int i = 0; i < DirCount; i++)
-        {
-            // TODO(calco): Do something about this magic number.
-            Vector2 target = GlobalPosition + (_dirs[i] * 10f) + (_dirs[i] * FollowSpeed * GameManager.PhysicsDelta);
-            if (GameManager.Raycast(GlobalPosition, target, 1 << 0))
-                _interest[i] = 0f;
-        }
-    }
-
-    private void ComputeSteeringDanger()
-    {
-        for (int i = 0; i < DirCount; i++)
-            _danger[i] = 0f;
-
-        float sqrDist = GameManager.Player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-        const float SqrDashDist = (DashRange + 5f) * (DashRange + 5f);
-        if (sqrDist < SqrDashDist)
-        {
-            Vector2 awayFrom = (GameManager.Player.GlobalPosition - GlobalPosition).Normalized();
-
-            for (int i = 0; i < DirCount; i++)
-            {
-                float dot = _dirs[i].Dot(awayFrom);
-                float weight = RepulsionShapingFunction(dot);
-
-                _danger[i] = Mathf.Max(weight, _danger[i]);
-            }
-
-            float max = 0f;
-            for (int i = 0; i < DirCount; i++)
-                max = Mathf.Max(max, _danger[i]);
-            if (!Calc.FloatEquals(max, 0f))
-            {
-                for (int i = 0; i < DirCount; i++)
-                {
-                    _danger[i] /= max;
-                    _danger[i] = -_danger[i];
-                }
-            }
-        }
-    }
-
-    private void ChooseSteeringDirection()
-    {
-        // List<int> maxIndices = new List<int>();
-
-        // float max = float.MinValue;
-        // for (int i = 0; i < DirCount; i++)
-        // {
-        //     float weight = _interest[i] + _danger[i];
-        //     if (weight > max)
-        //         max = weight;
-        // }
-
-        // for (int i = 0; i < DirCount; i++)
-        // {
-        //     float weight = _interest[i] + _danger[i];
-        //     if (Calc.FloatEquals(weight, max))
-        //         maxIndices.Add(i);
-        // }
-
-        // _steerDirIdx = maxIndices[GD.RandRange(0, maxIndices.Count - 1)];
-
-        // Create a list of all the directions indices in sorted order.
-        List<int> sortedIndices = new List<int>();
-        for (int i = 0; i < DirCount; i++)
-            sortedIndices.Add(i);
-        sortedIndices.Sort(SortSteeringDirections);
-
-        // Pick a random direction from the first 25% of the list, or less if one is o.
-        List<int> checks = new List<int>();
-        int count = Mathf.Max(sortedIndices.Count / 4, 1);
-        for (int i = 0; i < count; i++)
-        {
-            if (_interest[sortedIndices[i]] < 0f)
-                break;
-
-            checks.Add(sortedIndices[i]);
-        }
-
-        _steerDirIdx = checks[GD.RandRange(0, checks.Count - 1)];
-    }
-
-    private int SortSteeringDirections(int a, int b)
-    {
-        float weightA = _interest[a] + _danger[a];
-        float weightB = _interest[b] + _danger[b];
-
-        if (weightA == weightB)
-        {
-            float distA = GlobalPosition.DistanceSquaredTo(GameManager.Player.GlobalPosition);
-            float distB = GlobalPosition.DistanceSquaredTo(GameManager.Player.GlobalPosition);
-
-            // Favour the direction that is closer to the player.
-            if (distA < distB)
-                return -1;
-            else if (distA > distB)
-                return 1;
-            else
-                return 0;
-        }
-
-        if (weightA > weightB)
-            return -1;
-        else
-            return 1;
     }
 
     #endregion
