@@ -34,6 +34,8 @@ public partial class BowEnemy : Actor
     [Node("SteeringBehaviourComponent")]
     private SteeringBehaviourComponent _steeringBehaviour;
 
+    private SteeringBehaviourDefinition _seekSteerDef;
+
     private const int StNormal = 0;
     private const int StAttack = 1;
     private const int StDash = 2;
@@ -61,6 +63,8 @@ public partial class BowEnemy : Actor
 
     #endregion
 
+    #region Lifecycle
+
     public override void _Notification(long what)
     {
         if (what == NotificationEnterTree)
@@ -69,11 +73,18 @@ public partial class BowEnemy : Actor
 
     public override void _Ready()
     {
+        // State
         _stateMachine.UpdateSelf = false;
         _stateMachine.Init(StDash + 1, StNormal);
         _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
         // _stateMachine.SetCallbacks(StAttack, AttackUpdate, null, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, null);
+
+        // Steering & Pathfinding
+        _seekSteerDef = new SteeringBehaviourDefinition(24,
+            SteeringShapingFunctions.Normalized, SteeringShapingFunctions.Null,
+            SteeringSortingFunctions.ClosestHighestWeight);
+        _steeringBehaviour.Initialize(_seekSteerDef);
 
         _pathfinding.OnVelocityChanged += vel => _vel.SetVelocity(vel);
     }
@@ -84,19 +95,18 @@ public partial class BowEnemy : Actor
         _stateMachine.SetState(newSt);
     }
 
+    #endregion
+
     #region States
 
     private int NormalUpdate()
     {
-        // Check if the player is within the dash range, then attack range and then follow range.
-        PhysicsPlayer player = GameManager.Player;
-
-        // Timers
         _dashCooldownTimer.Update(GameManager.PhysicsDelta);
 
+
+        PhysicsPlayer player = GameManager.Player;
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
-
         if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
         {
             return StDash;
@@ -109,32 +119,23 @@ public partial class BowEnemy : Actor
         {
             _pathfinding.SetTargetInterval(player.GlobalPosition);
 
-            Vector2 nextPos = _pathfinding.Agent.GetNextLocation();
-            Vector2 nextPosDir = (nextPos - GlobalPosition).Normalized();
-            Vector2 playerDir = (player.GlobalPosition - GlobalPosition).Normalized();
-
-            // Hacky, but it works.
             Vector2 targetVel;
             if (playerInSight)
             {
+
                 // TODO(calco): This is an ugly hack instead of manipulating weights.
                 _steerTimer.Update(GameManager.PhysicsDelta);
                 if (_steerTimer.HasFinished())
                 {
-                    _steeringBehaviour.Target = player.GlobalPosition;
-                    _steeringBehaviour.Velocity = FollowSpeed * GameManager.PhysicsDelta;
-                    _steeringBehaviour.GetSteeringDirection();
+                    _steeringBehaviour.GetSteeringDirection(player.GlobalPosition, FollowSpeed * GameManager.PhysicsDelta);
                     _steerTimer.SetTime(0.25f);
                 }
 
                 targetVel = _steeringBehaviour.LastSteeringDirection * FollowSpeed;
-
-                QueueRedraw();
             }
             else
             {
-                GD.Print("Player not in sight");
-                targetVel = nextPosDir * FollowSpeed;
+                targetVel = (_pathfinding.Agent.GetNextLocation() - GlobalPosition).Normalized() * FollowSpeed;
             }
 
             _vel.SetVelocity(targetVel);

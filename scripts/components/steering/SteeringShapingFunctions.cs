@@ -1,8 +1,8 @@
 using Godot;
 
-namespace Incandescent.Utils;
+namespace Incandescent.Components.Steering;
 
-public static class DotProductShapingFunctions
+public static class SteeringShapingFunctions
 {
     public static float Null(float _)
     {

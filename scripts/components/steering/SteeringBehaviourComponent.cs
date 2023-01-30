@@ -8,11 +8,9 @@ namespace Incandescent.Components.Steering;
 
 public partial class SteeringBehaviourComponent : Node2D
 {
-    [Export] public float AgentRadius = 10f;
+    [Export] public float AgentRadius { get; set; } = 10f;
 
-    public readonly int DirCount = 24;
-    public Func<float, float> AttractionShapingFunction = DotProductShapingFunctions.Sideways;
-    public Func<float, float> RepulsionShapingFunction = DotProductShapingFunctions.Null;
+    public SteeringBehaviourDefinition Definition { get; set; }
 
     public Vector2 Target { get; set; }
     public float Velocity { get; set; }
@@ -20,31 +18,32 @@ public partial class SteeringBehaviourComponent : Node2D
     public Vector2 LastSteeringDirection { get; private set; }
     public int LastSteeringDirectionIndex { get; private set; }
 
-    private readonly Vector2[] _dirs;
+    private Vector2[] _dirs;
+    private float[] _attraction;
+    private float[] _repulsion;
 
-    private readonly float[] _attraction;
-    private readonly float[] _repulsion;
-
-    public SteeringBehaviourComponent()
+    public void Initialize(SteeringBehaviourDefinition definition)
     {
-        _dirs = new Vector2[DirCount];
-        _attraction = new float[DirCount];
-        _repulsion = new float[DirCount];
+        Definition = definition;
+        _dirs = new Vector2[Definition.DirCount];
+        _attraction = new float[Definition.DirCount];
+        _repulsion = new float[Definition.DirCount];
 
-        for (int i = 0; i < DirCount; i++)
+        for (int i = 0; i < Definition.DirCount; i++)
         {
-            float angle = Mathf.Pi * 2 * i / DirCount;
+            float angle = Mathf.Pi * 2 * i / Definition.DirCount;
             _dirs[i] = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             _attraction[i] = 0;
             _repulsion[i] = 0;
         }
-
-        GD.Print("SteeringBehaviourComponent");
     }
+
+    #region Lifecycle
 
     public override void _Process(double delta)
     {
-        QueueRedraw();
+        if (GameManager.Debug)
+            QueueRedraw();
     }
 
     public override void _Draw()
@@ -54,7 +53,7 @@ public partial class SteeringBehaviourComponent : Node2D
 
         const float Unit = 20f;
 
-        for (int i = 0; i < DirCount; i++)
+        for (int i = 0; i < Definition.DirCount; i++)
         {
             float weight = _attraction[i] + _repulsion[i];
             float length = Mathf.Abs(weight) * Unit;
@@ -68,44 +67,42 @@ public partial class SteeringBehaviourComponent : Node2D
         DrawArc(Vector2.Zero, Unit, 0f, Mathf.Pi * 2f, 32, Colors.DarkRed, 1.5f);
     }
 
-    public Vector2 GetSteeringDirection()
-    {
-        ComputeAttraction();
-        ComputeRepulsion();
-
-        int idx = GetDirection();
-        LastSteeringDirection = _dirs[idx];
-        return LastSteeringDirection;
-    }
+    #endregion
 
     public float GetWeight(int dirIdx)
     {
         return _attraction[dirIdx] + _repulsion[dirIdx];
     }
 
-    public float GetWeight(Vector2 dir)
+    public Vector2 GetDir(int dirIdx)
     {
-        return GetWeight(GetDirectionIndex(dir));
+        return _dirs[dirIdx];
     }
 
-    public int GetDirectionIndex(Vector2 dir)
+    public Vector2 GetSteeringDirection(Vector2 target, float velocity)
     {
-        float angle = Mathf.Atan2(dir.y, dir.x);
-        if (angle < 0f)
-            angle += Mathf.Pi * 2f;
+        Target = target;
+        Velocity = velocity;
 
-        return (int)Math.Round(angle * DirCount / (Mathf.Pi * 2f));
+        ComputeAttraction();
+        ComputeRepulsion();
+
+        int idx = ChooseDirection();
+        LastSteeringDirection = _dirs[idx];
+        return LastSteeringDirection;
     }
+
+    #region Computing
 
     private void ComputeAttraction()
     {
-        for (int i = 0; i < DirCount; i++)
+        for (int i = 0; i < Definition.DirCount; i++)
             _attraction[i] = 0f;
 
         Vector2 towards = (Target - GlobalPosition).Normalized();
 
         float max = 0f;
-        for (int i = 0; i < DirCount; i++)
+        for (int i = 0; i < Definition.DirCount; i++)
         {
             /* (_velocity * GameManager.PhysicsDelta) */
             Vector2 t = GlobalPosition + (_dirs[i] * (Velocity + AgentRadius));
@@ -117,7 +114,7 @@ public partial class SteeringBehaviourComponent : Node2D
             }
 
             float dot = _dirs[i].Dot(towards);
-            float weight = AttractionShapingFunction(dot);
+            float weight = Definition.AttractionShapingFunction(dot);
 
             _attraction[i] = Mathf.Max(weight, _attraction[i]);
             max = Mathf.Max(max, _attraction[i]);
@@ -125,20 +122,20 @@ public partial class SteeringBehaviourComponent : Node2D
 
         if (!Calc.FloatEquals(max, 0f))
         {
-            for (int i = 0; i < DirCount; i++)
+            for (int i = 0; i < Definition.DirCount; i++)
                 _attraction[i] /= max;
         }
     }
 
     private void ComputeRepulsion()
     {
-        for (int i = 0; i < DirCount; i++)
+        for (int i = 0; i < Definition.DirCount; i++)
             _repulsion[i] = 0f;
 
         Vector2 towards = (Target - GlobalPosition).Normalized();
 
         float max = 0f;
-        for (int i = 0; i < DirCount; i++)
+        for (int i = 0; i < Definition.DirCount; i++)
         {
             /* (_velocity * GameManager.PhysicsDelta) */
             Vector2 t = GlobalPosition + (_dirs[i] * (Velocity + AgentRadius));
@@ -150,7 +147,7 @@ public partial class SteeringBehaviourComponent : Node2D
             }
 
             float dot = _dirs[i].Dot(towards);
-            float weight = RepulsionShapingFunction(dot);
+            float weight = Definition.RepulsionShapingFunction(dot);
 
             _repulsion[i] = Mathf.Max(weight, _repulsion[i]);
             max = Mathf.Max(max, _repulsion[i]);
@@ -158,24 +155,25 @@ public partial class SteeringBehaviourComponent : Node2D
 
         if (!Calc.FloatEquals(max, 0f))
         {
-            for (int i = 0; i < DirCount; i++)
+            for (int i = 0; i < Definition.DirCount; i++)
                 _repulsion[i] = -(_repulsion[i] / max);
         }
     }
 
-    private int GetDirection()
+    #endregion
+
+    private int ChooseDirection()
     {
-        int[] sortedIndices = new int[DirCount];
-        for (int i = 0; i < DirCount; i++)
+        int[] sortedIndices = new int[Definition.DirCount];
+        for (int i = 0; i < Definition.DirCount; i++)
             sortedIndices[i] = i;
-        Array.Sort(sortedIndices, SortSteeringDirections);
+        Array.Sort(sortedIndices, (a, b) => Definition.DirSortingFunction.Invoke(this, a, b));
 
         List<int> checks = new List<int>();
-        int count = Mathf.Max(DirCount / 4, 1);
+        int count = Mathf.Max(Definition.DirCount / 4, 1);
         for (int i = 0; i < count; i++)
         {
             // TODO(calco): Why did I code it like this??
-            // if (_interest[sortedIndices[i]] < 0f)
             if (_attraction[sortedIndices[i]] < 0f)
                 break;
 
@@ -184,30 +182,5 @@ public partial class SteeringBehaviourComponent : Node2D
 
         LastSteeringDirectionIndex = checks[GD.RandRange(0, checks.Count - 1)];
         return LastSteeringDirectionIndex;
-    }
-
-    private int SortSteeringDirections(int a, int b)
-    {
-        float wA = GetWeight(a);
-        float wB = GetWeight(b);
-
-        // TODO(calco): Play around with EPSILON.
-        if (Calc.FloatEquals(wA, wB, 0.05f))
-        {
-            float dA = (GlobalPosition + _dirs[a]).DistanceTo(Target);
-            float dB = (GlobalPosition + _dirs[b]).DistanceTo(Target);
-
-            if (dA < dB)
-                return -1;
-            else if (dA > dB)
-                return 1;
-            else
-                return 0;
-        }
-
-        if (wA > wB)
-            return -1;
-
-        return 1;
     }
 }
