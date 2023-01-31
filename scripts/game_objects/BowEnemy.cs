@@ -35,6 +35,7 @@ public partial class BowEnemy : Actor
     private SteeringBehaviourComponent _steeringBehaviour;
 
     private SteeringBehaviourDefinition _seekSteerDef;
+    private SteeringBehaviourDefinition _strafeSteerDef;
 
     private const int StNormal = 0;
     private const int StAttack = 1;
@@ -43,7 +44,8 @@ public partial class BowEnemy : Actor
     private const float Acceleration = 1600f;
 
     private const float FollowRange = 200f;
-    private const float FollowSpeed = 125f;
+    private const float FollowSpeed = 100f;
+    private const float StrafeSpeed = 65f;
 
     private const float AttackRange = 125f;
 
@@ -60,6 +62,8 @@ public partial class BowEnemy : Actor
     // Dash
     private Vector2 _dashDir;
     private Vector2 _dashStartPos;
+
+    private float _lastSpeed;
 
     #endregion
 
@@ -82,9 +86,14 @@ public partial class BowEnemy : Actor
 
         // Steering & Pathfinding
         _seekSteerDef = new SteeringBehaviourDefinition(9,
-            SteeringShapingFunctions.Normalized, SteeringShapingFunctions.Null,
+            SteeringShapingFunctions.Normalized, SteeringShapingFunctions.Normalized,
             SteeringSortingFunctions.ClosestHighestWeight);
-        _steeringBehaviour.Initialize(_seekSteerDef);
+
+        _strafeSteerDef = new SteeringBehaviourDefinition(24,
+            SteeringShapingFunctions.Cosine, SteeringShapingFunctions.Avoid,
+            SteeringSortingFunctions.ClosestHighestWeight);
+
+        _steeringBehaviour.SetDefinition(_seekSteerDef);
 
         _pathfinding.OnVelocityChanged += vel => _vel.SetVelocity(vel);
     }
@@ -108,10 +117,10 @@ public partial class BowEnemy : Actor
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
         if (false) { }
-        // if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
-        // {
-        //     return StDash;
-        // }
+        else if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
+        {
+            return StDash;
+        }
         // else if (sqrDist < AttackRange * AttackRange)
         // {
         //     return StAttack;
@@ -126,13 +135,34 @@ public partial class BowEnemy : Actor
 
                 // TODO(calco): This is an ugly hack instead of manipulating weights.
                 _steerTimer.Update(GameManager.PhysicsDelta);
+
                 if (_steerTimer.HasFinished())
                 {
-                    _steeringBehaviour.GetSteeringDirection(player.GlobalPosition, FollowSpeed * GameManager.PhysicsDelta);
-                    _steerTimer.SetTime(0.25f);
+                    Vector2 vel = _vel.GetVelocity() * GameManager.PhysicsDelta;
+                    Vector2 attraction;
+                    Vector2 repulsion;
+
+                    if (sqrDist < (DashRange + 30f) * (DashRange + 30f))
+                    {
+                        _steeringBehaviour.SetDefinition(_strafeSteerDef);
+                        attraction = player.GlobalPosition - GlobalPosition;
+                        repulsion = attraction;
+                        _lastSpeed = StrafeSpeed;
+                        _steerTimer.SetTime(0.15f);
+                    }
+                    else
+                    {
+                        _steeringBehaviour.SetDefinition(_seekSteerDef);
+                        attraction = player.GlobalPosition - GlobalPosition;
+                        repulsion = -attraction;
+                        _lastSpeed = FollowSpeed;
+                        _steerTimer.SetTime(0.25f);
+                    }
+
+                    _steeringBehaviour.GetSteeringDirection(vel, attraction, repulsion);
                 }
 
-                targetVel = _steeringBehaviour.LastSteeringDirection * FollowSpeed;
+                targetVel = _steeringBehaviour.LastSteeringDirection * _lastSpeed;
             }
             else
             {

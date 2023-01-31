@@ -84,7 +84,6 @@ public abstract partial class Solid : AnimatableBody2D
         {
             var actor = (Actor)colls[i]["collider"];
 
-            // GD.Print(Time.GetTicksMsec() + ": Moving rider with: " + amount);
             // actor.MoveY(amount + amount < 0f ? 0.5f : 0f);
             // if (amount < 0.01f)
             //     amount -= 0.01f;

@@ -1,0 +1,63 @@
+[gd_scene load_steps=11 format=3 uid="uid://dvrh52m4okmtx"]
+
+[ext_resource type="Script" path="res://scripts/game_objects/BowEnemy.cs" id="1_xjljp"]
+[ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="2_nn5mk"]
+[ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_gcdix"]
+[ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="4_pkggu"]
+[ext_resource type="Script" path="res://scripts/components/PathfindingComponent.cs" id="5_0yfwh"]
+[ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="6_jmer4"]
+[ext_resource type="Script" path="res://scripts/components/steering/SteeringBehaviourComponent.cs" id="7_mmpw5"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6q35f"]
+radius = 3.0
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_84erp"]
+diffuse_texture = ExtResource("2_nn5mk")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qu20h"]
+radius = 3.0
+
+[node name="BowEnemy" type="CharacterBody2D"]
+collision_layer = 4
+safe_margin = 0.001
+script = ExtResource("1_xjljp")
+StrafeCoefficient = 0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_6q35f")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("CanvasTexture_84erp")
+centered = false
+offset = Vector2(-7, -7)
+flip_h = true
+
+[node name="StateMachineComponent" parent="." instance=ExtResource("3_gcdix")]
+
+[node name="VelocityComponent" parent="." instance=ExtResource("4_pkggu")]
+
+[node name="PathfindingComponent" type="Node2D" parent="."]
+rotation = 0.65351
+script = ExtResource("5_0yfwh")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="PathfindingComponent"]
+path_desired_distance = 5.0
+avoidance_enabled = true
+radius = 20.0
+
+[node name="IntervalTimer" parent="PathfindingComponent" instance=ExtResource("6_jmer4")]
+
+[node name="SteeringBehaviourComponent" type="Node2D" parent="."]
+script = ExtResource("7_mmpw5")
+
+[node name="ShapeCast2D" type="ShapeCast2D" parent="SteeringBehaviourComponent"]
+enabled = false
+shape = SubResource("CircleShape2D_qu20h")
+target_position = Vector2(0, 0)
+max_results = 1
+
+[node name="DashTimer" parent="." instance=ExtResource("6_jmer4")]
+
+[node name="DashCooldownTimer" parent="." instance=ExtResource("6_jmer4")]
+
+[node name="SteerTimer" parent="." instance=ExtResource("6_jmer4")]

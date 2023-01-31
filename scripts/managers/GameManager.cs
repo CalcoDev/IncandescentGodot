@@ -33,6 +33,8 @@ public partial class GameManager : Node
 
     public static bool Debug { get; set; } = false;
 
+    public static readonly Color ClearColour = new Color("10141f");
+
     #region Game Events
 
     [Signal]
@@ -58,6 +60,8 @@ public partial class GameManager : Node
         Root = GetTree().Root;
         SceneRoot = GetTree().CurrentScene as Node2D;
         Player = GetTree().GetFirstNodeInGroup("player") as PhysicsPlayer;
+
+        RenderingServer.SetDefaultClearColor(ClearColour);
     }
 
     public override void _Process(double delta)
@@ -90,7 +94,7 @@ public partial class GameManager : Node
         return res.Count > 0;
     }
 
-    public static bool Circlecast(Vector2 from, Vector2 to, float radius, uint mask)
+    public static Array<Dictionary> Circlecast(Vector2 from, Vector2 to, float radius, uint mask)
     {
         PhysicsShapeQueryParameters2D query = new PhysicsShapeQueryParameters2D();
         query.Set("shape", new CircleShape2D() { Radius = radius });
@@ -101,7 +105,7 @@ public partial class GameManager : Node
         query.Set("motion", to - from);
 
         Array<Dictionary> res = GlobalPhysicsSpace.IntersectShape(query);
-        return res.Count > 0;
+        return res;
     }
 
     #endregion

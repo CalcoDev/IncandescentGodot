@@ -194,9 +194,6 @@ public partial class PhysicsPlayer : Actor
         MoveX(_vel.X * GameManager.PhysicsDelta, OnCollideH);
         MoveY(_vel.Y * GameManager.PhysicsDelta, OnCollideV);
 
-        // var b = GameManager.Circlecast(GlobalPosition, GlobalPosition + (Vector2.Right * _lastNonZeroDir * 10f), 5f, 1 << 0);
-        // GD.Print(b);
-
         return StNormal;
     }
 

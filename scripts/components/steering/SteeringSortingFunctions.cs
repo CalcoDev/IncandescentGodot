@@ -12,8 +12,8 @@ public static class SteeringSortingFunctions
         // TODO(calco): Play around with EPSILON.
         if (Calc.FloatEquals(wA, wB, 0.05f))
         {
-            float dA = (steering.GlobalPosition + steering.GetDir(a)).DistanceTo(steering.Target);
-            float dB = (steering.GlobalPosition + steering.GetDir(a)).DistanceTo(steering.Target);
+            float dA = (steering.GlobalPosition + steering.GetDir(a)).DistanceSquaredTo(steering.Target);
+            float dB = (steering.GlobalPosition + steering.GetDir(a)).DistanceSquaredTo(steering.Target);
 
             if (dA < dB)
                 return -1;
