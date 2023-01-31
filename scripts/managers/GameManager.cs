@@ -20,7 +20,7 @@ public partial class GameManager : Node
     // TODO(calco): Actual proper management of stuff
     public static Node2D SceneRoot { get; private set; }
 
-    public static PhysicsPlayer Player { get; private set; }
+    public static Player Player { get; private set; }
 
     public static float Time { get; private set; } = 0f;
     public static uint FrameCount { get; private set; } = 0;
@@ -59,7 +59,7 @@ public partial class GameManager : Node
     {
         Root = GetTree().Root;
         SceneRoot = GetTree().CurrentScene as Node2D;
-        Player = GetTree().GetFirstNodeInGroup("player") as PhysicsPlayer;
+        Player = GetTree().GetFirstNodeInGroup("player") as Player;
 
         RenderingServer.SetDefaultClearColor(ClearColour);
     }

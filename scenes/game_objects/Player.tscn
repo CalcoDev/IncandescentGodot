@@ -1,9 +1,30 @@
-[gd_scene load_steps=7 format=3 uid="uid://ojl074exjn23"]
+[gd_scene load_steps=10 format=3 uid="uid://fghdwshfi4ro"]
 
-[ext_resource type="Script" path="res://scripts/game_objects/PhysicsPlayer.cs" id="1_521ab"]
+[ext_resource type="Script" path="res://scripts/game_objects/Player.cs" id="1_jwi8l"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
+[ext_resource type="Texture2D" uid="uid://bqi150vf2cwj5" path="res://assets/art/entities/player/debug.png" id="2_6r10y"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_j5h5e"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7f0p2"]
+atlas = ExtResource("2_6r10y")
+region = Rect2(0, 0, 16, 20)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_iakyq"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7f0p2")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nvssc"]
 size = Vector2(7.99, 12.999)
@@ -13,10 +34,12 @@ size = Vector2(7.98, 1.999)
 
 [node name="Player" type="CharacterBody2D"]
 safe_margin = 0.001
-script = ExtResource("1_521ab")
+script = ExtResource("1_jwi8l")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -1)
+frames = SubResource("SpriteFrames_iakyq")
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -0.5)

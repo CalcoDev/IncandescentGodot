@@ -1,10 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://2rh6wcug46o0"]
+[gd_scene load_steps=13 format=3 uid="uid://ce74g6hgps413"]
 
-[ext_resource type="PackedScene" uid="uid://ojl074exjn23" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
+[ext_resource type="PackedScene" uid="uid://fghdwshfi4ro" path="res://scenes/game_objects/Player.tscn" id="1_ialhu"]
 [ext_resource type="PackedScene" uid="uid://dvrh52m4okmtx" path="res://scenes/game_objects/Enemies/BowEnemy.tscn" id="1_yfh8n"]
+[ext_resource type="Script" path="res://scripts/game_objects/MovingPlatform.cs" id="3_8fnum"]
 [ext_resource type="Texture2D" uid="uid://cl5t6c6asrbv8" path="res://assets/art/tilesets/cave_dark.png" id="5_45sqg"]
 [ext_resource type="Texture2D" uid="uid://ce2rdold63vb8" path="res://assets/art/pixel.png" id="7_6en6j"]
-[ext_resource type="Script" path="res://scripts/game_objects/PhysicsMovingPlatform.cs" id="13_0pnag"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_76ife"]
 size = Vector2(24, 8)
@@ -546,7 +546,7 @@ collision_mask = 3
 position = Vector2(140, 137)
 collision_mask = 0
 sync_to_physics = false
-script = ExtResource("13_0pnag")
+script = ExtResource("3_8fnum")
 
 [node name="Sprite2D" type="Sprite2D" parent="MovingPlatform"]
 modulate = Color(0.0823529, 0.113725, 0.156863, 1)

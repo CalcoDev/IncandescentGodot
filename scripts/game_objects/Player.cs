@@ -10,7 +10,7 @@ using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class PhysicsPlayer : Actor
+public partial class Player : Actor
 {
     #region Constants
 
@@ -57,6 +57,8 @@ public partial class PhysicsPlayer : Actor
     private StateMachineComponent _stateMachine;
     [Node("VelocityComponent")]
     private VelocityComponent _vel;
+    [Node("AnimatedSprite2D")]
+    private AnimatedSprite2D _sprite;
     [Node("GroundedChecker")]
     private Area2D _groundedChecker;
 
@@ -99,6 +101,8 @@ public partial class PhysicsPlayer : Actor
 
     public override void _Ready()
     {
+        _sprite.Play("idle");
+
         _groundedChecker.BodyEntered += OnEnterGround;
         _groundedChecker.BodyExited += OnExitGround;
 

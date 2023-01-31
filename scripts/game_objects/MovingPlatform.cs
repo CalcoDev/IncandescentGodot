@@ -6,7 +6,7 @@ using Incandescent.Utils;
 
 namespace Incandescent.GameObjects;
 
-public partial class PhysicsMovingPlatform : Solid
+public partial class MovingPlatform : Solid
 {
     [Node("Path")]
     private Node _path;

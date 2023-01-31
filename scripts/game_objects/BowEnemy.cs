@@ -81,6 +81,10 @@ public partial class BowEnemy : Actor
 
     public override void _Ready()
     {
+        // Sprite
+        _sprite.Play("idle");
+        _sprite.FlipH = true;
+
         // State
         _stateMachine.UpdateSelf = false;
         _stateMachine.Init(StDash + 1, StNormal);
@@ -120,7 +124,7 @@ public partial class BowEnemy : Actor
     {
         _dashCooldownTimer.Update(GameManager.PhysicsDelta);
 
-        PhysicsPlayer player = GameManager.Player;
+        Player player = GameManager.Player;
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
 
@@ -164,9 +168,14 @@ public partial class BowEnemy : Actor
             }
 
             targetVel = _steeringBehaviour.LastSteeringDirection * _speed;
+
+            // Rotate the sprite towards the player
+            var a = player.GlobalPosition - GlobalPosition;
+            _sprite.Rotation = Mathf.Atan2(a.y, a.x);
         }
         else
         {
+            _sprite.Rotation = Mathf.Atan2(_vel.Y, _vel.X);
             targetVel = (_pathfinding.Agent.GetNextLocation() - GlobalPosition).Normalized() * FollowSpeed;
         }
 
@@ -176,7 +185,7 @@ public partial class BowEnemy : Actor
         MoveX(_vel.X * GameManager.PhysicsDelta);
         MoveY(_vel.Y * GameManager.PhysicsDelta);
 
-        _sprite.FlipH = _vel.X > 0;
+        // _sprite.FlipH = _vel.X > 0;
 
         return StNormal;
     }
