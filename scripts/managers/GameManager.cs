@@ -83,6 +83,20 @@ public partial class GameManager : Node
         return res.Count > 0;
     }
 
+    public static bool Circlecast(Vector2 from, Vector2 to, float radius, uint mask)
+    {
+        PhysicsShapeQueryParameters2D query = new PhysicsShapeQueryParameters2D();
+        query.Set("shape", new CircleShape2D() { Radius = radius });
+        query.Set("collision_mask", mask);
+
+        // TODO(calco): Check where the origin of this transform is.
+        query.Set("transform", new Transform2D(0, from));
+        query.Set("motion", to - from);
+
+        Array<Dictionary> res = GlobalPhysicsSpace.IntersectShape(query);
+        return res.Count > 0;
+    }
+
     #endregion
 
     #region FX Helpers

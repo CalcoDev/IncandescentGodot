@@ -43,7 +43,7 @@ public partial class BowEnemy : Actor
     private const float Acceleration = 1600f;
 
     private const float FollowRange = 200f;
-    private const float FollowSpeed = 75f;
+    private const float FollowSpeed = 25f;
 
     private const float AttackRange = 125f;
 
@@ -107,10 +107,11 @@ public partial class BowEnemy : Actor
         PhysicsPlayer player = GameManager.Player;
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
-        if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
-        {
-            return StDash;
-        }
+        if (false) { }
+        // if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
+        // {
+        //     return StDash;
+        // }
         // else if (sqrDist < AttackRange * AttackRange)
         // {
         //     return StAttack;

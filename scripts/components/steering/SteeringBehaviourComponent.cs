@@ -8,7 +8,7 @@ namespace Incandescent.Components.Steering;
 
 public partial class SteeringBehaviourComponent : Node2D
 {
-    [Export] public float AgentRadius { get; set; } = 10f;
+    [Export] public float AgentRadius { get; set; } = 1f;
 
     public SteeringBehaviourDefinition Definition { get; set; }
 
@@ -42,8 +42,7 @@ public partial class SteeringBehaviourComponent : Node2D
 
     public override void _Process(double delta)
     {
-        if (GameManager.Debug)
-            QueueRedraw();
+        QueueRedraw();
     }
 
     public override void _Draw()
@@ -55,7 +54,7 @@ public partial class SteeringBehaviourComponent : Node2D
 
         for (int i = 0; i < Definition.DirCount; i++)
         {
-            float weight = _attraction[i] + _repulsion[i];
+            float weight = GetWeight(i);
             float length = Mathf.Abs(weight) * Unit;
             Color col = weight > 0f ? Colors.DarkOliveGreen : Colors.Red;
             if (i == LastSteeringDirectionIndex)
@@ -92,6 +91,7 @@ public partial class SteeringBehaviourComponent : Node2D
         return LastSteeringDirection;
     }
 
+    // TODO(calco): Replace Target and Velocity, which should stay local to entity with attraction and repulsion vectors.
     #region Computing
 
     private void ComputeAttraction()
@@ -104,12 +104,10 @@ public partial class SteeringBehaviourComponent : Node2D
         float max = 0f;
         for (int i = 0; i < Definition.DirCount; i++)
         {
-            /* (_velocity * GameManager.PhysicsDelta) */
-            Vector2 t = GlobalPosition + (_dirs[i] * (Velocity + AgentRadius));
-            if (GameManager.Raycast(GlobalPosition, Target, 1 << 0))
+            Vector2 t = GlobalPosition + (_dirs[i] * Velocity) + (_dirs[i] * AgentRadius * 0.6f);
+            if (GameManager.Circlecast(GlobalPosition, Target, AgentRadius, 1 << 0))
             {
-                // Direction is obstructed.
-                _attraction[i] = 0f;
+                _attraction[i] = -1f;
                 continue;
             }
 
@@ -119,6 +117,8 @@ public partial class SteeringBehaviourComponent : Node2D
             _attraction[i] = Mathf.Max(weight, _attraction[i]);
             max = Mathf.Max(max, _attraction[i]);
         }
+
+        GD.Print(_attraction.Join(", "));
 
         if (!Calc.FloatEquals(max, 0f))
         {
@@ -137,14 +137,13 @@ public partial class SteeringBehaviourComponent : Node2D
         float max = 0f;
         for (int i = 0; i < Definition.DirCount; i++)
         {
-            /* (_velocity * GameManager.PhysicsDelta) */
-            Vector2 t = GlobalPosition + (_dirs[i] * (Velocity + AgentRadius));
-            if (GameManager.Raycast(GlobalPosition, Target, 1 << 0))
-            {
-                // Direction is obstructed.
-                _repulsion[i] = 0f;
-                continue;
-            }
+            // Vector2 t = GlobalPosition + (_dirs[i] * (Velocity + AgentRadius));
+            // if (GameManager.Raycast(GlobalPosition, Target, 1 << 0))
+            // {
+            //     _repulsion[i] = 1f;
+            //     max = Mathf.Max(max, _repulsion[i]);
+            //     continue;
+            // }
 
             float dot = _dirs[i].Dot(towards);
             float weight = Definition.RepulsionShapingFunction(dot);
@@ -174,13 +173,15 @@ public partial class SteeringBehaviourComponent : Node2D
         for (int i = 0; i < count; i++)
         {
             // TODO(calco): Why did I code it like this??
-            if (_attraction[sortedIndices[i]] < 0f)
+            if (GetWeight(sortedIndices[i]) < 0f)
                 break;
 
             checks.Add(sortedIndices[i]);
         }
+        GD.Print(checks.Count);
 
-        LastSteeringDirectionIndex = checks[GD.RandRange(0, checks.Count - 1)];
+        int idx = GD.RandRange(0, checks.Count - 1);
+        LastSteeringDirectionIndex = checks[idx < 0 ? 0 : idx];
         return LastSteeringDirectionIndex;
     }
 }

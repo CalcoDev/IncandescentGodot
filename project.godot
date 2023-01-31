@@ -91,7 +91,7 @@ btn_secondary={
 
 [navigation]
 
-2d/default_edge_connection_margin=4
+2d/default_edge_connection_margin=6
 
 [physics]
 
