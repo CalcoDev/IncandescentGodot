@@ -1,7 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://dvrh52m4okmtx"]
+[gd_scene load_steps=23 format=3 uid="uid://dvrh52m4okmtx"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/BowEnemy.cs" id="1_xjljp"]
-[ext_resource type="Texture2D" uid="uid://82qs6a5k8j3g" path="res://assets/art/entities/bow.png" id="2_nn5mk"]
+[ext_resource type="Texture2D" uid="uid://ccocjpwa60b75" path="res://assets/art/entities/enemies/bow/bow_all.png" id="2_usfqv"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_gcdix"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="4_pkggu"]
 [ext_resource type="Script" path="res://scripts/components/PathfindingComponent.cs" id="5_0yfwh"]
@@ -11,8 +11,123 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_6q35f"]
 radius = 3.0
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_84erp"]
-diffuse_texture = ExtResource("2_nn5mk")
+[sub_resource type="AtlasTexture" id="AtlasTexture_2w17g"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(0, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dw6jf"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(18, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ctrj"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(36, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mmkcd"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(54, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cfqvf"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(72, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bmklf"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(90, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_56frg"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(162, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fmteb"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(0, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ea2n"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(144, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_56v3v"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(180, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nn13d"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(198, 0, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m4b1l"]
+atlas = ExtResource("2_usfqv")
+region = Rect2(216, 0, 18, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_13j23"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2w17g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dw6jf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ctrj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mmkcd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cfqvf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bmklf")
+}],
+"loop": true,
+"name": &"create_arrow",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56frg")
+}],
+"loop": true,
+"name": &"dash",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fmteb")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fmteb")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ea2n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56frg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56v3v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nn13d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m4b1l")
+}],
+"loop": true,
+"name": &"shoot_recoil",
+"speed": 5.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qu20h"]
 radius = 3.0
@@ -26,11 +141,9 @@ StrafeCoefficient = 0.5
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_6q35f")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("CanvasTexture_84erp")
-centered = false
-offset = Vector2(-7, -7)
-flip_h = true
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+frames = SubResource("SpriteFrames_13j23")
+speed_scale = 2.5
 
 [node name="StateMachineComponent" parent="." instance=ExtResource("3_gcdix")]
 

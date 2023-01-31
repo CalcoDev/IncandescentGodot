@@ -33,7 +33,7 @@ public partial class GameManager : Node
 
     public static bool Debug { get; set; } = false;
 
-    public static readonly Color ClearColour = new Color("10141f");
+    public static readonly Color ClearColour = new Color("090a14");
 
     #region Game Events
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://de3rhxf13tl4y"
-path="res://.godot/imported/player_run_temp.png-959a87ec87d2762d1ae1d10e084bd585.ctex"
+uid="uid://ccocjpwa60b75"
+path="res://.godot/imported/bow_all.png-f236259c4978e9f86eec26613c239fc2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/entities/player/player_run_temp.png"
-dest_files=["res://.godot/imported/player_run_temp.png-959a87ec87d2762d1ae1d10e084bd585.ctex"]
+source_file="res://assets/art/entities/enemies/bow/bow_all.png"
+dest_files=["res://.godot/imported/bow_all.png-f236259c4978e9f86eec26613c239fc2.ctex"]
 
 [params]
 

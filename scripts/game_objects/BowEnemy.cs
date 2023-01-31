@@ -15,35 +15,13 @@ public partial class BowEnemy : Actor
 {
     #region Constants
 
-    [Export] private float StrafeCoefficient;
-
-    [Node("VelocityComponent")]
-    private VelocityComponent _vel;
-    [Node("StateMachineComponent")]
-    private StateMachineComponent _stateMachine;
-    [Node("PathfindingComponent")]
-    private PathfindingComponent _pathfinding;
-
-    [Node("DashTimer")]
-    private CustomTimerComponent _dashTimer;
-    [Node("DashCooldownTimer")]
-    private CustomTimerComponent _dashCooldownTimer;
-
-    [Node("SteerTimer")]
-    private CustomTimerComponent _steerTimer;
-    [Node("SteeringBehaviourComponent")]
-    private SteeringBehaviourComponent _steeringBehaviour;
-
-    private SteeringBehaviourDefinition _seekSteerDef;
-    private SteeringBehaviourDefinition _strafeSteerDef;
-
+    // States
     private const int StNormal = 0;
     private const int StAttack = 1;
     private const int StDash = 2;
 
     private const float Acceleration = 1600f;
 
-    private const float FollowRange = 200f;
     private const float FollowSpeed = 100f;
     private const float StrafeSpeed = 65f;
 
@@ -59,11 +37,37 @@ public partial class BowEnemy : Actor
 
     #region Variables
 
+    // General
+    [Node("VelocityComponent")]
+    private VelocityComponent _vel;
+    [Node("StateMachineComponent")]
+    private StateMachineComponent _stateMachine;
+    [Node("AnimatedSprite2D")]
+    private AnimatedSprite2D _sprite;
+
     // Dash
+    [Node("DashTimer")]
+    private CustomTimerComponent _dashTimer;
+    [Node("DashCooldownTimer")]
+    private CustomTimerComponent _dashCooldownTimer;
+
     private Vector2 _dashDir;
     private Vector2 _dashStartPos;
 
-    private float _lastSpeed;
+    // Steering
+    [Node("SteerTimer")]
+    private CustomTimerComponent _steerTimer;
+    [Node("SteeringBehaviourComponent")]
+    private SteeringBehaviourComponent _steeringBehaviour;
+
+    private SteeringBehaviourDefinition _seekSteerDef;
+    private SteeringBehaviourDefinition _strafeSteerDef;
+
+    private float _speed;
+
+    // Pathfinding
+    [Node("PathfindingComponent")]
+    private PathfindingComponent _pathfinding;
 
     #endregion
 
@@ -80,8 +84,7 @@ public partial class BowEnemy : Actor
         // State
         _stateMachine.UpdateSelf = false;
         _stateMachine.Init(StDash + 1, StNormal);
-        _stateMachine.SetCallbacks(StNormal, NormalUpdate, null, null, null);
-        // _stateMachine.SetCallbacks(StAttack, AttackUpdate, null, null, null);
+        _stateMachine.SetCallbacks(StNormal, NormalUpdate, NormalEnter, null, null);
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, null);
 
         // Steering & Pathfinding
@@ -108,80 +111,73 @@ public partial class BowEnemy : Actor
 
     #region States
 
+    private void NormalEnter()
+    {
+        _sprite.Play("idle");
+    }
+
     private int NormalUpdate()
     {
         _dashCooldownTimer.Update(GameManager.PhysicsDelta);
 
-
         PhysicsPlayer player = GameManager.Player;
         float sqrDist = player.GlobalPosition.DistanceSquaredTo(GlobalPosition);
         bool playerInSight = !GameManager.Raycast(GlobalPosition, player.GlobalPosition, 1 << 0);
-        if (false) { }
-        else if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
-        {
+
+        if (sqrDist < DashRange * DashRange && _dashCooldownTimer.HasFinished() && playerInSight)
             return StDash;
-        }
         // else if (sqrDist < AttackRange * AttackRange)
-        // {
         //     return StAttack;
-        // }
-        else if (sqrDist < FollowRange * FollowRange)
+
+        _pathfinding.SetTargetInterval(player.GlobalPosition);
+
+        Vector2 targetVel;
+        if (playerInSight)
         {
-            _pathfinding.SetTargetInterval(player.GlobalPosition);
+            _steerTimer.Update(GameManager.PhysicsDelta);
 
-            Vector2 targetVel;
-            if (playerInSight)
+            if (_steerTimer.HasFinished())
             {
+                Vector2 vel = _vel.GetVelocity() * GameManager.PhysicsDelta;
+                Vector2 attraction;
+                Vector2 repulsion;
 
-                // TODO(calco): This is an ugly hack instead of manipulating weights.
-                _steerTimer.Update(GameManager.PhysicsDelta);
-
-                if (_steerTimer.HasFinished())
+                // TODO(calco): Refactor this entire thing + INTERPOLATE THE WEIGHTS
+                if (sqrDist < (DashRange + 30f) * (DashRange + 30f))
                 {
-                    Vector2 vel = _vel.GetVelocity() * GameManager.PhysicsDelta;
-                    Vector2 attraction;
-                    Vector2 repulsion;
-
-                    if (sqrDist < (DashRange + 30f) * (DashRange + 30f))
-                    {
-                        _steeringBehaviour.SetDefinition(_strafeSteerDef);
-                        attraction = player.GlobalPosition - GlobalPosition;
-                        repulsion = attraction;
-                        _lastSpeed = StrafeSpeed;
-                        _steerTimer.SetTime(0.15f);
-                    }
-                    else
-                    {
-                        _steeringBehaviour.SetDefinition(_seekSteerDef);
-                        attraction = player.GlobalPosition - GlobalPosition;
-                        repulsion = -attraction;
-                        _lastSpeed = FollowSpeed;
-                        _steerTimer.SetTime(0.25f);
-                    }
-
-                    _steeringBehaviour.GetSteeringDirection(vel, attraction, repulsion);
+                    _steeringBehaviour.SetDefinition(_strafeSteerDef);
+                    attraction = player.GlobalPosition - GlobalPosition;
+                    repulsion = attraction;
+                    _speed = StrafeSpeed;
+                    _steerTimer.SetTime(0.15f);
+                }
+                else
+                {
+                    _steeringBehaviour.SetDefinition(_seekSteerDef);
+                    attraction = player.GlobalPosition - GlobalPosition;
+                    repulsion = -attraction;
+                    _speed = FollowSpeed;
+                    _steerTimer.SetTime(0.25f);
                 }
 
-                targetVel = _steeringBehaviour.LastSteeringDirection * _lastSpeed;
-            }
-            else
-            {
-                targetVel = (_pathfinding.Agent.GetNextLocation() - GlobalPosition).Normalized() * FollowSpeed;
+                _steeringBehaviour.GetSteeringDirection(vel, attraction, repulsion);
             }
 
-            _vel.SetVelocity(targetVel);
-            _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
-
-            MoveX(_vel.X * GameManager.PhysicsDelta);
-            MoveY(_vel.Y * GameManager.PhysicsDelta);
+            targetVel = _steeringBehaviour.LastSteeringDirection * _speed;
+        }
+        else
+        {
+            targetVel = (_pathfinding.Agent.GetNextLocation() - GlobalPosition).Normalized() * FollowSpeed;
         }
 
-        return StNormal;
-    }
+        _vel.Approach(targetVel, Acceleration * GameManager.PhysicsDelta);
+        _pathfinding.Agent.SetVelocity(_vel.GetVelocity());
 
-    private int AttackUpdate()
-    {
-        GD.Print("Attack");
+        MoveX(_vel.X * GameManager.PhysicsDelta);
+        MoveY(_vel.Y * GameManager.PhysicsDelta);
+
+        _sprite.FlipH = _vel.X > 0;
+
         return StNormal;
     }
 
@@ -192,6 +188,9 @@ public partial class BowEnemy : Actor
 
         _dashTimer.SetTime(DashDuration);
         _dashCooldownTimer.SetTime(DashCooldown);
+
+        _sprite.Play("dash");
+        _sprite.FlipH = _dashDir.x > 0;
     }
 
     private int DashUpdate()

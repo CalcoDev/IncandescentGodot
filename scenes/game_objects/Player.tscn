@@ -1,9 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://ojl074exjn23"]
+[gd_scene load_steps=7 format=3 uid="uid://ojl074exjn23"]
 
 [ext_resource type="Script" path="res://scripts/game_objects/PhysicsPlayer.cs" id="1_521ab"]
 [ext_resource type="PackedScene" uid="uid://dl0daymt4ahxi" path="res://scenes/components/VelocityComponent.tscn" id="2_0apfh"]
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_j5h5e"]
-[ext_resource type="Texture2D" uid="uid://ckihyaab1up4u" path="res://assets/art/entities/player/player.png" id="5_dw34v"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nvssc"]
@@ -18,7 +17,6 @@ script = ExtResource("1_521ab")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -1)
-texture = ExtResource("5_dw34v")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -0.5)

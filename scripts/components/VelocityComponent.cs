@@ -16,7 +16,7 @@ public partial class VelocityComponent : Node
         return _velocity;
     }
 
-    public void Apprach(Vector2 target, float maxDelta)
+    public void Approach(Vector2 target, float maxDelta)
     {
         ApproachX(target.x, maxDelta);
         ApproachY(target.y, maxDelta);

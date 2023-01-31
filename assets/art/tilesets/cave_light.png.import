@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cvxeqr0ka2i4v"
-path="res://.godot/imported/attemp1.png-4c7bc1afe1e6793facdc6dda48afe1cc.ctex"
+path="res://.godot/imported/cave_light.png-90c841f84e72689277b6ad6d6ef3e938.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/tilesets/attemp1.png"
-dest_files=["res://.godot/imported/attemp1.png-4c7bc1afe1e6793facdc6dda48afe1cc.ctex"]
+source_file="res://assets/art/tilesets/cave_light.png"
+dest_files=["res://.godot/imported/cave_light.png-90c841f84e72689277b6ad6d6ef3e938.ctex"]
 
 [params]
 
