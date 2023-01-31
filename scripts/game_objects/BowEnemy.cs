@@ -43,7 +43,7 @@ public partial class BowEnemy : Actor
     private const float Acceleration = 1600f;
 
     private const float FollowRange = 200f;
-    private const float FollowSpeed = 25f;
+    private const float FollowSpeed = 125f;
 
     private const float AttackRange = 125f;
 
@@ -81,7 +81,7 @@ public partial class BowEnemy : Actor
         _stateMachine.SetCallbacks(StDash, DashUpdate, DashEnter, DashExit, null);
 
         // Steering & Pathfinding
-        _seekSteerDef = new SteeringBehaviourDefinition(24,
+        _seekSteerDef = new SteeringBehaviourDefinition(9,
             SteeringShapingFunctions.Normalized, SteeringShapingFunctions.Null,
             SteeringSortingFunctions.ClosestHighestWeight);
         _steeringBehaviour.Initialize(_seekSteerDef);

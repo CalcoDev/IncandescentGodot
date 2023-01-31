@@ -41,8 +41,8 @@ colors = PackedColorArray(0.905882, 0.835294, 0.701961, 1, 0.854902, 0.52549, 0.
 [sub_resource type="CanvasTexture" id="CanvasTexture_84erp"]
 diffuse_texture = ExtResource("14_pr42x")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5bw46"]
-size = Vector2(4, 11)
+[sub_resource type="CircleShape2D" id="CircleShape2D_6q35f"]
+radius = 3.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_76ife"]
 size = Vector2(24, 8)
@@ -1120,8 +1120,7 @@ radius = 20.0
 [node name="IntervalTimer" parent="BowEnemy/PathfindingComponent" instance=ExtResource("8_tb6wk")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BowEnemy"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_5bw46")
+shape = SubResource("CircleShape2D_6q35f")
 
 [node name="DashTimer" parent="BowEnemy" instance=ExtResource("8_tb6wk")]
 
@@ -1156,7 +1155,7 @@ shape = SubResource("RectangleShape2D_76ife")
 position = Vector2(52, 139)
 
 [node name="Marker2D2" type="Marker2D" parent="MovingPlatform/Path"]
-position = Vector2(52, 86)
+position = Vector2(102, 139)
 
 [node name="TileMap" type="TileMap" parent="."]
 z_index = 2

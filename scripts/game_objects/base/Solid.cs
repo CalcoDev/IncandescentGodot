@@ -1,4 +1,5 @@
 using Godot;
+using Incandescent.Managers;
 
 namespace Incandescent.GameObjects.Base;
 
@@ -8,7 +9,7 @@ public abstract partial class Solid : AnimatableBody2D
 
     public void MoveX(float amount)
     {
-        CollisionLayer = 1 << 20;
+        CollisionLayer = (uint)GameManager.CollisionLayers.Disabled;
 
         var shape = ShapeOwnerGetShape(0, 0);
         var state = GetWorld2d().DirectSpaceState;
@@ -42,14 +43,13 @@ public abstract partial class Solid : AnimatableBody2D
             actor.MoveX(amount);
         }
 
-        // GlobalPosition += Vector2.Right * amount;
-
-        CollisionLayer = 1 << 0;
+        MoveAndCollide(Vector2.Right * amount, safeMargin: 0.001f);
+        CollisionLayer = (uint)GameManager.CollisionLayers.LevelGeometry;
     }
 
     public void MoveY(float amount)
     {
-        CollisionLayer = 1 << 20;
+        CollisionLayer = (uint)GameManager.CollisionLayers.Disabled;
 
         var old = GlobalTransform;
         MoveAndCollide(Vector2.Down * amount, safeMargin: 0.001f);
@@ -92,7 +92,6 @@ public abstract partial class Solid : AnimatableBody2D
             actor.MoveY(amount);
         }
 
-        // GlobalPosition += Vector2.Down * amount;
-        CollisionLayer = 1 << 0;
+        CollisionLayer = (uint)GameManager.CollisionLayers.LevelGeometry;
     }
 }

@@ -6,6 +6,13 @@ namespace Incandescent.Managers;
 
 public partial class GameManager : Node
 {
+    public enum CollisionLayers : uint
+    {
+        LevelGeometry = 1 << 0,
+        Actor = 1 << 2,
+        Disabled = 1 << 30,
+    }
+
     public static GameManager Instance { get; private set; }
 
     public static Node Root { get; private set; }
