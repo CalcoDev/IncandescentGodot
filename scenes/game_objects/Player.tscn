@@ -33,10 +33,13 @@ size = Vector2(7.99, 12.999)
 size = Vector2(7.98, 1.999)
 
 [node name="Player" type="CharacterBody2D"]
+z_as_relative = false
 safe_margin = 0.001
 script = ExtResource("1_jwi8l")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+light_mask = 2
+visibility_layer = 2
 position = Vector2(0, -1)
 frames = SubResource("SpriteFrames_iakyq")
 animation = &"idle"
