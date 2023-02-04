@@ -133,8 +133,6 @@ public partial class BowEnemy : Actor
         // else if (sqrDist < AttackRange * AttackRange)
         //     return StAttack;
 
-        _pathfinding.SetTargetInterval(player.GlobalPosition);
-
         Vector2 targetVel;
         if (playerInSight)
         {
@@ -176,6 +174,7 @@ public partial class BowEnemy : Actor
         else
         {
             _sprite.Rotation = Mathf.Atan2(_vel.Y, _vel.X);
+            _pathfinding.SetTargetInterval(player.GlobalPosition);
             targetVel = (_pathfinding.Agent.GetNextLocation() - GlobalPosition).Normalized() * FollowSpeed;
         }
 

@@ -38,8 +38,6 @@ safe_margin = 0.001
 script = ExtResource("1_jwi8l")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-light_mask = 2
-visibility_layer = 2
 position = Vector2(0, -1)
 frames = SubResource("SpriteFrames_iakyq")
 animation = &"idle"
