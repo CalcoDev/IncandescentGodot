@@ -4,6 +4,7 @@ using Godot;
 using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
+using Incandescent.Components.Logic.Coroutines;
 using Incandescent.GameObjects.Base;
 using Incandescent.Managers;
 using Incandescent.Utils;
@@ -239,7 +240,7 @@ public partial class Player : Actor
 
         _vel.SetVelocity(speed);
 
-        yield return DashTime;
+        yield return new WaitForSeconds(DashTime);
 
         _vel.MultiplyX(DashFinishMultiplier);
         _stateMachine.SetState(StNormal);

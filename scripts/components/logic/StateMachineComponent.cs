@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Godot;
+using Incandescent.Components.Logic.Coroutines;
 
 namespace Incandescent.Components.Logic;
 

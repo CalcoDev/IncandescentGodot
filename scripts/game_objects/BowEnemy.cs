@@ -5,6 +5,7 @@ using Godot;
 using GodotUtilities;
 using Incandescent.Components;
 using Incandescent.Components.Logic;
+using Incandescent.Components.Logic.Coroutines;
 using Incandescent.Components.Steering;
 using Incandescent.GameObjects.Base;
 using Incandescent.Managers;
@@ -179,10 +180,10 @@ public partial class BowEnemy : Actor
         // Stage 1: Create arrow
         _sprite.Play("create_arrow");
 
-        yield return 0.625f;
+        yield return new WaitForSeconds(0.625f);
 
         _sprite.Play("shoot");
-        yield return 0.24f;
+        yield return new WaitForSeconds(0.24f);
 
         // Stage 2: Shoot arrow
         var arrow = (PackedScene)_res.GetResource("Arrow");
@@ -197,7 +198,7 @@ public partial class BowEnemy : Actor
 
         // Stage 3: Recoil
         _sprite.Play("shoot_recoil");
-        yield return 0.24f;
+        yield return new WaitForSeconds(0.24f);
 
         _stateMachine.SetState(StNormal);
     }

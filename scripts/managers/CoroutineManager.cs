@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Godot;
-using Incandescent.Components.Logic;
+using Incandescent.Components.Logic.Coroutines;
 
 namespace Incandescent.Managers;
 
