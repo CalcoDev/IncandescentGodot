@@ -6,9 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://xod8ikyxh7lf" path="res://scenes/components/logic/StateMachineComponent.tscn" id="3_j5h5e"]
 [ext_resource type="PackedScene" uid="uid://bwvd83xhp0mki" path="res://scenes/components/logic/CustomTimerComponent.tscn" id="8_vigfg"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_7f0p2"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_12le8"]
 atlas = ExtResource("2_6r10y")
-region = Rect2(0, 0, 16, 20)
+region = Rect2(0, 0, 32, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_iakyq"]
 animations = [{
@@ -19,7 +19,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_7f0p2")
+"texture": SubResource("AtlasTexture_12le8")
 }],
 "loop": true,
 "name": &"idle",
@@ -38,7 +38,6 @@ safe_margin = 0.001
 script = ExtResource("1_jwi8l")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -1)
 frames = SubResource("SpriteFrames_iakyq")
 animation = &"idle"
 

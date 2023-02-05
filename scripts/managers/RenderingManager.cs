@@ -83,12 +83,12 @@ public partial class RenderingManager : Node
         AddChild(layerRoot);
     }
 
-    private bool NodeIsEligibleForFollower(Node2D node)
+    private static bool NodeIsEligibleForFollower(Node2D node)
     {
         return node.GetParent() is Node2D && node.GetParent().Name != "root" && !node.GetParent().Name.ToString().StartsWith("Scene");
     }
 
-    private void AddFollowerToNode(Node2D node)
+    private static void AddFollowerToNode(Node2D node)
     {
         FollowerComponent followerComp = new FollowerComponent
         {

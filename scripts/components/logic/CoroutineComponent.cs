@@ -4,6 +4,7 @@ using Godot;
 
 namespace Incandescent.Components.Logic;
 
+// TODO(calco): Make this more customizable
 public partial class CoroutineComponent : Node
 {
     [Export] public bool Finished { get; private set; } = false;

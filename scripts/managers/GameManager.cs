@@ -10,7 +10,7 @@ public partial class GameManager : Node
     {
         LevelGeometry = 1 << 0,
         Actor = 1 << 2,
-        Disabled = 1 << 30,
+        Disabled = 0,
     }
 
     public static GameManager Instance { get; private set; }
